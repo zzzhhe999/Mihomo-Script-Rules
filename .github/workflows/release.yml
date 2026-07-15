@@ -1,12 +1,8 @@
-# .github/workflows/release.yml
-# 作用：打 tag 时自动构建并发布 GitHub Release，附带脚本和 yaml
-# 触发：push 一个以 v 开头的 tag（如 v1.0.0、v1.1.0-beta）
 name: 自动发布 Release
 
 on:
-  push:
-    tags:
-      - 'v*'
+  release:
+    types: [published]
 
 jobs:
   release:
