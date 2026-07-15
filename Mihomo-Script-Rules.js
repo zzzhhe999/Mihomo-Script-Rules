@@ -530,10 +530,18 @@ function main(config) {
     let newName = originalName;
     if (matchedNormalRegionName) {
       const flag = regionFlags[matchedNormalRegionName] || '🏳️';
-      if (!regionCounters[matchedNormalRegionName]) regionCounters[matchedNormalRegionName] = 0;
-      regionCounters[matchedNormalRegionName]++;
-      const serial = regionCounters[matchedNormalRegionName].toString().padStart(2, '0');
-      newName = `${flag} ${matchedNormalRegionName} ${serial}`;
+      if (isLowMultiplier || isHighMultiplier) {
+        const multiKey = matchedNormalRegionName + '_multi';
+        if (!regionCounters[multiKey]) regionCounters[multiKey] = 0;
+        regionCounters[multiKey]++;
+        const serial = regionCounters[multiKey].toString().padStart(2, '0');
+        newName = `${flag} ${matchedNormalRegionName} ${serial}`;
+      } else {
+        if (!regionCounters[matchedNormalRegionName]) regionCounters[matchedNormalRegionName] = 0;
+        regionCounters[matchedNormalRegionName]++;
+        const serial = regionCounters[matchedNormalRegionName].toString().padStart(2, '0');
+        newName = `${flag} ${matchedNormalRegionName} ${serial}`;
+      }
     } else {
       otherCounter++;
       const serial = otherCounter.toString().padStart(2, '0');
@@ -543,8 +551,7 @@ function main(config) {
     if (isLowMultiplier) {
       const low = extractLowMultiplier(originalName);
       if (low) newName += ' ' + low;
-    }
-    if (isHighMultiplier) {
+    } else if (isHighMultiplier) {
       const high = extractHighMultiplier(originalName);
       if (high) newName += ' ' + high;
     }
