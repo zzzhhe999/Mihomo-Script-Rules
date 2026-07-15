@@ -1,0 +1,93 @@
+# .github/workflows/rule-check.yml
+# 作用：每天定时检查所有 rule-provider 的 URL 是否可达，失效则自动开 Issue 告警
+# 触发：每天 UTC 08:00（北京时间 16:00），或手动触发
+name: 规则集可达性检查
+
+on:
+  schedule:
+    - cron: '0 8 * * *'
+  workflow_dispatch: {}
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: 提取所有规则集 URL
+        run: |
+          node -e "
+            const fs = require('fs');
+            const path = require('path');
+            const src = fs.readFileSync('Mihomo-Script-Rules.js', 'utf8');
+            const exportSrc = src + '\nmodule.exports = { main, baseRuleProviders, serviceConfigs };\n';
+            const tmp = path.join(process.cwd(), '_tmp_check.cjs');
+            fs.writeFileSync(tmp, exportSrc);
+            const { baseRuleProviders, serviceConfigs } = require(tmp);
+            fs.unlinkSync(tmp);
+            const allProviders = { ...baseRuleProviders };
+            for (const svc of serviceConfigs) {
+              Object.assign(allProviders, svc.providers || {});
+            }
+            const urls = Object.entries(allProviders).map(([name, p]) => ({ name, url: p.url }));
+            console.log('共 ' + urls.length + ' 个规则集需要检查');
+            fs.writeFileSync('/tmp/providers.json', JSON.stringify(urls, null, 2));
+          "
+
+      - name: 逐个检查 HTTP 可达性
+        run: |
+          node -e "
+            const https = require('https');
+            const http = require('http');
+            const providers = JSON.parse(require('fs').readFileSync('/tmp/providers.json', 'utf8'));
+
+            function check(url) {
+              return new Promise((resolve) => {
+                const client = url.startsWith('https') ? https : http;
+                const req = client.get(url, { timeout: 15000 }, (res) => {
+                  resolve({ status: res.statusCode, ok: res.statusCode === 200 });
+                });
+                req.on('timeout', () => { req.destroy(); resolve({ status: 0, ok: false }); });
+                req.on('error', () => resolve({ status: 0, ok: false }));
+              });
+            }
+
+            (async () => {
+              const results = [];
+              for (const p of providers) {
+                const r = await check(p.url);
+                results.push({ ...p, ...r });
+                console.log((r.ok ? '✅' : '❌') + ' ' + p.name + ' -> ' + p.url + ' [' + (r.status || 'TIMEOUT/ERROR') + ']');
+              }
+              const failed = results.filter(r => !r.ok);
+              require('fs').writeFileSync('/tmp/results.json', JSON.stringify({ results, failed }, null, 2));
+              console.log('\\n总计: ' + results.length + ' | 正常: ' + (results.length - failed.length) + ' | 失效: ' + failed.length);
+            })();
+          "
+
+      - name: 失效告警（自动开 Issue）
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const data = JSON.parse(fs.readFileSync('/tmp/results.json', 'utf8'));
+            if (data.failed.length === 0) {
+              console.log('✅ 所有规则集均正常，无需告警');
+              return;
+            }
+            const failedList = data.failed.map(f =>
+              '- [' + f.name + '](' + f.url + ') — HTTP ' + (f.status || 'TIMEOUT/ERROR')
+            ).join('\n');
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: '⚠️ 规则集可达性检查发现 ' + data.failed.length + ' 个失效项',
+              body: '以下规则集在定时检查中不可达，可能需要更换规则源：\n\n' + failedList + '\n\n> 此 Issue 由 GitHub Actions 自动创建。',
+              labels: ['rule-check', 'auto-generated']
+            });

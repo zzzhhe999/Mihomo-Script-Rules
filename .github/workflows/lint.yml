@@ -1,0 +1,55 @@
+# .github/workflows/lint.yml
+# 作用：每次 push 或提 PR 时，自动检查脚本语法 + 运行时功能验证
+# 触发：push 到 main 分支，或发起 Pull Request
+name: 脚本语法与功能自检
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: 语法检查 (node --check)
+        run: node --check Mihomo-Script-Rules.js
+
+      - name: 运行时功能验证
+        run: |
+          node -e "
+            const fs = require('fs');
+            const path = require('path');
+            const src = fs.readFileSync('Mihomo-Script-Rules.js', 'utf8');
+            const tmp = path.join(process.cwd(), '_tmp_verify.cjs');
+            fs.writeFileSync(tmp, src + '\nmodule.exports = { main };\n');
+            const { main } = require(tmp);
+            const config = {
+              proxies: [
+                { name: '🇭🇰 香港01', type: 'vmess', server: '1.1.1.1', port: 443 },
+                { name: '🇯🇵 日本01', type: 'vless', server: '2.2.2.1', port: 443 },
+                { name: '官网 www.expire.com', type: 'vmess', server: '0.0.0.1', port: 443 },
+                { name: '香港 0.5倍', type: 'trojan', server: '1.1.1.2', port: 443 },
+              ],
+              mode: 'rule',
+            };
+            const out = main(config);
+            if (!out.proxies || !out['proxy-groups'] || !out.rules) throw new Error('输出缺少必要字段');
+            console.log('✅ 验证通过');
+            console.log('   proxies:', out.proxies.length);
+            console.log('   proxy-groups:', out['proxy-groups'].length);
+            console.log('   rules:', out.rules.length);
+            fs.unlinkSync(tmp);
+          "
+
+      - name: YAML 生成验证
+        run: node generate-yaml.cjs

@@ -1,0 +1,62 @@
+# .github/workflows/release.yml
+# 作用：打 tag 时自动构建并发布 GitHub Release，附带脚本和 yaml
+# 触发：push 一个以 v 开头的 tag（如 v1.0.0、v1.1.0-beta）
+name: 自动发布 Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: 语法检查
+        run: node --check Mihomo-Script-Rules.js
+
+      - name: 生成 mihomoConfig.yaml
+        run: node generate-yaml.cjs
+
+      - name: 打包附件
+        run: |
+          mkdir -p release
+          cp Mihomo-Script-Rules.js release/
+          cp Config/mihomoConfig.yaml release/
+          cd release && zip -r Mihomo-Script-Rules-${{ github.ref_name }}.zip . && cd ..
+          ls -la release/
+
+      - name: 创建 GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: ${{ github.ref_name }}
+          body: |
+            ## Mihomo-Script-Rules ${{ github.ref_name }}
+
+            ### 附件说明
+            - **Mihomo-Script-Rules.js** — 覆写脚本，在代理客户端中导入
+            - **mihomoConfig.yaml** — 纯配置文件，不支持脚本的客户端可直接使用
+            - **Mihomo-Script-Rules-${{ github.ref_name }}.zip** — 以上文件打包
+
+            ### 使用方法
+            1. 脚本：复制 [raw 链接](https://raw.githubusercontent.com/zzzhhe123/Mihomo-Script-Rules/main/Mihomo-Script-Rules.js)，在客户端脚本功能中导入
+            2. 配置：复制 [yaml 链接](https://raw.githubusercontent.com/zzzhhe123/Mihomo-Script-Rules/main/Config/mihomoConfig.yaml)，在客户端配置中导入
+
+            > 完整文档见 [README](https://github.com/zzzhhe123/Mihomo-Script-Rules#readme)
+          files: |
+            release/Mihomo-Script-Rules.js
+            release/mihomoConfig.yaml
+            release/Mihomo-Script-Rules-${{ github.ref_name }}.zip
+          draft: false
+          prerelease: ${{ contains(github.ref_name, '-') }}
