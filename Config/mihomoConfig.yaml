@@ -100,22 +100,22 @@ proxies:
     server: 16.16.16.1
     port: 443
     client-fingerprint: chrome
-  - name: 🇭🇰 香港 04 0.5x
+  - name: 🇭🇰 香港 01 0.5x
     type: vmess
     server: 1.1.1.4
     port: 443
     client-fingerprint: chrome
-  - name: 🇯🇵 日本 03 3x
+  - name: 🇯🇵 日本 01 3x
     type: vless
     server: 2.2.2.3
     port: 443
     client-fingerprint: chrome
-  - name: 🇺🇸 美国 03 5x
+  - name: 🇺🇸 美国 01 5x
     type: trojan
     server: 3.3.3.3
     port: 443
     client-fingerprint: chrome
-  - name: 🇸🇬 新加坡 02 省流
+  - name: 🇸🇬 新加坡 01 省流
     type: vmess
     server: 4.4.4.2
     port: 443
@@ -130,7 +130,7 @@ proxies:
     server: 20.20.20.2
     port: 443
     client-fingerprint: chrome
-  - name: 🇯🇵 日本 04
+  - name: 🇯🇵 日本 03
     type: hy2
     server: 2.2.2.4
     port: 443
@@ -834,7 +834,7 @@ proxy-groups:
       - "日本-负载均衡"
       - 🇯🇵 日本 01
       - 🇯🇵 日本 02
-      - 🇯🇵 日本 04
+      - 🇯🇵 日本 03
   - interval: 180
     timeout: 3000
     url: "https://cp.cloudflare.com/generate_204"
@@ -848,7 +848,7 @@ proxy-groups:
     proxies:
       - 🇯🇵 日本 01
       - 🇯🇵 日本 02
-      - 🇯🇵 日本 04
+      - 🇯🇵 日本 03
   - interval: 180
     timeout: 3000
     url: "https://cp.cloudflare.com/generate_204"
@@ -862,7 +862,7 @@ proxy-groups:
     proxies:
       - 🇯🇵 日本 01
       - 🇯🇵 日本 02
-      - 🇯🇵 日本 04
+      - 🇯🇵 日本 03
   - type: select
     hidden: false
     name: 美国
@@ -1321,8 +1321,8 @@ proxy-groups:
     proxies:
       - "低倍率节点-自动选择"
       - "低倍率节点-负载均衡"
-      - 🇭🇰 香港 04 0.5x
-      - 🇸🇬 新加坡 02 省流
+      - 🇭🇰 香港 01 0.5x
+      - 🇸🇬 新加坡 01 省流
   - interval: 180
     timeout: 3000
     url: "https://cp.cloudflare.com/generate_204"
@@ -1334,8 +1334,8 @@ proxy-groups:
     hidden: true
     name: "低倍率节点-自动选择"
     proxies:
-      - 🇭🇰 香港 04 0.5x
-      - 🇸🇬 新加坡 02 省流
+      - 🇭🇰 香港 01 0.5x
+      - 🇸🇬 新加坡 01 省流
   - interval: 180
     timeout: 3000
     url: "https://cp.cloudflare.com/generate_204"
@@ -1347,8 +1347,8 @@ proxy-groups:
     hidden: true
     name: "低倍率节点-负载均衡"
     proxies:
-      - 🇭🇰 香港 04 0.5x
-      - 🇸🇬 新加坡 02 省流
+      - 🇭🇰 香港 01 0.5x
+      - 🇸🇬 新加坡 01 省流
   - type: select
     hidden: false
     name: 高倍率节点
@@ -1356,8 +1356,8 @@ proxy-groups:
     proxies:
       - "高倍率节点-自动选择"
       - "高倍率节点-负载均衡"
-      - 🇯🇵 日本 03 3x
-      - 🇺🇸 美国 03 5x
+      - 🇯🇵 日本 01 3x
+      - 🇺🇸 美国 01 5x
   - interval: 180
     timeout: 3000
     url: "https://cp.cloudflare.com/generate_204"
@@ -1369,8 +1369,8 @@ proxy-groups:
     hidden: true
     name: "高倍率节点-自动选择"
     proxies:
-      - 🇯🇵 日本 03 3x
-      - 🇺🇸 美国 03 5x
+      - 🇯🇵 日本 01 3x
+      - 🇺🇸 美国 01 5x
   - interval: 180
     timeout: 3000
     url: "https://cp.cloudflare.com/generate_204"
@@ -1382,8 +1382,8 @@ proxy-groups:
     hidden: true
     name: "高倍率节点-负载均衡"
     proxies:
-      - 🇯🇵 日本 03 3x
-      - 🇺🇸 美国 03 5x
+      - 🇯🇵 日本 01 3x
+      - 🇺🇸 美国 01 5x
   - type: select
     hidden: false
     name: 其他节点
