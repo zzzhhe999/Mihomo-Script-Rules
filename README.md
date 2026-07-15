@@ -30,7 +30,6 @@
   - [方式二：纯配置文件](#方式二纯配置文件)
 - [客户端兼容性](#客户端兼容性)
 - [个性化定制](#个性化定制)
-- [自动化维护](#自动化维护)
 - [脚本维护与更新](#脚本维护与更新)
 - [鸣谢](#鸣谢)
 - [许可证](#许可证)
@@ -283,25 +282,6 @@ https://fastly.jsdelivr.net/gh/zzzhhe123/Mihomo-Script-Rules@main/Config/mihomoC
 | [Clash Verge](https://github.com/clash-verge-rev/clash-verge-rev) | 旧版 | 旧版可能不支持，建议升级到 Verge Rev |
 | Stash / Shadowrocket | 不兼容 | JS 预处理语法不同，建议用 sub-store 中转 |
 | Surge / Quantumult X | 不兼容 | 同上  |
-
----
-
-## 自动化维护
-
-本项目通过 GitHub Actions 实现全自动化维护，无需手动检查：
-
-| 工作流 | 文件 | 触发条件 | 作用 |
-| --- | --- | --- | --- |
-| **脚本语法与功能自检** | `.github/workflows/lint.yml` | push / PR | 自动运行 `node --check` 语法检查 + 运行时功能验证 + YAML 生成验证，防止改坏脚本 |
-| **规则集可达性检查** | `.github/workflows/rule-check.yml` | 每天北京时间 16:00 / 手动 | 自动访问所有 rule-provider URL，失效自动开 Issue 告警 |
-
-### YAML 配置自动生成
-
-纯配置文件 `Config/mihomoConfig.yaml` 由 `generate-yaml.cjs` 从脚本自动生成。修改脚本后，运行以下命令即可同步更新 yaml：
-
-```bash
-node generate-yaml.cjs
-```
 
 ---
 
