@@ -48,7 +48,12 @@ const excludeFilter = /群|返利|循环|官[网址]|客服|网站|网址|获取
 
 const tunEnable = false;
 
-const quicRule = 'AND,((NETWORK,UDP),(DST-PORT,443)),QUIC处理';
+const quicEnable = true;
+
+const quicRules = [
+  'AND,((NETWORK,UDP),(DST-PORT,443),(OR,((RULE-SET,cn_additional),(RULE-SET,cn_ip,no-resolve)))),直连',
+  'AND,((NETWORK,UDP),(DST-PORT,443)),QUIC处理',
+];
 
 const rules = [
   'DOMAIN-SUFFIX,mcdn.bilivideo.com,REJECT',
@@ -503,7 +508,6 @@ function main(config) {
       .map((r) => [r.name, r.flag])
   );
   const regionCounters = {};
-  let otherCounter = 0;
 
   for (const proxy of proxies) {
     const originalName = proxy.name;
@@ -542,10 +546,6 @@ function main(config) {
         const serial = regionCounters[matchedNormalRegionName].toString().padStart(2, '0');
         newName = `${flag} ${matchedNormalRegionName} ${serial}`;
       }
-    } else {
-      otherCounter++;
-      const serial = otherCounter.toString().padStart(2, '0');
-      newName = `🌐 其他 ${serial}`;
     }
 
     if (isLowMultiplier) {
@@ -908,7 +908,7 @@ const regionSelectNames = generatedRegionGroups
     'DOMAIN-SUFFIX,local,直连',
     'DOMAIN-SUFFIX,lan,直连',
     'GEOIP,LAN,直连,no-resolve',
-    quicRule,
+    ...(quicEnable ? quicRules : []),
     'MATCH,默认代理',
   ];
 
