@@ -83,7 +83,7 @@
 
 | 服务  | 策略组名称 | 规则来源 | 特殊处理 |
 | --- | --- | --- | --- |
-| AI 服务 | `AI` | `category-ai-!cn` | ChatGPT、Claude、Gemini 等 |
+| AI 服务 | `AI` | `category-ai` | ChatGPT、Claude、Gemini 等 |
 | YouTube | `YouTube` | `geosite:youtube` | —   |
 | FCM 推送 | `FCM` | `geosite:googlefcm` | 保障 Android 推送 |
 | Google | `Google` | `geosite:google` + `geoip:google` | 域名 + IP 双重匹配 |
@@ -163,6 +163,8 @@
 
 - `direct-nameserver-follow-policy`：直连请求跟随策略选择 DNS
 
+- **纯净默认解析**：从默认 `nameserver` 数组中彻底剥离国内 DNS，防止并发查询时遭 GFW 抢答污染，确保未知境外域名的解析绝对安全。
+
 ### 5.5 广告拦截
 
 - 深度集成 [adblockmihomolite](https://github.com/217heidai/adblockfilters) 规则集
@@ -171,6 +173,8 @@
 
 - 策略组默认 REJECT，可随时切换到直连或代理
 
+- **强制远程更新**：通过显式抹除配置中的 `path-in-bundle` 属性，强制内核无视本地老旧的内置规则库，确保每次均从 GitHub 远端精准拉取最新规则。
+
 ### 5.6 自动补全客户端指纹
 
 针对 `vmess`、`vless`、`trojan`、`hysteria2`、`hy2`、`tuic` 协议，自动补全 `client-fingerprint: chrome`，降低 TLS 指纹被识别和阻断的风险。
@@ -178,10 +182,15 @@
 ### 5.7 QUIC 管控
 
 ```
-AND,((NETWORK,UDP),(DST-PORT,443)),QUIC处理
+AND,(NETWORK,UDP),(DST-PORT,443),QUIC处理
 ```
 
-UDP 443 (QUIC) 流量集中拦截到独立策略组，默认走代理。可手动切换到 REJECT 彻底阻断 QUIC，解决部分环境下 QUIC 导致网页加载卡顿的问题。
+- ​**流量集中管控：** UDP 443 (QUIC) 流量集中拦截到独立策略组，默认走代理。可手动切换到 REJECT 彻底阻断 QUIC，解决部分环境下 QUIC 导致网页加载卡顿的问题。
+- **国内外差异化处理**：
+  - **🇨🇳 国内流量（默认放行）**：匹配到国内域名或 IP 的 QUIC 流量会直接走 **直连**，保障国内应用（如淘宝、抖音、微信等）的极致加载速度。
+  - **🌐 境外流量（手动管控）**：未匹配到国内规则的 QUIC 流量统一进入 `QUIC处理` 策略组，提供两种选项：
+    - `默认代理`：允许 QUIC 流量正常通过代理服务器。
+    - `REJECT`：强制阻断 QUIC。如果你在观看 YouTube 或使用 Google 搜索时遇到无限转圈、加载卡顿，建议选此项，迫使应用回退到更稳定的 TCP 连接。
 
 ### 5.8 双栈 & TUN 模式
 
