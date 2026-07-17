@@ -83,7 +83,7 @@
 
 | 服务  | 策略组名称 | 规则来源 | 特殊处理 |
 | --- | --- | --- | --- |
-| AI 服务 | `AI` | `category-ai` | ChatGPT、Claude、Gemini 等 |
+| AI 服务 | `AI` | `geosite:anthropic/openai` | ChatGPT、Claude 等 |
 | YouTube | `YouTube` | `geosite:youtube` | —   |
 | FCM 推送 | `FCM` | `geosite:googlefcm` | 保障 Android 推送 |
 | Google | `Google` | `geosite:google` + `geoip:google` | 域名 + IP 双重匹配 |
