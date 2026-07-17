@@ -25,20 +25,6 @@ jobs:
       - name: 生成 mihomoConfig.yaml
         run: node generate-yaml.cjs
 
-      - name: 构建发布标题
-        id: release_name
-        env:
-          REF_NAME: ${{ github.ref_name }}
-          BODY: ${{ github.event.release.body }}
-        run: |
-          # 取 body 第一行作为标题后缀，空则不加
-          SUFFIX=$(echo "$BODY" | head -1 | xargs)
-          if [ -n "$SUFFIX" ]; then
-            echo "name=${REF_NAME} - ${SUFFIX}" >> $GITHUB_OUTPUT
-          else
-            echo "name=${REF_NAME}" >> $GITHUB_OUTPUT
-          fi
-
       - name: 打包附件
         run: |
           mkdir -p release
@@ -47,12 +33,13 @@ jobs:
           cd release && zip -r Mihomo-Script-Rules-${{ github.ref_name }}.zip . && cd ..
           ls -la release/
 
-      - name: 创建 GitHub Release
+      - name: 更新 GitHub Release 附件与说明
         uses: softprops/action-gh-release@v2
         with:
-          name: ${{ steps.release_name.outputs.name }}
+          tag_name: ${{ github.event.release.tag_name }} # 定位到当前触发的 Release
+          name: ${{ github.ref_name }}
           body: |
-            ## Mihomo-Script-Rules ${{ github.ref_name }}
+            ${{ github.event.release.body }}
 
             ### 附件说明
             - **Mihomo-Script-Rules.js** — 覆写脚本，在代理客户端中导入
@@ -68,5 +55,3 @@ jobs:
             release/Mihomo-Script-Rules.js
             release/mihomoConfig.yaml
             release/Mihomo-Script-Rules-${{ github.ref_name }}.zip
-          draft: false
-          prerelease: ${{ contains(github.ref_name, '-') }}
