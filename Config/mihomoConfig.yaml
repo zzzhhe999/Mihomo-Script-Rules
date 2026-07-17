@@ -144,107 +144,26 @@ proxies:
   - name: "🇨🇳 直连 | 双栈"
     type: direct
 mode: rule
-sniffer:
-  enable: true
-  force-dns-mapping: true
-  parse-pure-ip: true
-  override-destination: true
-  sniff:
-    HTTP:
-      ports:
-        - 80
-        - "8080-8880"
-    TLS:
-      ports:
-        - 443
-        - 8443
-    QUIC:
-      ports:
-        - 443
-        - 8443
-  skip-domain:
-    - +.mijia.com
-    - +.push.apple.com
-    - gs.apple.com
-    - "gsp-ssl.ls.apple.com"
-    - +.lan
-    - +.local
-dns:
-  enable: true
-  ipv6: true
-  listen: ":1053"
-  cache-algorithm: arc
-  use-hosts: true
-  use-system-hosts: false
-  prefer-h3: false
-  enhanced-mode: "fake-ip"
-  fake-ip-range: 198.18.0.0/15
-  fake-ip-filter:
-    - "*.lan"
-    - "*.local"
-    - dns.msftncsi.com
-    - www.msftncsi.com
-    - www.msftconnecttest.com
-    - connectivitycheck.gstatic.com
-    - connectivitycheck.android.com
-    - connectivitycheck.platform.hicloud.com
-    - "time.*.com"
-    - "time.*.gov"
-    - "time.*.edu.cn"
-    - "time.*.apple.com"
-    - "time-ios.apple.com"
-    - time1.cloud.tencent.com
-    - "ntp.*.com"
-    - ntp.aliyun.com
-    - pool.ntp.org
-    - "*.ntp.org"
-    - +.msftconnecttest.com
-    - +.msftncsi.com
-    - +.srv.nintendo.net
-    - +.stun.playstation.net
-    - +.xboxlive.com
-    - +.ipv6.microsoft.com
-    - "rule-set:fakeip_filter"
-  default-nameserver:
-    - 223.5.5.5
-    - 1.12.12.12
-  proxy-server-nameserver:
-    - 223.5.5.5
-    - 1.12.12.12
-    - "https://dns.alidns.com/dns-query"
-    - "https://doh.pub/dns-query"
-  nameserver:
-    - "https://dns.google/dns-query#默认代理"
-    - "https://dns.cloudflare.com/dns-query#默认代理"
-  nameserver-policy:
-    "rule-set:private":
-      - "https://dns.alidns.com/dns-query#直连"
-      - "https://doh.pub/dns-query#直连"
-    "rule-set:cn":
-      - "https://dns.alidns.com/dns-query#直连"
-      - "https://doh.pub/dns-query#直连"
-    "rule-set:cn_additional":
-      - "https://dns.alidns.com/dns-query#直连"
-      - "https://doh.pub/dns-query#直连"
-    "rule-set:apple_cn":
-      - "https://dns.alidns.com/dns-query#直连"
-      - "https://doh.pub/dns-query#直连"
-    "rule-set:cloudflare_cn":
-      - "https://dns.alidns.com/dns-query#直连"
-      - "https://doh.pub/dns-query#直连"
-    "rule-set:games_cn":
-      - "https://dns.alidns.com/dns-query#直连"
-      - "https://doh.pub/dns-query#直连"
-    "rule-set:nvidia_cn":
-      - "https://dns.alidns.com/dns-query#直连"
-      - "https://doh.pub/dns-query#直连"
-    "rule-set:gfw":
-      - "https://dns.google/dns-query#默认代理"
-      - "https://dns.cloudflare.com/dns-query#默认代理"
-  direct-nameserver:
-    - 223.5.5.5
-    - 119.29.29.29
-  direct-nameserver-follow-policy: true
+mixed-port: 7890
+allow-lan: true
+ipv6: true
+bind-address: "*"
+unified-delay: true
+tcp-concurrent: true
+keep-alive-idle: 30
+keep-alive-interval: 15
+find-process-mode: strict
+geodata-mode: false
+external-controller: "127.0.0.1:9090"
+external-ui: ui
+external-ui-url: "https://github.com/Zephyruso/zashboard/releases/latest/download/dist.zip"
+profile:
+  store-selected: true
+  store-fake-ip: true
+experimental:
+  quic-go-disable-gso: true
+  quic-go-disable-ecn: true
+  dialer-ip4p-convert: false
 proxy-groups:
   - type: select
     hidden: false
@@ -1528,14 +1447,22 @@ rule-providers:
     url: "https://fastly.jsdelivr.net/gh/217heidai/adblockfilters@main/rules/adblockmihomolite.mrs"
     path: ./ruleset/adblockmihomolite.mrs
     path-in-bundle: null
-  ai:
+  openai:
     type: http
     interval: 86400
     behavior: domain
     format: mrs
-    url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/category-ai.mrs"
-    path: ./ruleset/ai.mrs
-    path-in-bundle: "geo/geosite/category-ai.mrs"
+    url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/openai.mrs"
+    path: ./ruleset/openai.mrs
+    path-in-bundle: geo/geosite/openai.mrs
+  anthropic:
+    type: http
+    interval: 86400
+    behavior: domain
+    format: mrs
+    url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/anthropic.mrs"
+    path: ./ruleset/anthropic.mrs
+    path-in-bundle: geo/geosite/anthropic.mrs
   youtube:
     type: http
     interval: 86400
@@ -1688,26 +1615,6 @@ rule-providers:
     url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geoip/netflix.mrs"
     path: ./ruleset/netflix_ip.mrs
     path-in-bundle: geo/geoip/netflix.mrs
-mixed-port: 7890
-allow-lan: true
-ipv6: true
-bind-address: "*"
-unified-delay: true
-tcp-concurrent: true
-keep-alive-idle: 30
-keep-alive-interval: 15
-find-process-mode: strict
-geodata-mode: false
-external-controller: "127.0.0.1:9090"
-external-ui: ui
-external-ui-url: "https://github.com/Zephyruso/zashboard/releases/latest/download/dist.zip"
-profile:
-  store-selected: true
-  store-fake-ip: true
-experimental:
-  quic-go-disable-gso: true
-  quic-go-disable-ecn: true
-  dialer-ip4p-convert: false
 hosts:
   dns.alidns.com:
     - 223.5.5.5
@@ -1733,6 +1640,107 @@ ntp:
   port: 123
   interval: 30
   dialer-proxy: DIRECT
+sniffer:
+  enable: true
+  force-dns-mapping: true
+  parse-pure-ip: true
+  override-destination: true
+  sniff:
+    HTTP:
+      ports:
+        - 80
+        - "8080-8880"
+    TLS:
+      ports:
+        - 443
+        - 8443
+    QUIC:
+      ports:
+        - 443
+        - 8443
+  skip-domain:
+    - +.mijia.com
+    - +.push.apple.com
+    - gs.apple.com
+    - "gsp-ssl.ls.apple.com"
+    - +.lan
+    - +.local
+dns:
+  enable: true
+  ipv6: true
+  listen: ":1053"
+  cache-algorithm: arc
+  use-hosts: true
+  use-system-hosts: false
+  prefer-h3: false
+  enhanced-mode: "fake-ip"
+  fake-ip-range: 198.18.0.0/15
+  fake-ip-filter:
+    - "*.lan"
+    - "*.local"
+    - dns.msftncsi.com
+    - www.msftncsi.com
+    - www.msftconnecttest.com
+    - connectivitycheck.gstatic.com
+    - connectivitycheck.android.com
+    - connectivitycheck.platform.hicloud.com
+    - "time.*.com"
+    - "time.*.gov"
+    - "time.*.edu.cn"
+    - "time.*.apple.com"
+    - "time-ios.apple.com"
+    - time1.cloud.tencent.com
+    - "ntp.*.com"
+    - ntp.aliyun.com
+    - pool.ntp.org
+    - "*.ntp.org"
+    - +.msftconnecttest.com
+    - +.msftncsi.com
+    - +.srv.nintendo.net
+    - +.stun.playstation.net
+    - +.xboxlive.com
+    - +.ipv6.microsoft.com
+    - "rule-set:fakeip_filter"
+  default-nameserver:
+    - 223.5.5.5
+    - 1.12.12.12
+  proxy-server-nameserver:
+    - 223.5.5.5
+    - 1.12.12.12
+    - "https://dns.alidns.com/dns-query"
+    - "https://doh.pub/dns-query"
+  nameserver:
+    - "https://dns.google/dns-query#默认代理"
+    - "https://dns.cloudflare.com/dns-query#默认代理"
+  direct-nameserver:
+    - 223.5.5.5
+    - 119.29.29.29
+  direct-nameserver-follow-policy: true
+  nameserver-policy:
+    "rule-set:private":
+      - "https://dns.alidns.com/dns-query#直连"
+      - "https://doh.pub/dns-query#直连"
+    "rule-set:cn":
+      - "https://dns.alidns.com/dns-query#直连"
+      - "https://doh.pub/dns-query#直连"
+    "rule-set:cn_additional":
+      - "https://dns.alidns.com/dns-query#直连"
+      - "https://doh.pub/dns-query#直连"
+    "rule-set:apple_cn":
+      - "https://dns.alidns.com/dns-query#直连"
+      - "https://doh.pub/dns-query#直连"
+    "rule-set:cloudflare_cn":
+      - "https://dns.alidns.com/dns-query#直连"
+      - "https://doh.pub/dns-query#直连"
+    "rule-set:games_cn":
+      - "https://dns.alidns.com/dns-query#直连"
+      - "https://doh.pub/dns-query#直连"
+    "rule-set:nvidia_cn":
+      - "https://dns.alidns.com/dns-query#直连"
+      - "https://doh.pub/dns-query#直连"
+    "rule-set:gfw":
+      - "https://dns.google/dns-query#默认代理"
+      - "https://dns.cloudflare.com/dns-query#默认代理"
 rules:
   - "DOMAIN-SUFFIX,mcdn.bilivideo.com,REJECT"
   - "DOMAIN-SUFFIX,mcdn.bilivideo.cn,REJECT"
@@ -1755,7 +1763,8 @@ rules:
   - "DOMAIN,fsend.cn,直连"
   - "DOMAIN-SUFFIX,jlc-jdgf.com,直连"
   - "RULE-SET,adblockmihomolite,广告拦截"
-  - "RULE-SET,ai,AI"
+  - "RULE-SET,openai,AI"
+  - "RULE-SET,anthropic,AI"
   - "RULE-SET,youtube,YouTube"
   - "RULE-SET,googlefcm,FCM"
   - "RULE-SET,google,Google"
