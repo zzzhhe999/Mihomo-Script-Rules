@@ -182,7 +182,8 @@
 ### 5.7 QUIC 管控
 
 ```
-AND,(NETWORK,UDP),(DST-PORT,443),QUIC处理
+'AND,(NETWORK,UDP),(DST-PORT,443),(OR,(RULE-SET,cn_additional),(RULE-SET,cn_ip,no-resolve)),直连',
+'AND,(NETWORK,UDP),(DST-PORT,443),QUIC处理'
 ```
 
 - ​**流量集中管控：** UDP 443 (QUIC) 流量集中拦截到独立策略组，默认走代理。可手动切换到 REJECT 彻底阻断 QUIC，解决部分环境下 QUIC 导致网页加载卡顿的问题。
