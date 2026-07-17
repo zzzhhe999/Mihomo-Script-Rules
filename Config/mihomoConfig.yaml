@@ -216,8 +216,6 @@ dns:
   nameserver:
     - "https://dns.google/dns-query#默认代理"
     - "https://dns.cloudflare.com/dns-query#默认代理"
-    - "https://dns.alidns.com/dns-query#直连"
-    - "https://doh.pub/dns-query#直连"
   nameserver-policy:
     "rule-set:private":
       - "https://dns.alidns.com/dns-query#直连"
@@ -1529,15 +1527,15 @@ rule-providers:
     format: mrs
     url: "https://fastly.jsdelivr.net/gh/217heidai/adblockfilters@main/rules/adblockmihomolite.mrs"
     path: ./ruleset/adblockmihomolite.mrs
-    path-in-bundle: geo/geosite/ads.mrs
+    path-in-bundle: null
   ai:
     type: http
     interval: 86400
     behavior: domain
     format: mrs
-    url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/category-ai-!cn.mrs"
+    url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/category-ai.mrs"
     path: ./ruleset/ai.mrs
-    path-in-bundle: "geo/geosite/category-ai-!cn.mrs"
+    path-in-bundle: "geo/geosite/category-ai.mrs"
   youtube:
     type: http
     interval: 86400
@@ -1741,6 +1739,8 @@ rules:
   - "DOMAIN-KEYWORD,mcdn.bili,REJECT"
   - "RULE-SET,private,直连"
   - "RULE-SET,private_ip,直连,no-resolve"
+  - "AND,(NETWORK,UDP),(DST-PORT,443),(OR,(RULE-SET,cn_additional),(RULE-SET,cn_ip,no-resolve)),直连"
+  - "AND,(NETWORK,UDP),(DST-PORT,443),QUIC处理"
   - "DOMAIN-SUFFIX,ibytedtos.com,直连"
   - "DOMAIN-SUFFIX,bytecdn.cn,直连"
   - "DOMAIN-SUFFIX,snssdk.com,直连"
@@ -1784,6 +1784,4 @@ rules:
   - "DOMAIN-SUFFIX,local,直连"
   - "DOMAIN-SUFFIX,lan,直连"
   - "GEOIP,LAN,直连,no-resolve"
-  - "AND,((NETWORK,UDP),(DST-PORT,443),(OR,((RULE-SET,cn_additional),(RULE-SET,cn_ip,no-resolve)))),直连"
-  - "AND,((NETWORK,UDP),(DST-PORT,443)),QUIC处理"
   - "MATCH,默认代理"
