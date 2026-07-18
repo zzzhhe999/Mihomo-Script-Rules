@@ -43,7 +43,6 @@ const excludeFilter =
   /群|返利|循环|官[网址]|客服|网站|网址|获取|订阅|流量|到期|机场|下次|备用|过期|已用|联系|邮箱|工单|通知|防止|国内|地址|频道|无法|说明|使用|提示|特别|访问|教程|关注|更新|作者|加入|超时|收藏|福利|邀请|好友|选择|剩余|公益|发布|通路|登录|禁止|定时|渠道|牢记|永久|余额|阁下|本站|刷新|导航|⚠️|@|Expire|https?:\/\/|www\.|\.com(?:$|[^a-zA-Z0-9])/u;
 
 const tunEnable = false;
-
 const quicEnable = true;
 
 const quicRules = [
@@ -72,6 +71,9 @@ const rules = [
   'DOMAIN,fsend.cn,直连',
   'DOMAIN-SUFFIX,jlc-jdgf.com,直连',
 ];
+
+const NODE_RATE_LOW = '低倍率节点';
+const NODE_RATE_HIGH = '高倍率节点';
 
 const regionDefinitions = [
   {
@@ -171,13 +173,13 @@ const regionDefinitions = [
     flag: '🇷🇺',
   },
   {
-    name: '低倍率节点',
+    name: NODE_RATE_LOW,
     regex:
       /^(?!.*(?:剩|期|客户端|软件|官网|流量|订阅|v\d(?!ray|less))).*(?:低倍|低倍率|省流|下载|(?:^|[^\d])0\.[0-5])/u,
     icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Available_1.png',
   },
   {
-    name: '高倍率节点',
+    name: NODE_RATE_HIGH,
     regex:
       /^(?!.*(?:剩|期|客户端|软件|官网|流量|订阅|v\d(?!ray|less))).*(?:[*×xX✕✖⨉]\s*(?:[2-9]\d*|[1-9]\d+)(?:\.\d+)?|(?:^|[^\d.])(?:[2-9]\d*|[1-9]\d+)(?:\.\d+)?\s*(?:倍|倍率|[*×xX✕✖⨉]))/u,
     icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Airport.png',
@@ -283,10 +285,12 @@ const loadBalanceBaseOption = {
 };
 
 const extractMultiplier = (name, isHigh) => {
+  if (typeof name !== 'string') return '';
   if (!isHigh) {
     const match = name.match(/(?:^|[^\d])(0\.[0-5])\s*(?:倍|倍率|[xX×])?/u);
     if (match) return `${match[1]}x`;
-    return /低倍|低倍率|省流|下载/.test(name) ? (name.match(/省流|下载/) || ['低倍'])[0] : '低倍';
+    const lowMatch = name.match(/省流|下载/);
+    return lowMatch ? lowMatch[0] : '低倍';
   }
   const match = name.match(/(\d+(?:\.\d+)?)\s*[xX×倍]/u) || name.match(/[×*xX]\s*(\d+(?:\.\d+)?)/u);
   return match ? `${match[1]}x` : '';
@@ -444,10 +448,18 @@ const createRegionGroup = (name, icon, proxies) => {
 };
 
 function main(config) {
+  if (!config || typeof config !== 'object') return config;
+  
   delete config['global-client-fingerprint'];
   delete config['sub-rules'];
-  const rawProxies = config.proxies ?? [];
-  const hasValidProxy = rawProxies.some((p) => p.type && !['direct', 'reject'].includes(p.type.toLowerCase()));
+
+  const rawProxies = Array.isArray(config.proxies) ? config.proxies : [];
+  
+  const hasValidProxy = rawProxies.some((p) => {
+    const pType = p?.type;
+    return typeof pType === 'string' && !['direct', 'reject'].includes(pType.toLowerCase());
+  });
+
   if (!hasValidProxy) {
     throw new Error('配置文件中未找到有效代理节点，请使用机场提供的原始订阅配置进行覆写');
   }
@@ -459,16 +471,18 @@ function main(config) {
   const processedProxies = [];
   const otherProxies = [];
   const regionCounters = new Map();
-
   const fingerprintSupported = new Set(['vmess', 'vless', 'trojan', 'hysteria2', 'hy2', 'tuic']);
 
   for (const proxy of rawProxies) {
+    if (!proxy || typeof proxy !== 'object') continue;
+    
     const originalName = proxy.name;
-    if (!originalName) continue;
+    if (typeof originalName !== 'string' || !originalName) continue;
 
     if (excludeFilterEnable && excludeFilter.test(originalName)) continue;
 
-    if (fingerprintSupported.has(proxy.type?.toLowerCase())) {
+    const proxyType = typeof proxy.type === 'string' ? proxy.type.toLowerCase() : '';
+    if (fingerprintSupported.has(proxyType)) {
       proxy['client-fingerprint'] ??= 'chrome';
     }
 
@@ -479,37 +493,41 @@ function main(config) {
     for (const region of enabledDefinitions) {
       if (region.regex.test(originalName)) {
         matchedGroups.push(region.name);
-        if (region.name !== '低倍率节点' && region.name !== '高倍率节点') {
+        if (region.name !== NODE_RATE_LOW && region.name !== NODE_RATE_HIGH) {
           matchedNormalRegion = true;
           matchedNormalRegionName ??= region.name;
         }
       }
     }
 
-    const isLow = matchedGroups.includes('低倍率节点');
-    const isHigh = matchedGroups.includes('高倍率节点');
+    const isLow = matchedGroups.includes(NODE_RATE_LOW);
+    const isHigh = matchedGroups.includes(NODE_RATE_HIGH);
     let newName = originalName;
 
     if (matchedNormalRegionName) {
       const flag = regionFlags[matchedNormalRegionName] ?? '🏳️';
       const counterKey = isLow || isHigh ? `${matchedNormalRegionName}_multi` : matchedNormalRegionName;
-
       const count = (regionCounters.get(counterKey) ?? 0) + 1;
+      
       regionCounters.set(counterKey, count);
-
       const serial = String(count).padStart(2, '0');
       newName = `${flag} ${matchedNormalRegionName} ${serial}`;
     }
 
-    if (isLow) newName += ` ${extractMultiplier(originalName, false)}`;
-    else if (isHigh) newName += ` ${extractMultiplier(originalName, true)}`;
+    if (isLow) {
+      newName += ` ${extractMultiplier(originalName, false)}`;
+    } else if (isHigh) {
+      newName += ` ${extractMultiplier(originalName, true)}`;
+    }
 
     proxy.name = newName;
     processedProxies.push(proxy);
 
     for (const groupName of matchedGroups) {
-      if ((isLow || isHigh) && !['低倍率节点', '高倍率节点'].includes(groupName)) continue;
-      regionGroups[groupName].proxies.push(newName);
+      if ((isLow || isHigh) && groupName !== NODE_RATE_LOW && groupName !== NODE_RATE_HIGH) continue;
+      if (regionGroups[groupName]) {
+        regionGroups[groupName].proxies.push(newName);
+      }
     }
 
     if (!matchedNormalRegion) otherProxies.push(newName);
@@ -518,7 +536,7 @@ function main(config) {
   config.proxies = processedProxies;
 
   const generatedRegionGroups = enabledDefinitions
-    .filter((r) => regionGroups[r.name].proxies.length > 0)
+    .filter((r) => regionGroups[r.name]?.proxies.length > 0)
     .flatMap((r) => createRegionGroup(r.name, r.icon, regionGroups[r.name].proxies));
 
   if (otherProxies.length > 0) {
@@ -625,11 +643,16 @@ function main(config) {
   ];
 
   const orderMap = new Map(functionalGroupDisplayOrder.map((name, idx) => [name, idx]));
-  const functionalGroupsSorted = [...functionalGroups].sort((a, b) => {
-    const orderA = orderMap.get(a.name) ?? Number.MAX_SAFE_INTEGER;
-    const orderB = orderMap.get(b.name) ?? Number.MAX_SAFE_INTEGER;
-    return orderA === orderB ? functionalGroups.indexOf(a) - functionalGroups.indexOf(b) : orderA - orderB;
-  });
+  
+  const functionalGroupsSorted = functionalGroups
+    .map((group, index) => ({ group, index }))
+    .sort((a, b) => {
+      const orderA = orderMap.get(a.group.name) ?? Number.MAX_SAFE_INTEGER;
+      const orderB = orderMap.get(b.group.name) ?? Number.MAX_SAFE_INTEGER;
+      if (orderA !== orderB) return orderA - orderB;
+      return a.index - b.index;
+    })
+    .map(({ group }) => group);
 
   const globalGroup = {
     ...selectBaseOption,
@@ -712,7 +735,7 @@ function main(config) {
         '*.local',
         'dns.msftncsi.com',
         'www.msftncsi.com',
-      'www.msftconnecttest.com',
+        'www.msftconnecttest.com',
         'connectivitycheck.gstatic.com',
         'connectivitycheck.android.com',
         'connectivitycheck.platform.hicloud.com',
