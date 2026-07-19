@@ -56,7 +56,6 @@ const rules = [
   'DOMAIN-KEYWORD,mcdn.bili,REJECT',
   'RULE-SET,private,直连',
   'RULE-SET,private_ip,直连,no-resolve',
-  ...(quicEnable ? quicRules : []),
   'DOMAIN-SUFFIX,ibytedtos.com,直连',
   'DOMAIN-SUFFIX,bytecdn.cn,直连',
   'DOMAIN-SUFFIX,snssdk.com,直连',
@@ -288,12 +287,12 @@ const extractMultiplier = (name, isHigh) => {
   if (typeof name !== 'string') return '';
   if (!isHigh) {
     const match = name.match(/(?:^|[^\d])(0\.[0-5])\s*(?:倍|倍率|[xX×])?/u);
-    if (match) return `${match[1]}x`;
+    if (match !== null) return `${match[1]}x`;
     const lowMatch = name.match(/省流|下载/);
-    return lowMatch ? lowMatch[0] : '低倍';
+    return lowMatch !== null ? lowMatch[0] : '低倍';
   }
   const match = name.match(/(\d+(?:\.\d+)?)\s*[xX×倍]/u) || name.match(/[×*xX]\s*(\d+(?:\.\d+)?)/u);
-  return match ? `${match[1]}x` : '';
+  return match !== null ? `${match[1]}x` : '';
 };
 
 const serviceConfigs = [
@@ -448,69 +447,106 @@ const createRegionGroup = (name, icon, proxies) => {
 };
 
 function main(config) {
+  if (typeof config !== 'object' || config === null) {
+    return { proxies: [], 'proxy-groups': [], rules: [] };
+  }
+
   try {
-    if (!config || typeof config !== 'object') return config;
-
-    delete config['global-client-fingerprint'];
-    delete config['sub-rules'];
-
-    const rawProxies = Array.isArray(config.proxies) ? config.proxies : [];
-
-    const hasValidProxy = rawProxies.some((p) => {
-      const pType = (p !== null && typeof p === 'object' && 'type' in p) ? p.type : undefined;
-      return typeof pType === 'string' && !['direct', 'reject'].includes(pType.toLowerCase());
-    });
-
-    if (!hasValidProxy) {
-      throw new Error('配置文件中未找到有效代理节点，请使用机场提供的原始订阅配置进行覆写');
+    if (config.hasOwnProperty('global-client-fingerprint')) {
+      delete config['global-client-fingerprint'];
+    }
+    if (config.hasOwnProperty('sub-rules')) {
+      delete config['sub-rules'];
     }
 
-    const enabledDefinitions = regionDefinitions.filter((r) => regionDefinitionsEnable[r.name]);
-    const regionGroups = Object.fromEntries(enabledDefinitions.map((r) => [r.name, { ...r, proxies: [] }]));
-    const regionFlags = Object.fromEntries(enabledDefinitions.filter((r) => r.flag).map((r) => [r.name, r.flag]));
+    const rawProxies = Array.isArray(config.proxies) ? config.proxies : [];
+    
+    let hasValidProxy = false;
+    for (let i = 0; i < rawProxies.length; i++) {
+      const p = rawProxies[i];
+      if (typeof p === 'object' && p !== null && typeof p.type === 'string') {
+        const pType = p.type.toLowerCase();
+        if (pType !== 'direct' && pType !== 'reject') {
+          hasValidProxy = true;
+          break;
+        }
+      }
+    }
+
+    if (!hasValidProxy) {
+      throw new Error('未发现有效代理节点数据');
+    }
+
+    const enabledDefinitions = [];
+    for (let i = 0; i < regionDefinitions.length; i++) {
+      const def = regionDefinitions[i];
+      if (regionDefinitionsEnable[def.name]) {
+        enabledDefinitions.push(def);
+      }
+    }
+
+    const regionGroups = {};
+    const regionFlags = {};
+    for (let i = 0; i < enabledDefinitions.length; i++) {
+      const r = enabledDefinitions[i];
+      regionGroups[r.name] = { name: r.name, icon: r.icon, proxies: [] };
+      if (r.hasOwnProperty('flag')) {
+        regionFlags[r.name] = r.flag;
+      }
+    }
 
     const processedProxies = [];
     const otherProxies = [];
     const regionCounters = new Map();
     const fingerprintSupported = new Set(['vmess', 'vless', 'trojan', 'hysteria2', 'hy2', 'tuic']);
 
-    for (const proxy of rawProxies) {
-      if (proxy === null || typeof proxy !== 'object') continue;
+    for (let i = 0; i < rawProxies.length; i++) {
+      const proxy = rawProxies[i];
+      
+      if (typeof proxy !== 'object' || proxy === null || Array.isArray(proxy)) continue;
 
       const originalName = proxy.name;
-      if (typeof originalName !== 'string' || !originalName) continue;
+      if (typeof originalName !== 'string' || originalName.trim() === '') continue;
 
       if (excludeFilterEnable && excludeFilter.test(originalName)) continue;
 
-      const proxyType = ('type' in proxy && typeof proxy.type === 'string') ? proxy.type.toLowerCase() : '';
+      const proxyType = (proxy.hasOwnProperty('type') && typeof proxy.type === 'string') 
+        ? proxy.type.toLowerCase() 
+        : 'unknown';
+
       if (fingerprintSupported.has(proxyType)) {
-        if (typeof proxy['client-fingerprint'] === 'undefined' || proxy['client-fingerprint'] === null) {
+        if (!proxy.hasOwnProperty('client-fingerprint') || proxy['client-fingerprint'] === null) {
           proxy['client-fingerprint'] = 'chrome';
         }
       }
 
-      let matchedNormalRegionName = null;
+      let matchedNormalRegionName = '';
       let matchedNormalRegion = false;
       const matchedGroups = [];
 
-      for (const region of enabledDefinitions) {
+      for (let j = 0; j < enabledDefinitions.length; j++) {
+        const region = enabledDefinitions[j];
         if (region.regex.test(originalName)) {
           matchedGroups.push(region.name);
           if (region.name !== NODE_RATE_LOW && region.name !== NODE_RATE_HIGH) {
             matchedNormalRegion = true;
-            matchedNormalRegionName ??= region.name;
+            if (matchedNormalRegionName === '') {
+              matchedNormalRegionName = region.name;
+            }
           }
         }
       }
 
-      const isLow = matchedGroups.includes(NODE_RATE_LOW);
-      const isHigh = matchedGroups.includes(NODE_RATE_HIGH);
+      const isLow = matchedGroups.indexOf(NODE_RATE_LOW) !== -1;
+      const isHigh = matchedGroups.indexOf(NODE_RATE_HIGH) !== -1;
       let newName = originalName;
 
-      if (matchedNormalRegionName) {
-        const flag = regionFlags[matchedNormalRegionName] ?? '🏳️';
-        const counterKey = isLow || isHigh ? `${matchedNormalRegionName}_multi` : matchedNormalRegionName;
-        const count = (regionCounters.get(counterKey) ?? 0) + 1;
+      if (matchedNormalRegionName !== '') {
+        const flag = regionFlags.hasOwnProperty(matchedNormalRegionName) 
+          ? regionFlags[matchedNormalRegionName] 
+          : '🏳️';
+        const counterKey = (isLow || isHigh) ? `${matchedNormalRegionName}_multi` : matchedNormalRegionName;
+        const count = (regionCounters.has(counterKey) ? regionCounters.get(counterKey) : 0) + 1;
 
         regionCounters.set(counterKey, count);
         const serial = String(count).padStart(2, '0');
@@ -526,9 +562,10 @@ function main(config) {
       proxy.name = newName;
       processedProxies.push(proxy);
 
-      for (const groupName of matchedGroups) {
+      for (let j = 0; j < matchedGroups.length; j++) {
+        const groupName = matchedGroups[j];
         if ((isLow || isHigh) && groupName !== NODE_RATE_LOW && groupName !== NODE_RATE_HIGH) continue;
-        if (regionGroups[groupName]) {
+        if (regionGroups.hasOwnProperty(groupName)) {
           regionGroups[groupName].proxies.push(newName);
         }
       }
@@ -538,32 +575,41 @@ function main(config) {
 
     config.proxies = processedProxies;
 
-    const generatedRegionGroups = enabledDefinitions
-      .filter((r) => {
-        const group = regionGroups[r.name];
-        return group !== undefined && Array.isArray(group.proxies) && group.proxies.length > 0;
-      })
-      .flatMap((r) => createRegionGroup(r.name, r.icon, regionGroups[r.name].proxies));
-
-    if (otherProxies.length > 0) {
-      generatedRegionGroups.push(
-        ...createRegionGroup(
-          '其他节点',
-          'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/World_Map.png',
-          otherProxies
-        )
-      );
+    const generatedRegionGroups = [];
+    for (let i = 0; i < enabledDefinitions.length; i++) {
+      const def = enabledDefinitions[i];
+      const group = regionGroups[def.name];
+      if (group !== undefined && Array.isArray(group.proxies) && group.proxies.length > 0) {
+        const newGroups = createRegionGroup(group.name, group.icon, group.proxies);
+        for (let j = 0; j < newGroups.length; j++) {
+          generatedRegionGroups.push(newGroups[j]);
+        }
+      }
     }
 
-    const groupNamesOfSelect = generatedRegionGroups
-      .filter((g) => g.type === 'select' && !g.name.includes('倍率'))
-      .map((g) => g.name);
-    const autoTestProxies = generatedRegionGroups
-      .filter((g) => g.type === 'url-test' && !g.name.includes('倍率'))
-      .map((g) => g.name);
-    const loadBalanceProxies = generatedRegionGroups
-      .filter((g) => g.type === 'load-balance' && !g.name.includes('倍率'))
-      .map((g) => g.name);
+    if (otherProxies.length > 0) {
+      const otherGroups = createRegionGroup(
+        '其他节点',
+        'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/World_Map.png',
+        otherProxies
+      );
+      for (let i = 0; i < otherGroups.length; i++) {
+        generatedRegionGroups.push(otherGroups[i]);
+      }
+    }
+
+    const groupNamesOfSelect = [];
+    const autoTestProxies = [];
+    const loadBalanceProxies = [];
+
+    for (let i = 0; i < generatedRegionGroups.length; i++) {
+      const g = generatedRegionGroups[i];
+      if (g.name.indexOf('倍率') === -1) {
+        if (g.type === 'select') groupNamesOfSelect.push(g.name);
+        else if (g.type === 'url-test') autoTestProxies.push(g.name);
+        else if (g.type === 'load-balance') loadBalanceProxies.push(g.name);
+      }
+    }
 
     const proxyModes = {
       default: ['默认代理', '直连', '自动选择', '负载均衡', ...groupNamesOfSelect],
@@ -580,12 +626,12 @@ function main(config) {
       {
         ...urlTestBaseOption,
         name: '自动选择',
-        proxies: autoTestProxies.length ? autoTestProxies : ['直连'],
+        proxies: autoTestProxies.length > 0 ? autoTestProxies : ['直连'],
       },
       {
         ...loadBalanceBaseOption,
         name: '负载均衡',
-        proxies: loadBalanceProxies.length ? loadBalanceProxies : ['直连'],
+        proxies: loadBalanceProxies.length > 0 ? loadBalanceProxies : ['直连'],
       },
       {
         ...selectBaseOption,
@@ -595,24 +641,37 @@ function main(config) {
       },
     ];
 
-    const finalRules = [...rules];
+    const finalRules = quicEnable ? quicRules.concat(rules) : [...rules];
     const finalRuleProviders = { ...baseRuleProviders };
 
-    const orderedServiceConfigs = [
-      ...serviceConfigs.filter((s) => s.key === 'adblock'),
-      ...serviceConfigs.filter((s) => s.key !== 'adblock'),
-    ];
+    const orderedServiceConfigs = [];
+    for (let i = 0; i < serviceConfigs.length; i++) {
+      if (serviceConfigs[i].key === 'adblock') orderedServiceConfigs.push(serviceConfigs[i]);
+    }
+    for (let i = 0; i < serviceConfigs.length; i++) {
+      if (serviceConfigs[i].key !== 'adblock') orderedServiceConfigs.push(serviceConfigs[i]);
+    }
 
-    for (const svc of orderedServiceConfigs) {
+    for (let i = 0; i < orderedServiceConfigs.length; i++) {
+      const svc = orderedServiceConfigs[i];
       if (!ruleOptionsEnable[svc.key]) continue;
-      finalRules.push(...svc.rules);
-      Object.assign(finalRuleProviders, svc.providers);
+      
+      for (let j = 0; j < svc.rules.length; j++) {
+        finalRules.push(svc.rules[j]);
+      }
+      
+      const providerKeys = Object.keys(svc.providers);
+      for (let j = 0; j < providerKeys.length; j++) {
+        const pKey = providerKeys[j];
+        finalRuleProviders[pKey] = svc.providers[pKey];
+      }
 
+      const currentProxyMode = svc.hasOwnProperty('proxyMode') ? svc.proxyMode : 'default';
       functionalGroups.push({
         ...selectBaseOption,
         name: svc.name,
         icon: svc.icon,
-        proxies: proxyModes[svc.proxyMode ?? 'default'],
+        proxies: proxyModes.hasOwnProperty(currentProxyMode) ? proxyModes[currentProxyMode] : proxyModes['default'],
       });
     }
 
@@ -648,30 +707,44 @@ function main(config) {
       'Spotify',
     ];
 
-    const orderMap = new Map(functionalGroupDisplayOrder.map((name, idx) => [name, idx]));
+    const orderMap = new Map();
+    for (let i = 0; i < functionalGroupDisplayOrder.length; i++) {
+      orderMap.set(functionalGroupDisplayOrder[i], i);
+    }
 
     const functionalGroupsSorted = functionalGroups
       .map((group, index) => ({ group, index }))
       .sort((a, b) => {
-        const orderA = orderMap.get(a.group.name) ?? Number.MAX_SAFE_INTEGER;
-        const orderB = orderMap.get(b.group.name) ?? Number.MAX_SAFE_INTEGER;
+        const orderA = orderMap.has(a.group.name) ? orderMap.get(a.group.name) : Number.MAX_SAFE_INTEGER;
+        const orderB = orderMap.has(b.group.name) ? orderMap.get(b.group.name) : Number.MAX_SAFE_INTEGER;
         if (orderA !== orderB) return orderA - orderB;
         return a.index - b.index;
       })
-      .map(({ group }) => group);
+      .map((item) => item.group);
+
+    const globalGroupProxies = [];
+    for (let i = 0; i < functionalGroupsSorted.length; i++) {
+      globalGroupProxies.push(functionalGroupsSorted[i].name);
+    }
+    for (let i = 0; i < generatedRegionGroups.length; i++) {
+      if (generatedRegionGroups[i].type === 'select') {
+        globalGroupProxies.push(generatedRegionGroups[i].name);
+      }
+    }
 
     const globalGroup = {
       ...selectBaseOption,
       name: 'GLOBAL',
-      proxies: [
-        ...functionalGroupsSorted.map((g) => g.name),
-        ...generatedRegionGroups.filter((g) => g.type === 'select').map((g) => g.name),
-      ],
+      proxies: globalGroupProxies,
       icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Global.png',
     };
 
     const chinaDNS = ['https://dns.alidns.com/dns-query#直连', 'https://doh.pub/dns-query#直连'];
     const foreignDNS = ['https://dns.google/dns-query#默认代理', 'https://dns.cloudflare.com/dns-query#默认代理'];
+
+    if (config.hasOwnProperty('experimental')) {
+      delete config.experimental;
+    }
 
     Object.assign(config, {
       mode: 'rule',
@@ -681,8 +754,6 @@ function main(config) {
       'bind-address': '*',
       'unified-delay': true,
       'tcp-concurrent': true,
-      'keep-alive-idle': 30,
-      'keep-alive-interval': 15,
       'find-process-mode': 'strict',
       'geodata-mode': false,
       'external-controller': '127.0.0.1:9090',
@@ -691,11 +762,6 @@ function main(config) {
       profile: {
         'store-selected': true,
         'store-fake-ip': true,
-      },
-      experimental: {
-        'quic-go-disable-gso': true,
-        'quic-go-disable-ecn': true,
-        'dialer-ip4p-convert': false,
       },
       'proxy-groups': [globalGroup, ...functionalGroupsSorted, ...generatedRegionGroups],
       'rule-providers': finalRuleProviders,
@@ -804,7 +870,7 @@ function main(config) {
         'dns-hijack': ['any:53', 'tcp://any:53'],
         'udp-timeout': 300,
       };
-    } else {
+    } else if (config.hasOwnProperty('tun')) {
       delete config.tun;
     }
 
@@ -813,17 +879,17 @@ function main(config) {
       'RULE-SET,cn_additional,直连',
       'RULE-SET,cn,直连',
       'RULE-SET,cn_ip,直连,no-resolve',
-      'GEOIP,CN,直连,no-resolve',
       'RULE-SET,gfw,默认代理',
       'DOMAIN-SUFFIX,cn,直连',
       'DOMAIN-SUFFIX,local,直连',
       'DOMAIN-SUFFIX,lan,直连',
-      'GEOIP,LAN,直连,no-resolve',
       'MATCH,默认代理',
     ];
 
     return config;
   } catch (error) {
-    return config || { proxies: [], 'proxy-groups': [], rules: [] };
+    return config && typeof config === 'object' && Array.isArray(config.proxies) 
+      ? config 
+      : { proxies: [], 'proxy-groups': [], rules: [] };
   }
 }
