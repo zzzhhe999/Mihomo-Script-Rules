@@ -1674,7 +1674,7 @@ dns:
   use-system-hosts: false
   prefer-h3: false
   enhanced-mode: "fake-ip"
-  fake-ip-range: 198.18.0.0/15
+  fake-ip-range: 198.18.0.1/16
   fake-ip-filter:
     - "*.lan"
     - "*.local"
@@ -1747,8 +1747,8 @@ rules:
   - "DOMAIN-KEYWORD,mcdn.bili,REJECT"
   - "RULE-SET,private,直连"
   - "RULE-SET,private_ip,直连,no-resolve"
-  - "AND,(NETWORK,UDP),(DST-PORT,443),(OR,(RULE-SET,cn_additional),(RULE-SET,cn_ip,no-resolve)),直连"
-  - "AND,(NETWORK,UDP),(DST-PORT,443),QUIC处理"
+  - "AND,((NETWORK,udp),(DST-PORT,443),(OR,((RULE-SET,cn_additional),(RULE-SET,cn_ip,no-resolve)))),直连"
+  - "AND,((NETWORK,udp),(DST-PORT,443)),QUIC处理"
   - "DOMAIN-SUFFIX,ibytedtos.com,直连"
   - "DOMAIN-SUFFIX,bytecdn.cn,直连"
   - "DOMAIN-SUFFIX,snssdk.com,直连"
