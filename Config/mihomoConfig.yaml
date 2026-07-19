@@ -150,8 +150,6 @@ ipv6: true
 bind-address: "*"
 unified-delay: true
 tcp-concurrent: true
-keep-alive-idle: 30
-keep-alive-interval: 15
 find-process-mode: strict
 geodata-mode: false
 external-controller: "127.0.0.1:9090"
@@ -160,10 +158,6 @@ external-ui-url: "https://github.com/Zephyruso/zashboard/releases/latest/downloa
 profile:
   store-selected: true
   store-fake-ip: true
-experimental:
-  quic-go-disable-gso: true
-  quic-go-disable-ecn: true
-  dialer-ip4p-convert: false
 proxy-groups:
   - type: select
     hidden: false
@@ -1742,13 +1736,13 @@ dns:
       - "https://dns.google/dns-query#默认代理"
       - "https://dns.cloudflare.com/dns-query#默认代理"
 rules:
+  - "AND,((NETWORK,udp),(DST-PORT,443),(OR,((RULE-SET,cn_additional),(RULE-SET,cn_ip,no-resolve)))),直连"
+  - "AND,((NETWORK,udp),(DST-PORT,443)),QUIC处理"
   - "DOMAIN-SUFFIX,mcdn.bilivideo.com,REJECT"
   - "DOMAIN-SUFFIX,mcdn.bilivideo.cn,REJECT"
   - "DOMAIN-KEYWORD,mcdn.bili,REJECT"
   - "RULE-SET,private,直连"
   - "RULE-SET,private_ip,直连,no-resolve"
-  - "AND,((NETWORK,udp),(DST-PORT,443),(OR,((RULE-SET,cn_additional),(RULE-SET,cn_ip,no-resolve)))),直连"
-  - "AND,((NETWORK,udp),(DST-PORT,443)),QUIC处理"
   - "DOMAIN-SUFFIX,ibytedtos.com,直连"
   - "DOMAIN-SUFFIX,bytecdn.cn,直连"
   - "DOMAIN-SUFFIX,snssdk.com,直连"
@@ -1787,10 +1781,8 @@ rules:
   - "RULE-SET,cn_additional,直连"
   - "RULE-SET,cn,直连"
   - "RULE-SET,cn_ip,直连,no-resolve"
-  - "GEOIP,CN,直连,no-resolve"
   - "RULE-SET,gfw,默认代理"
   - "DOMAIN-SUFFIX,cn,直连"
   - "DOMAIN-SUFFIX,local,直连"
   - "DOMAIN-SUFFIX,lan,直连"
-  - "GEOIP,LAN,直连,no-resolve"
   - "MATCH,默认代理"
