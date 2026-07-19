@@ -43,9 +43,12 @@
 
 本项目主要用于接管机场的原始订阅配置，通过自动执行**节点重命名、无效节点过滤、精细化策略组分流、智能 DNS 配置**，彻底解决原始订阅杂乱无章的问题，提供开箱即用的网络体验。
 
+> **核心工程优势**：
+> 本脚本经过深度架构重构，全面兼容 **QuickJS** 引擎。采用极其严格的**防御性编程**，能完美隔离机场下发的脏数据（如空节点、残缺字段），杜绝配置挂载过程中的引擎崩溃与客户端假死，保障极致的稳定性。
+
 > **两种模式**：
-> - **脚本**（`Mihomo-Script-Rules.js`）：根据节点名动态生成地区策略组，推荐大多数用户使用
-> - **纯配置**（`Config/mihomoConfig.yaml`）：静态配置，适用于不支持 JS 脚本的客户端，需自行填入节点
+> - **脚本**（`Mihomo-Script-Rules.js`）：根据节点名动态生成地区策略组，自动化程度最高，推荐大多数用户使用。
+> - **纯配置**（`Config/mihomoConfig.yaml`）：静态配置，适用于不支持 JS 脚本的客户端，需自行填入节点。
 
 ---
 
@@ -315,13 +318,14 @@ https://fastly.jsdelivr.net/gh/zzzhhe123/Mihomo-Script-Rules@main/Config/mihomoC
 
 | 客户端 | 兼容性 | 备注  |
 | --- | --- | --- |
-| [Bettbox](https://github.com/appshubcc/Bettbox) | 完美 | **强烈推荐**，原生支持 JS 脚本预处理 |
-| [FlClash](https://github.com/chen08209/FlClash) | 完美 | **强烈推荐**，原生支持 JS 脚本预处理 |
+| [Bettbox](https://github.com/appshubcc/Bettbox) | 完美 | **强烈推荐**，原生支持 JS 脚本，完美契合本脚本的 QuickJS 防御性架构 |
+| [FlClash](https://github.com/chen08209/FlClash) | 完美 | **强烈推荐**，原生支持 JS 脚本预处理，执行效率极高 |
 | [Clash Verge Rev](https://github.com/clash-verge-rev/clash-verge-rev) | 兼容 | 需在配置编辑中手动设置预处理脚本 |
 | [Clash Nyanpasu](https://github.com/libnyanpasu/clash-nyanpasu) | 兼容 | 同上  |
 | [Clash Verge](https://github.com/clash-verge-rev/clash-verge-rev) | 旧版 | 旧版可能不支持，建议升级到 Verge Rev |
-| Stash / Shadowrocket | 不兼容 | JS 预处理语法不同，建议用 sub-store 中转 |
+| Stash / Shadowrocket | 不兼容 | JS 预处理语法不同，建议用 sub-store 中转或使用纯配置 |
 | Surge / Quantumult X | 不兼容 | 同上  |
+|
 
 ---
 
