@@ -25,13 +25,12 @@
 - [3.支持的服务/应用](#3支持的服务应用)
 - [4.支持的国家/地区](#4支持的国家地区)
 - [5.核心特性](#5核心特性)
-- [6.处理流程图](#6处理流程图)
-- [7.快速上手](#7快速上手)
-- [8.客户端兼容性](#8客户端兼容性)
-- [9.个性化定制](#9个性化定制)
-- [10.脚本维护与更新](#10脚本维护与更新)
-- [11.鸣谢](#11鸣谢)
-- [12.许可证](#12许可证)
+- [6.快速上手](#6快速上手)
+- [7.客户端兼容性](#7客户端兼容性)
+- [8.个性化定制](#8个性化定制)
+- [9.脚本维护与更新](#9脚本维护与更新)
+- [10.鸣谢](#10鸣谢)
+- [11.许可证](#11许可证)
 
 ---
 
@@ -234,21 +233,15 @@
 
 ---
 
-## 6.处理流程图
-
-![处理流程图](./flowchart.png)
-
----
-
-## 7.快速上手
+## 6.快速上手
 
 提供两种使用方式，根据客户端支持情况选择：
 
-### 7.1 脚本（推荐）
+### 6.1 脚本（推荐）
 
 适用于支持 JS 预处理的客户端（Bettbox / FlClash / Clash Verge Rev 等）。脚本会根据节点名动态生成地区策略组，自动化程度最高。
 
-#### 7.1.1 获取脚本链接
+#### 6.1.1 获取脚本链接
 
 **主链接（GitHub Raw）：**
 
@@ -262,7 +255,7 @@ https://raw.githubusercontent.com/zzzhhe123/Mihomo-Script-Rules/refs/heads/main/
 https://fastly.jsdelivr.net/gh/zzzhhe123/Mihomo-Script-Rules@main/Mihomo-Script-Rules.js
 ```
 
-#### 7.1.2 在客户端中导入
+#### 6.1.2 在客户端中导入
 
 **Bettbox / FlClash：**
 
@@ -284,11 +277,11 @@ https://fastly.jsdelivr.net/gh/zzzhhe123/Mihomo-Script-Rules@main/Mihomo-Script-
 
 Ⅲ 保存并更新订阅
 
-### 7.2 纯配置文件
+### 6.2 纯配置文件
 
 适用于不支持 JS 脚本的客户端，或不想用脚本的用户。配置文件由脚本自动生成，但**不含动态地区分组**（需手动填入节点）。
 
-#### 7.2.1 获取配置文件链接
+#### 6.2.1 获取配置文件链接
 
 **主链接：**
 
@@ -302,7 +295,7 @@ https://raw.githubusercontent.com/zzzhhe123/Mihomo-Script-Rules/refs/heads/main/
 https://fastly.jsdelivr.net/gh/zzzhhe123/Mihomo-Script-Rules@main/Config/mihomoConfig.yaml
 ```
 
-#### 7.2.2 使用方式
+#### 6.2.2 使用方式
 
 1. 下载上述 yaml 文件
 
@@ -318,7 +311,7 @@ https://fastly.jsdelivr.net/gh/zzzhhe123/Mihomo-Script-Rules@main/Config/mihomoC
 
 ---
 
-## 8.客户端兼容性
+## 7.客户端兼容性
 
 | 客户端 | 兼容性 | 备注  |
 | --- | --- | --- |
@@ -333,11 +326,11 @@ https://fastly.jsdelivr.net/gh/zzzhhe123/Mihomo-Script-Rules@main/Config/mihomoC
 
 ---
 
-## 9.个性化定制
+## 8.个性化定制
 
 脚本开头定义了所有可配置常量，直接编辑即可自定义。
 
-### 9.1 策略组开关 (`ruleOptionsEnable`)
+### 8.1 策略组开关 (`ruleOptionsEnable`)
 
 控制每个应用策略组是否开启。设为 `false` 可禁用不需要的服务，减少策略组数量。
 
@@ -362,7 +355,7 @@ const ruleOptionsEnable = {
 };
 ```
 
-### 9.2 地区策略组开关 (`regionDefinitionsEnable`)
+### 8.2 地区策略组开关 (`regionDefinitionsEnable`)
 
 控制哪些国家/地区生成独立的节点策略组。不需要的地区设为 `false` 即可。
 
@@ -389,14 +382,14 @@ const regionDefinitionsEnable = {
 };
 ```
 
-### 9.3 全局开关
+### 8.3 全局开关
 
 | 常量  | 作用  | 默认值 | 推荐  |
 | --- | --- | --- | --- |
 | `excludeFilterEnable` | 是否开启杂质节点过滤 | `true` | 始终开启 |
 | `tunEnable` | TUN 模式开关 | `false` | 电脑端建议 `true`，手机端保持 `false` |
 
-### 9.4 杂质过滤正则 (`excludeFilter`)
+### 8.4 杂质过滤正则 (`excludeFilter`)
 
 如果你想自定义过滤规则，修改此正则。匹配到以下关键词的节点会被自动移除：
 
@@ -405,7 +398,7 @@ const excludeFilter = /群|返利|循环|官[网址]|客服|网站|网址|获取
 ```
 ---
 
-## 10.脚本维护与更新
+## 9.脚本维护与更新
 
 - 本脚本持续维护
 
@@ -415,7 +408,7 @@ const excludeFilter = /群|返利|循环|官[网址]|客服|网站|网址|获取
 
 ---
 
-## 11.鸣谢
+## 10.鸣谢
 
 本项目的诞生离不开以下优秀开源项目：
 
@@ -431,7 +424,7 @@ const excludeFilter = /群|返利|循环|官[网址]|客服|网站|网址|获取
 
 ---
 
-## 12.许可证
+## 11.许可证
 
 本项目基于 **MIT License** 开源。详见 [LICENSE](./LICENSE) 文件。
 
