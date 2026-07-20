@@ -24,12 +24,10 @@ proxies:
     type: hysteria2
     server: 2.2.2.2
     port: 443
-    client-fingerprint: chrome
   - name: 🇺🇸 美国 01
     type: tuic
     server: 3.3.3.1
     port: 443
-    client-fingerprint: chrome
   - name: 🇺🇸 美国 02
     type: vmess
     server: 3.3.3.2
@@ -69,12 +67,10 @@ proxies:
     type: hysteria2
     server: 10.10.10.1
     port: 443
-    client-fingerprint: chrome
   - name: 🇦🇺 澳大利亚 01
     type: tuic
     server: 11.11.11.1
     port: 443
-    client-fingerprint: chrome
   - name: 🇮🇳 印度 01
     type: vmess
     server: 12.12.12.1
@@ -134,7 +130,6 @@ proxies:
     type: hy2
     server: 2.2.2.4
     port: 443
-    client-fingerprint: chrome
   - name: "🇨🇳 直连 | IPv4优先"
     type: direct
     ip-version: "ipv4-prefer"
@@ -1754,8 +1749,6 @@ rules:
   - "RULE-SET,nvidia_cn,直连"
   - "RULE-SET,cloudflare_cn,直连"
   - "RULE-SET,apple_cn,直连"
-  - "DOMAIN,fsend.cn,直连"
-  - "DOMAIN-SUFFIX,jlc-jdgf.com,直连"
   - "RULE-SET,adblockmihomolite,广告拦截"
   - "RULE-SET,openai,AI"
   - "RULE-SET,anthropic,AI"
