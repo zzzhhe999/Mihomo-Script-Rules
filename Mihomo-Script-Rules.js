@@ -498,7 +498,7 @@ function main(config) {
     const processedProxies = [];
     const otherProxies = [];
     const regionCounters = new Map();
-    const fingerprintSupported = new Set(['vmess', 'vless', 'trojan', 'hysteria2', 'hy2', 'tuic']);
+    const fingerprintSupported = new Set(['vmess', 'vless', 'trojan', 'anytls']);
 
     for (let i = 0; i < rawProxies.length; i++) {
       const proxy = rawProxies[i];
