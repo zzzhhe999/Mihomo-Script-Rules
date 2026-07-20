@@ -38,19 +38,6 @@ const regionDefinitionsEnable = {
   高倍率节点: true,
 };
 
-const hasOwn = (obj, key) => Object.prototype.hasOwnProperty.call(obj, key);
-
-const isNonEmptyString = (val) => typeof val === 'string' && val.trim() !== '';
-
-const safeJsonParse = (str) => {
-  if (typeof str !== 'string') return null;
-  try {
-    return JSON.parse(str);
-  } catch (_) {
-    return null;
-  }
-};
-
 const excludeFilterEnable = true;
 const excludeFilter =
   /群|返利|循环|官[网址]|客服|网站|网址|获取|订阅|流量|到期|机场|下次|备用|过期|已用|联系|邮箱|工单|通知|防止|国内|地址|频道|无法|说明|使用|提示|特别|访问|教程|关注|更新|作者|加入|超时|收藏|福利|邀请|好友|选择|剩余|公益|发布|通路|登录|禁止|定时|渠道|牢记|永久|余额|阁下|本站|刷新|导航|⚠️|@|Expire|https?:\/\/|www\.|\.com(?:$|[^a-zA-Z0-9])/u;
@@ -80,6 +67,8 @@ const rules = [
   'RULE-SET,nvidia_cn,直连',
   'RULE-SET,cloudflare_cn,直连',
   'RULE-SET,apple_cn,直连',
+  'DOMAIN,fsend.cn,直连',
+  'DOMAIN-SUFFIX,jlc-jdgf.com,直连',
 ];
 
 const NODE_RATE_LOW = '低倍率节点';
@@ -457,28 +446,21 @@ const createRegionGroup = (name, icon, proxies) => {
   ];
 };
 
-const UTLS_FINGERPRINT_PROTOCOLS = new Set(['vmess', 'vless', 'trojan', 'anytls']);
-
 function main(config) {
-  if (typeof config === 'string') {
-    const parsed = safeJsonParse(config);
-    if (parsed !== null && typeof parsed === 'object') {
-      config = parsed;
-    } else {
-      return { proxies: [], 'proxy-groups': [], rules: [] };
-    }
-  }
-
   if (typeof config !== 'object' || config === null) {
     return { proxies: [], 'proxy-groups': [], rules: [] };
   }
 
   try {
-    delete config['global-client-fingerprint'];
-    delete config['sub-rules'];
+    if (config.hasOwnProperty('global-client-fingerprint')) {
+      delete config['global-client-fingerprint'];
+    }
+    if (config.hasOwnProperty('sub-rules')) {
+      delete config['sub-rules'];
+    }
 
     const rawProxies = Array.isArray(config.proxies) ? config.proxies : [];
-
+    
     let hasValidProxy = false;
     for (let i = 0; i < rawProxies.length; i++) {
       const p = rawProxies[i];
@@ -498,7 +480,7 @@ function main(config) {
     const enabledDefinitions = [];
     for (let i = 0; i < regionDefinitions.length; i++) {
       const def = regionDefinitions[i];
-      if (regionDefinitionsEnable[def.name] === true) {
+      if (regionDefinitionsEnable[def.name]) {
         enabledDefinitions.push(def);
       }
     }
@@ -508,7 +490,7 @@ function main(config) {
     for (let i = 0; i < enabledDefinitions.length; i++) {
       const r = enabledDefinitions[i];
       regionGroups[r.name] = { name: r.name, icon: r.icon, proxies: [] };
-      if (hasOwn(r, 'flag')) {
+      if (r.hasOwnProperty('flag')) {
         regionFlags[r.name] = r.flag;
       }
     }
@@ -516,27 +498,30 @@ function main(config) {
     const processedProxies = [];
     const otherProxies = [];
     const regionCounters = new Map();
+    const fingerprintSupported = new Set(['vmess', 'vless', 'trojan', 'hysteria2', 'hy2', 'tuic']);
 
     for (let i = 0; i < rawProxies.length; i++) {
       const proxy = rawProxies[i];
-
+      
       if (typeof proxy !== 'object' || proxy === null || Array.isArray(proxy)) continue;
 
       const originalName = proxy.name;
-      if (!isNonEmptyString(originalName)) continue;
+      if (typeof originalName !== 'string' || originalName.trim() === '') continue;
 
       if (excludeFilterEnable && excludeFilter.test(originalName)) continue;
 
-      const proxyType =
-        typeof proxy.type === 'string' ? proxy.type.toLowerCase() : 'unknown';
-        
-      if (UTLS_FINGERPRINT_PROTOCOLS.has(proxyType)) {
-        if (!hasOwn(proxy, 'client-fingerprint') || proxy['client-fingerprint'] === null) {
+      const proxyType = (proxy.hasOwnProperty('type') && typeof proxy.type === 'string') 
+        ? proxy.type.toLowerCase() 
+        : 'unknown';
+
+      if (fingerprintSupported.has(proxyType)) {
+        if (!proxy.hasOwnProperty('client-fingerprint') || proxy['client-fingerprint'] === null) {
           proxy['client-fingerprint'] = 'chrome';
         }
       }
 
       let matchedNormalRegionName = '';
+      let matchedNormalRegion = false;
       const matchedGroups = [];
 
       for (let j = 0; j < enabledDefinitions.length; j++) {
@@ -544,6 +529,7 @@ function main(config) {
         if (region.regex.test(originalName)) {
           matchedGroups.push(region.name);
           if (region.name !== NODE_RATE_LOW && region.name !== NODE_RATE_HIGH) {
+            matchedNormalRegion = true;
             if (matchedNormalRegionName === '') {
               matchedNormalRegionName = region.name;
             }
@@ -556,12 +542,12 @@ function main(config) {
       let newName = originalName;
 
       if (matchedNormalRegionName !== '') {
-        const flag = hasOwn(regionFlags, matchedNormalRegionName)
-          ? regionFlags[matchedNormalRegionName]
+        const flag = regionFlags.hasOwnProperty(matchedNormalRegionName) 
+          ? regionFlags[matchedNormalRegionName] 
           : '🏳️';
-        const counterKey =
-          isLow || isHigh ? `${matchedNormalRegionName}_multi` : matchedNormalRegionName;
-        const count = (regionCounters.get(counterKey) || 0) + 1;
+        const counterKey = (isLow || isHigh) ? `${matchedNormalRegionName}_multi` : matchedNormalRegionName;
+        const count = (regionCounters.has(counterKey) ? regionCounters.get(counterKey) : 0) + 1;
+
         regionCounters.set(counterKey, count);
         const serial = String(count).padStart(2, '0');
         newName = `${flag} ${matchedNormalRegionName} ${serial}`;
@@ -578,14 +564,13 @@ function main(config) {
 
       for (let j = 0; j < matchedGroups.length; j++) {
         const groupName = matchedGroups[j];
-        if ((isLow || isHigh) && groupName !== NODE_RATE_LOW && groupName !== NODE_RATE_HIGH)
-          continue;
-        if (hasOwn(regionGroups, groupName)) {
+        if ((isLow || isHigh) && groupName !== NODE_RATE_LOW && groupName !== NODE_RATE_HIGH) continue;
+        if (regionGroups.hasOwnProperty(groupName)) {
           regionGroups[groupName].proxies.push(newName);
         }
       }
 
-      if (matchedNormalRegionName === '') otherProxies.push(newName);
+      if (!matchedNormalRegion) otherProxies.push(newName);
     }
 
     config.proxies = processedProxies;
@@ -670,35 +655,23 @@ function main(config) {
     for (let i = 0; i < orderedServiceConfigs.length; i++) {
       const svc = orderedServiceConfigs[i];
       if (!ruleOptionsEnable[svc.key]) continue;
-
+      
       for (let j = 0; j < svc.rules.length; j++) {
         finalRules.push(svc.rules[j]);
       }
-
+      
       const providerKeys = Object.keys(svc.providers);
       for (let j = 0; j < providerKeys.length; j++) {
         const pKey = providerKeys[j];
-        if (hasOwn(finalRuleProviders, pKey)) {
-          if (typeof console !== 'undefined' && typeof console.log === 'function') {
-            console.log(
-              '[Mihomo-Script] rule-provider key conflict:',
-              pKey,
-              '— keeping existing definition'
-            );
-          }
-        } else {
-          finalRuleProviders[pKey] = svc.providers[pKey];
-        }
+        finalRuleProviders[pKey] = svc.providers[pKey];
       }
 
-      const currentProxyMode = hasOwn(svc, 'proxyMode') ? svc.proxyMode : 'default';
+      const currentProxyMode = svc.hasOwnProperty('proxyMode') ? svc.proxyMode : 'default';
       functionalGroups.push({
         ...selectBaseOption,
         name: svc.name,
         icon: svc.icon,
-        proxies: hasOwn(proxyModes, currentProxyMode)
-          ? proxyModes[currentProxyMode]
-          : proxyModes['default'],
+        proxies: proxyModes.hasOwnProperty(currentProxyMode) ? proxyModes[currentProxyMode] : proxyModes['default'],
       });
     }
 
@@ -742,12 +715,8 @@ function main(config) {
     const functionalGroupsSorted = functionalGroups
       .map((group, index) => ({ group, index }))
       .sort((a, b) => {
-        const orderA = orderMap.has(a.group.name)
-          ? orderMap.get(a.group.name)
-          : Number.MAX_SAFE_INTEGER;
-        const orderB = orderMap.has(b.group.name)
-          ? orderMap.get(b.group.name)
-          : Number.MAX_SAFE_INTEGER;
+        const orderA = orderMap.has(a.group.name) ? orderMap.get(a.group.name) : Number.MAX_SAFE_INTEGER;
+        const orderB = orderMap.has(b.group.name) ? orderMap.get(b.group.name) : Number.MAX_SAFE_INTEGER;
         if (orderA !== orderB) return orderA - orderB;
         return a.index - b.index;
       })
@@ -771,25 +740,11 @@ function main(config) {
     };
 
     const chinaDNS = ['https://dns.alidns.com/dns-query#直连', 'https://doh.pub/dns-query#直连'];
-    const foreignDNS = [
-      'https://dns.google/dns-query#默认代理',
-      'https://dns.cloudflare.com/dns-query#默认代理',
-    ];
+    const foreignDNS = ['https://dns.google/dns-query#默认代理', 'https://dns.cloudflare.com/dns-query#默认代理'];
 
-    delete config['experimental'];
-    
-    const builtinHosts = {
-      'dns.alidns.com': ['223.5.5.5', '223.6.6.6', '2400:3200::1', '2400:3200:baba::1'],
-      'doh.pub': ['1.12.12.12', '120.53.53.53'],
-      'dns.cloudflare.com': ['1.1.1.1', '1.0.0.1'],
-      'dns.google': ['8.8.8.8', '8.8.4.4', '2001:4860:4860::8888', '2001:4860:4860::8844'],
-      'cn.bing.com': 'global.bing.com',
-    };
-
-    const mergedHosts =
-      typeof config.hosts === 'object' && config.hosts !== null && !Array.isArray(config.hosts)
-        ? Object.assign({}, config.hosts, builtinHosts)
-        : builtinHosts;
+    if (config.hasOwnProperty('experimental')) {
+      delete config.experimental;
+    }
 
     Object.assign(config, {
       mode: 'rule',
@@ -803,15 +758,20 @@ function main(config) {
       'geodata-mode': false,
       'external-controller': '127.0.0.1:9090',
       'external-ui': 'ui',
-      'external-ui-url':
-        'https://github.com/Zephyruso/zashboard/releases/latest/download/dist.zip',
+      'external-ui-url': 'https://github.com/Zephyruso/zashboard/releases/latest/download/dist.zip',
       profile: {
         'store-selected': true,
         'store-fake-ip': true,
       },
       'proxy-groups': [globalGroup, ...functionalGroupsSorted, ...generatedRegionGroups],
       'rule-providers': finalRuleProviders,
-      hosts: mergedHosts,
+      hosts: {
+        'dns.alidns.com': ['223.5.5.5', '223.6.6.6', '2400:3200::1', '2400:3200:baba::1'],
+        'doh.pub': ['1.12.12.12', '120.53.53.53'],
+        'dns.cloudflare.com': ['1.1.1.1', '1.0.0.1'],
+        'dns.google': ['8.8.8.8', '8.8.4.4', '2001:4860:4860::8888', '2001:4860:4860::8844'],
+        'cn.bing.com': 'global.bing.com',
+      },
       ntp: {
         enable: true,
         'write-to-system': false,
@@ -830,14 +790,7 @@ function main(config) {
           TLS: { ports: [443, 8443] },
           QUIC: { ports: [443, 8443] },
         },
-        'skip-domain': [
-          '+.mijia.com',
-          '+.push.apple.com',
-          'gs.apple.com',
-          'gsp-ssl.ls.apple.com',
-          '+.lan',
-          '+.local',
-        ],
+        'skip-domain': ['+.mijia.com', '+.push.apple.com', 'gs.apple.com', 'gsp-ssl.ls.apple.com', '+.lan', '+.local'],
       },
       dns: {
         enable: true,
@@ -917,8 +870,8 @@ function main(config) {
         'dns-hijack': ['any:53', 'tcp://any:53'],
         'udp-timeout': 300,
       };
-    } else {
-      delete config['tun'];
+    } else if (config.hasOwnProperty('tun')) {
+      delete config.tun;
     }
 
     config.rules = [
@@ -935,10 +888,8 @@ function main(config) {
 
     return config;
   } catch (error) {
-    return typeof config === 'object' &&
-      config !== null &&
-      Array.isArray(config.proxies)
-      ? config
+    return config && typeof config === 'object' && Array.isArray(config.proxies) 
+      ? config 
       : { proxies: [], 'proxy-groups': [], rules: [] };
   }
 }
