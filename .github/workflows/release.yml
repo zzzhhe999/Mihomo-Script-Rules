@@ -41,12 +41,12 @@ jobs:
           body: |
             ${{ github.event.release.body }}
 
-            ### 附件说明
+            ## 附件说明
             - **Mihomo-Script-Rules.js** — 覆写脚本，在代理客户端中导入
             - **mihomoConfig.yaml** — 纯配置文件，不支持脚本的客户端可直接使用
             - **Mihomo-Script-Rules-${{ github.ref_name }}.zip** — 以上文件打包
 
-            ### 使用方法
+            ## 使用方法
             1. 脚本：复制 [raw 链接](https://raw.githubusercontent.com/zzzhhe123/Mihomo-Script-Rules/main/Mihomo-Script-Rules.js)，在客户端脚本功能中导入
             2. 配置：复制 [yaml 链接](https://raw.githubusercontent.com/zzzhhe123/Mihomo-Script-Rules/main/Config/mihomoConfig.yaml)，在客户端配置中导入
 
