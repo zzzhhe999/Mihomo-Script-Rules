@@ -1,117 +1,117 @@
 
 proxies:
-  - name: 🇭🇰 香港 01
+  - name: 🇭🇰 HK 01
     type: vmess
     server: 1.1.1.1
     port: 443
     client-fingerprint: chrome
-  - name: 🇭🇰 香港 02
+  - name: 🇭🇰 HK 02
     type: vless
     server: 1.1.1.2
     port: 443
     client-fingerprint: chrome
-  - name: 🇭🇰 香港 03
+  - name: 🇭🇰 HK 03
     type: trojan
     server: 1.1.1.3
     port: 443
     client-fingerprint: chrome
-  - name: 🇯🇵 日本 01
+  - name: 🇯🇵 JP 01
     type: vmess
     server: 2.2.2.1
     port: 443
     client-fingerprint: chrome
-  - name: 🇯🇵 日本 02
+  - name: 🇯🇵 JP 02
     type: hysteria2
     server: 2.2.2.2
     port: 443
-  - name: 🇺🇸 美国 01
+  - name: 🇺🇸 US 01
     type: tuic
     server: 3.3.3.1
     port: 443
-  - name: 🇺🇸 美国 02
+  - name: 🇺🇸 US 02
     type: vmess
     server: 3.3.3.2
     port: 443
     client-fingerprint: chrome
-  - name: 🇸🇬 新加坡 01
+  - name: 🇸🇬 SG 01
     type: vless
     server: 4.4.4.1
     port: 443
     client-fingerprint: chrome
-  - name: 🇹🇼 台湾 01
+  - name: 🇹🇼 TW 01
     type: trojan
     server: 5.5.5.1
     port: 443
     client-fingerprint: chrome
-  - name: 🇰🇷 韩国 01
+  - name: 🇰🇷 KR 01
     type: vmess
     server: 6.6.6.1
     port: 443
     client-fingerprint: chrome
-  - name: 🇬🇧 英国 01
+  - name: 🇬🇧 UK 01
     type: vless
     server: 7.7.7.1
     port: 443
     client-fingerprint: chrome
-  - name: 🇩🇪 德国 01
+  - name: 🇩🇪 DE 01
     type: trojan
     server: 8.8.8.1
     port: 443
     client-fingerprint: chrome
-  - name: 🇫🇷 法国 01
+  - name: 🇫🇷 FR 01
     type: vmess
     server: 9.9.9.1
     port: 443
     client-fingerprint: chrome
-  - name: 🇨🇦 加拿大 01
+  - name: 🇨🇦 CA 01
     type: hysteria2
     server: 10.10.10.1
     port: 443
-  - name: 🇦🇺 澳大利亚 01
+  - name: 🇦🇺 AU 01
     type: tuic
     server: 11.11.11.1
     port: 443
-  - name: 🇮🇳 印度 01
+  - name: 🇮🇳 IN 01
     type: vmess
     server: 12.12.12.1
     port: 443
     client-fingerprint: chrome
-  - name: 🇹🇷 土耳其 01
+  - name: 🇹🇷 TR 01
     type: vless
     server: 13.13.13.1
     port: 443
     client-fingerprint: chrome
-  - name: 🇧🇷 巴西 01
+  - name: 🇧🇷 BR 01
     type: trojan
     server: 14.14.14.1
     port: 443
     client-fingerprint: chrome
-  - name: 🇦🇷 阿根廷 01
+  - name: 🇦🇷 AR 01
     type: vmess
     server: 15.15.15.1
     port: 443
     client-fingerprint: chrome
-  - name: 🇷🇺 俄罗斯 01
+  - name: 🇷🇺 RU 01
     type: vless
     server: 16.16.16.1
     port: 443
     client-fingerprint: chrome
-  - name: 🇭🇰 香港 01 0.5x
+  - name: 🇭🇰 HK 01 0.5x
     type: vmess
     server: 1.1.1.4
     port: 443
     client-fingerprint: chrome
-  - name: 🇯🇵 日本 01 3x
+  - name: 🇯🇵 JP 01 3x
     type: vless
     server: 2.2.2.3
     port: 443
     client-fingerprint: chrome
-  - name: 🇺🇸 美国 01 5x
+  - name: 🇺🇸 US 01 5x
     type: trojan
     server: 3.3.3.3
     port: 443
     client-fingerprint: chrome
-  - name: 🇸🇬 新加坡 01 省流
+  - name: 🇸🇬 SG 01 省流
     type: vmess
     server: 4.4.4.2
     port: 443
@@ -126,17 +126,17 @@ proxies:
     server: 20.20.20.2
     port: 443
     client-fingerprint: chrome
-  - name: 🇯🇵 日本 03
+  - name: 🇯🇵 JP 03
     type: hy2
     server: 2.2.2.4
     port: 443
-  - name: "🇨🇳 直连 | IPv4优先"
+  - name: "Direct | IPv4 Preferred"
     type: direct
     ip-version: "ipv4-prefer"
-  - name: "🇨🇳 直连 | IPv6优先"
+  - name: "Direct | IPv6 Preferred"
     type: direct
     ip-version: "ipv6-prefer"
-  - name: "🇨🇳 直连 | 双栈"
+  - name: "Direct | Dual Stack"
     type: direct
 mode: rule
 mixed-port: 7890
@@ -158,12 +158,12 @@ proxy-groups:
     hidden: false
     name: GLOBAL
     proxies:
-      - 默认代理
-      - 直连
-      - 自动选择
-      - 负载均衡
-      - QUIC处理
-      - 广告拦截
+      - Default
+      - Direct
+      - Auto
+      - Balance
+      - QUIC
+      - AdBlock
       - Cloudflare
       - FCM
       - AI
@@ -179,58 +179,58 @@ proxy-groups:
       - Instagram
       - Netflix
       - Spotify
-      - 香港
-      - 日本
-      - 美国
-      - 新加坡
-      - 台湾
-      - 韩国
-      - 英国
-      - 德国
-      - 法国
-      - 加拿大
-      - 澳大利亚
-      - 印度
-      - 土耳其
-      - 巴西
-      - 阿根廷
-      - 俄罗斯
-      - 低倍率节点
-      - 高倍率节点
-      - 其他节点
+      - HK
+      - JP
+      - US
+      - SG
+      - TW
+      - KR
+      - UK
+      - DE
+      - FR
+      - CA
+      - AU
+      - IN
+      - TR
+      - BR
+      - AR
+      - RU
+      - "Low-Rate"
+      - "High-Rate"
+      - Others
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Global.png"
   - type: select
     hidden: false
-    name: 默认代理
+    name: Default
     proxies:
-      - 自动选择
-      - 直连
-      - 负载均衡
-      - 香港
-      - 日本
-      - 美国
-      - 新加坡
-      - 台湾
-      - 韩国
-      - 英国
-      - 德国
-      - 法国
-      - 加拿大
-      - 澳大利亚
-      - 印度
-      - 土耳其
-      - 巴西
-      - 阿根廷
-      - 俄罗斯
-      - 其他节点
+      - Auto
+      - Direct
+      - Balance
+      - HK
+      - JP
+      - US
+      - SG
+      - TW
+      - KR
+      - UK
+      - DE
+      - FR
+      - CA
+      - AU
+      - IN
+      - TR
+      - BR
+      - AR
+      - RU
+      - Others
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Proxy.png"
   - type: select
     hidden: false
-    name: 直连
+    name: Direct
     proxies:
-      - "🇨🇳 直连 | IPv4优先"
-      - "🇨🇳 直连 | IPv6优先"
-      - "🇨🇳 直连 | 双栈"
+      - "Direct | IPv4 Preferred"
+      - "Direct | IPv6 Preferred"
+      - "Direct | Dual Stack"
     url: "https://connectivitycheck.platform.hicloud.com/generate_204"
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/China_Map.png"
   - interval: 180
@@ -242,25 +242,25 @@ proxy-groups:
     tolerance: 50
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png"
     hidden: true
-    name: 自动选择
+    name: Auto
     proxies:
-      - "香港-自动选择"
-      - "日本-自动选择"
-      - "美国-自动选择"
-      - "新加坡-自动选择"
-      - "台湾-自动选择"
-      - "韩国-自动选择"
-      - "英国-自动选择"
-      - "德国-自动选择"
-      - "法国-自动选择"
-      - "加拿大-自动选择"
-      - "澳大利亚-自动选择"
-      - "印度-自动选择"
-      - "土耳其-自动选择"
-      - "巴西-自动选择"
-      - "阿根廷-自动选择"
-      - "俄罗斯-自动选择"
-      - "其他节点-自动选择"
+      - "HK-Auto"
+      - "JP-Auto"
+      - "US-Auto"
+      - "SG-Auto"
+      - "TW-Auto"
+      - "KR-Auto"
+      - "UK-Auto"
+      - "DE-Auto"
+      - "FR-Auto"
+      - "CA-Auto"
+      - "AU-Auto"
+      - "IN-Auto"
+      - "TR-Auto"
+      - "BR-Auto"
+      - "AR-Auto"
+      - "RU-Auto"
+      - "Others-Auto"
   - interval: 180
     timeout: 3000
     url: "https://cp.cloudflare.com/generate_204"
@@ -270,35 +270,35 @@ proxy-groups:
     strategy: "sticky-sessions"
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Round_Robin_1.png"
     hidden: true
-    name: 负载均衡
+    name: Balance
     proxies:
-      - "香港-负载均衡"
-      - "日本-负载均衡"
-      - "美国-负载均衡"
-      - "新加坡-负载均衡"
-      - "台湾-负载均衡"
-      - "韩国-负载均衡"
-      - "英国-负载均衡"
-      - "德国-负载均衡"
-      - "法国-负载均衡"
-      - "加拿大-负载均衡"
-      - "澳大利亚-负载均衡"
-      - "印度-负载均衡"
-      - "土耳其-负载均衡"
-      - "巴西-负载均衡"
-      - "阿根廷-负载均衡"
-      - "俄罗斯-负载均衡"
-      - "其他节点-负载均衡"
+      - "HK-Balance"
+      - "JP-Balance"
+      - "US-Balance"
+      - "SG-Balance"
+      - "TW-Balance"
+      - "KR-Balance"
+      - "UK-Balance"
+      - "DE-Balance"
+      - "FR-Balance"
+      - "CA-Balance"
+      - "AU-Balance"
+      - "IN-Balance"
+      - "TR-Balance"
+      - "BR-Balance"
+      - "AR-Balance"
+      - "RU-Balance"
+      - "Others-Balance"
   - type: select
     hidden: false
-    name: QUIC处理
+    name: QUIC
     proxies:
-      - 默认代理
+      - Default
       - REJECT
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Lock.png"
   - type: select
     hidden: false
-    name: 广告拦截
+    name: AdBlock
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Advertising.png"
     proxies:
       - REJECT
@@ -308,401 +308,401 @@ proxy-groups:
     name: Cloudflare
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Cloudflare.png"
     proxies:
-      - 默认代理
-      - 直连
-      - 自动选择
-      - 负载均衡
-      - 香港
-      - 日本
-      - 美国
-      - 新加坡
-      - 台湾
-      - 韩国
-      - 英国
-      - 德国
-      - 法国
-      - 加拿大
-      - 澳大利亚
-      - 印度
-      - 土耳其
-      - 巴西
-      - 阿根廷
-      - 俄罗斯
-      - 其他节点
+      - Default
+      - Direct
+      - Auto
+      - Balance
+      - HK
+      - JP
+      - US
+      - SG
+      - TW
+      - KR
+      - UK
+      - DE
+      - FR
+      - CA
+      - AU
+      - IN
+      - TR
+      - BR
+      - AR
+      - RU
+      - Others
   - type: select
     hidden: false
     name: FCM
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Google.png"
     proxies:
-      - 默认代理
-      - 直连
-      - 自动选择
-      - 负载均衡
-      - 香港
-      - 日本
-      - 美国
-      - 新加坡
-      - 台湾
-      - 韩国
-      - 英国
-      - 德国
-      - 法国
-      - 加拿大
-      - 澳大利亚
-      - 印度
-      - 土耳其
-      - 巴西
-      - 阿根廷
-      - 俄罗斯
-      - 其他节点
+      - Default
+      - Direct
+      - Auto
+      - Balance
+      - HK
+      - JP
+      - US
+      - SG
+      - TW
+      - KR
+      - UK
+      - DE
+      - FR
+      - CA
+      - AU
+      - IN
+      - TR
+      - BR
+      - AR
+      - RU
+      - Others
   - type: select
     hidden: false
     name: AI
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/ChatGPT.png"
     proxies:
-      - 默认代理
-      - 直连
-      - 自动选择
-      - 负载均衡
-      - 香港
-      - 日本
-      - 美国
-      - 新加坡
-      - 台湾
-      - 韩国
-      - 英国
-      - 德国
-      - 法国
-      - 加拿大
-      - 澳大利亚
-      - 印度
-      - 土耳其
-      - 巴西
-      - 阿根廷
-      - 俄罗斯
-      - 其他节点
+      - Default
+      - Direct
+      - Auto
+      - Balance
+      - HK
+      - JP
+      - US
+      - SG
+      - TW
+      - KR
+      - UK
+      - DE
+      - FR
+      - CA
+      - AU
+      - IN
+      - TR
+      - BR
+      - AR
+      - RU
+      - Others
   - type: select
     hidden: false
     name: Google
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Google_Search.png"
     proxies:
-      - 默认代理
-      - 直连
-      - 自动选择
-      - 负载均衡
-      - 香港
-      - 日本
-      - 美国
-      - 新加坡
-      - 台湾
-      - 韩国
-      - 英国
-      - 德国
-      - 法国
-      - 加拿大
-      - 澳大利亚
-      - 印度
-      - 土耳其
-      - 巴西
-      - 阿根廷
-      - 俄罗斯
-      - 其他节点
+      - Default
+      - Direct
+      - Auto
+      - Balance
+      - HK
+      - JP
+      - US
+      - SG
+      - TW
+      - KR
+      - UK
+      - DE
+      - FR
+      - CA
+      - AU
+      - IN
+      - TR
+      - BR
+      - AR
+      - RU
+      - Others
   - type: select
     hidden: false
     name: GitHub
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/GitHub.png"
     proxies:
-      - 默认代理
-      - 直连
-      - 自动选择
-      - 负载均衡
-      - 香港
-      - 日本
-      - 美国
-      - 新加坡
-      - 台湾
-      - 韩国
-      - 英国
-      - 德国
-      - 法国
-      - 加拿大
-      - 澳大利亚
-      - 印度
-      - 土耳其
-      - 巴西
-      - 阿根廷
-      - 俄罗斯
-      - 其他节点
+      - Default
+      - Direct
+      - Auto
+      - Balance
+      - HK
+      - JP
+      - US
+      - SG
+      - TW
+      - KR
+      - UK
+      - DE
+      - FR
+      - CA
+      - AU
+      - IN
+      - TR
+      - BR
+      - AR
+      - RU
+      - Others
   - type: select
     hidden: false
     name: Steam
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Steam.png"
     proxies:
-      - 默认代理
-      - 直连
-      - 自动选择
-      - 负载均衡
-      - 香港
-      - 日本
-      - 美国
-      - 新加坡
-      - 台湾
-      - 韩国
-      - 英国
-      - 德国
-      - 法国
-      - 加拿大
-      - 澳大利亚
-      - 印度
-      - 土耳其
-      - 巴西
-      - 阿根廷
-      - 俄罗斯
-      - 其他节点
+      - Default
+      - Direct
+      - Auto
+      - Balance
+      - HK
+      - JP
+      - US
+      - SG
+      - TW
+      - KR
+      - UK
+      - DE
+      - FR
+      - CA
+      - AU
+      - IN
+      - TR
+      - BR
+      - AR
+      - RU
+      - Others
   - type: select
     hidden: false
     name: Telegram
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Telegram.png"
     proxies:
-      - 默认代理
-      - 直连
-      - 自动选择
-      - 负载均衡
-      - 香港
-      - 日本
-      - 美国
-      - 新加坡
-      - 台湾
-      - 韩国
-      - 英国
-      - 德国
-      - 法国
-      - 加拿大
-      - 澳大利亚
-      - 印度
-      - 土耳其
-      - 巴西
-      - 阿根廷
-      - 俄罗斯
-      - 其他节点
+      - Default
+      - Direct
+      - Auto
+      - Balance
+      - HK
+      - JP
+      - US
+      - SG
+      - TW
+      - KR
+      - UK
+      - DE
+      - FR
+      - CA
+      - AU
+      - IN
+      - TR
+      - BR
+      - AR
+      - RU
+      - Others
   - type: select
     hidden: false
     name: X
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/X.png"
     proxies:
-      - 默认代理
-      - 直连
-      - 自动选择
-      - 负载均衡
-      - 香港
-      - 日本
-      - 美国
-      - 新加坡
-      - 台湾
-      - 韩国
-      - 英国
-      - 德国
-      - 法国
-      - 加拿大
-      - 澳大利亚
-      - 印度
-      - 土耳其
-      - 巴西
-      - 阿根廷
-      - 俄罗斯
-      - 其他节点
+      - Default
+      - Direct
+      - Auto
+      - Balance
+      - HK
+      - JP
+      - US
+      - SG
+      - TW
+      - KR
+      - UK
+      - DE
+      - FR
+      - CA
+      - AU
+      - IN
+      - TR
+      - BR
+      - AR
+      - RU
+      - Others
   - type: select
     hidden: false
     name: TikTok
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/TikTok.png"
     proxies:
-      - 默认代理
-      - 直连
-      - 自动选择
-      - 负载均衡
-      - 香港
-      - 日本
-      - 美国
-      - 新加坡
-      - 台湾
-      - 韩国
-      - 英国
-      - 德国
-      - 法国
-      - 加拿大
-      - 澳大利亚
-      - 印度
-      - 土耳其
-      - 巴西
-      - 阿根廷
-      - 俄罗斯
-      - 其他节点
+      - Default
+      - Direct
+      - Auto
+      - Balance
+      - HK
+      - JP
+      - US
+      - SG
+      - TW
+      - KR
+      - UK
+      - DE
+      - FR
+      - CA
+      - AU
+      - IN
+      - TR
+      - BR
+      - AR
+      - RU
+      - Others
   - type: select
     hidden: false
     name: Microsoft
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Microsoft.png"
     proxies:
-      - 默认代理
-      - 直连
-      - 自动选择
-      - 负载均衡
-      - 香港
-      - 日本
-      - 美国
-      - 新加坡
-      - 台湾
-      - 韩国
-      - 英国
-      - 德国
-      - 法国
-      - 加拿大
-      - 澳大利亚
-      - 印度
-      - 土耳其
-      - 巴西
-      - 阿根廷
-      - 俄罗斯
-      - 其他节点
+      - Default
+      - Direct
+      - Auto
+      - Balance
+      - HK
+      - JP
+      - US
+      - SG
+      - TW
+      - KR
+      - UK
+      - DE
+      - FR
+      - CA
+      - AU
+      - IN
+      - TR
+      - BR
+      - AR
+      - RU
+      - Others
   - type: select
     hidden: false
     name: Apple
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Apple.png"
     proxies:
-      - 默认代理
-      - 直连
-      - 自动选择
-      - 负载均衡
-      - 香港
-      - 日本
-      - 美国
-      - 新加坡
-      - 台湾
-      - 韩国
-      - 英国
-      - 德国
-      - 法国
-      - 加拿大
-      - 澳大利亚
-      - 印度
-      - 土耳其
-      - 巴西
-      - 阿根廷
-      - 俄罗斯
-      - 其他节点
+      - Default
+      - Direct
+      - Auto
+      - Balance
+      - HK
+      - JP
+      - US
+      - SG
+      - TW
+      - KR
+      - UK
+      - DE
+      - FR
+      - CA
+      - AU
+      - IN
+      - TR
+      - BR
+      - AR
+      - RU
+      - Others
   - type: select
     hidden: false
     name: YouTube
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/YouTube.png"
     proxies:
-      - 默认代理
-      - 直连
-      - 自动选择
-      - 负载均衡
-      - 香港
-      - 日本
-      - 美国
-      - 新加坡
-      - 台湾
-      - 韩国
-      - 英国
-      - 德国
-      - 法国
-      - 加拿大
-      - 澳大利亚
-      - 印度
-      - 土耳其
-      - 巴西
-      - 阿根廷
-      - 俄罗斯
-      - 其他节点
+      - Default
+      - Direct
+      - Auto
+      - Balance
+      - HK
+      - JP
+      - US
+      - SG
+      - TW
+      - KR
+      - UK
+      - DE
+      - FR
+      - CA
+      - AU
+      - IN
+      - TR
+      - BR
+      - AR
+      - RU
+      - Others
   - type: select
     hidden: false
     name: Instagram
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Instagram.png"
     proxies:
-      - 默认代理
-      - 直连
-      - 自动选择
-      - 负载均衡
-      - 香港
-      - 日本
-      - 美国
-      - 新加坡
-      - 台湾
-      - 韩国
-      - 英国
-      - 德国
-      - 法国
-      - 加拿大
-      - 澳大利亚
-      - 印度
-      - 土耳其
-      - 巴西
-      - 阿根廷
-      - 俄罗斯
-      - 其他节点
+      - Default
+      - Direct
+      - Auto
+      - Balance
+      - HK
+      - JP
+      - US
+      - SG
+      - TW
+      - KR
+      - UK
+      - DE
+      - FR
+      - CA
+      - AU
+      - IN
+      - TR
+      - BR
+      - AR
+      - RU
+      - Others
   - type: select
     hidden: false
     name: Netflix
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Netflix.png"
     proxies:
-      - 默认代理
-      - 直连
-      - 自动选择
-      - 负载均衡
-      - 香港
-      - 日本
-      - 美国
-      - 新加坡
-      - 台湾
-      - 韩国
-      - 英国
-      - 德国
-      - 法国
-      - 加拿大
-      - 澳大利亚
-      - 印度
-      - 土耳其
-      - 巴西
-      - 阿根廷
-      - 俄罗斯
-      - 其他节点
+      - Default
+      - Direct
+      - Auto
+      - Balance
+      - HK
+      - JP
+      - US
+      - SG
+      - TW
+      - KR
+      - UK
+      - DE
+      - FR
+      - CA
+      - AU
+      - IN
+      - TR
+      - BR
+      - AR
+      - RU
+      - Others
   - type: select
     hidden: false
     name: Spotify
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Spotify.png"
     proxies:
-      - 默认代理
-      - 直连
-      - 自动选择
-      - 负载均衡
-      - 香港
-      - 日本
-      - 美国
-      - 新加坡
-      - 台湾
-      - 韩国
-      - 英国
-      - 德国
-      - 法国
-      - 加拿大
-      - 澳大利亚
-      - 印度
-      - 土耳其
-      - 巴西
-      - 阿根廷
-      - 俄罗斯
-      - 其他节点
+      - Default
+      - Direct
+      - Auto
+      - Balance
+      - HK
+      - JP
+      - US
+      - SG
+      - TW
+      - KR
+      - UK
+      - DE
+      - FR
+      - CA
+      - AU
+      - IN
+      - TR
+      - BR
+      - AR
+      - RU
+      - Others
   - type: select
     hidden: false
-    name: 香港
+    name: HK
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Hong_Kong.png"
     proxies:
-      - "香港-自动选择"
-      - "香港-负载均衡"
-      - 🇭🇰 香港 01
-      - 🇭🇰 香港 02
-      - 🇭🇰 香港 03
+      - "HK-Auto"
+      - "HK-Balance"
+      - 🇭🇰 HK 01
+      - 🇭🇰 HK 02
+      - 🇭🇰 HK 03
   - interval: 180
     timeout: 3000
     url: "https://cp.cloudflare.com/generate_204"
@@ -712,11 +712,11 @@ proxy-groups:
     tolerance: 50
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png"
     hidden: true
-    name: "香港-自动选择"
+    name: "HK-Auto"
     proxies:
-      - 🇭🇰 香港 01
-      - 🇭🇰 香港 02
-      - 🇭🇰 香港 03
+      - 🇭🇰 HK 01
+      - 🇭🇰 HK 02
+      - 🇭🇰 HK 03
   - interval: 180
     timeout: 3000
     url: "https://cp.cloudflare.com/generate_204"
@@ -726,21 +726,21 @@ proxy-groups:
     strategy: "sticky-sessions"
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Round_Robin_1.png"
     hidden: true
-    name: "香港-负载均衡"
+    name: "HK-Balance"
     proxies:
-      - 🇭🇰 香港 01
-      - 🇭🇰 香港 02
-      - 🇭🇰 香港 03
+      - 🇭🇰 HK 01
+      - 🇭🇰 HK 02
+      - 🇭🇰 HK 03
   - type: select
     hidden: false
-    name: 日本
+    name: JP
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Japan.png"
     proxies:
-      - "日本-自动选择"
-      - "日本-负载均衡"
-      - 🇯🇵 日本 01
-      - 🇯🇵 日本 02
-      - 🇯🇵 日本 03
+      - "JP-Auto"
+      - "JP-Balance"
+      - 🇯🇵 JP 01
+      - 🇯🇵 JP 02
+      - 🇯🇵 JP 03
   - interval: 180
     timeout: 3000
     url: "https://cp.cloudflare.com/generate_204"
@@ -750,11 +750,11 @@ proxy-groups:
     tolerance: 50
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png"
     hidden: true
-    name: "日本-自动选择"
+    name: "JP-Auto"
     proxies:
-      - 🇯🇵 日本 01
-      - 🇯🇵 日本 02
-      - 🇯🇵 日本 03
+      - 🇯🇵 JP 01
+      - 🇯🇵 JP 02
+      - 🇯🇵 JP 03
   - interval: 180
     timeout: 3000
     url: "https://cp.cloudflare.com/generate_204"
@@ -764,20 +764,20 @@ proxy-groups:
     strategy: "sticky-sessions"
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Round_Robin_1.png"
     hidden: true
-    name: "日本-负载均衡"
+    name: "JP-Balance"
     proxies:
-      - 🇯🇵 日本 01
-      - 🇯🇵 日本 02
-      - 🇯🇵 日本 03
+      - 🇯🇵 JP 01
+      - 🇯🇵 JP 02
+      - 🇯🇵 JP 03
   - type: select
     hidden: false
-    name: 美国
+    name: US
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/United_States.png"
     proxies:
-      - "美国-自动选择"
-      - "美国-负载均衡"
-      - 🇺🇸 美国 01
-      - 🇺🇸 美国 02
+      - "US-Auto"
+      - "US-Balance"
+      - 🇺🇸 US 01
+      - 🇺🇸 US 02
   - interval: 180
     timeout: 3000
     url: "https://cp.cloudflare.com/generate_204"
@@ -787,10 +787,10 @@ proxy-groups:
     tolerance: 50
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png"
     hidden: true
-    name: "美国-自动选择"
+    name: "US-Auto"
     proxies:
-      - 🇺🇸 美国 01
-      - 🇺🇸 美国 02
+      - 🇺🇸 US 01
+      - 🇺🇸 US 02
   - interval: 180
     timeout: 3000
     url: "https://cp.cloudflare.com/generate_204"
@@ -800,18 +800,18 @@ proxy-groups:
     strategy: "sticky-sessions"
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Round_Robin_1.png"
     hidden: true
-    name: "美国-负载均衡"
+    name: "US-Balance"
     proxies:
-      - 🇺🇸 美国 01
-      - 🇺🇸 美国 02
+      - 🇺🇸 US 01
+      - 🇺🇸 US 02
   - type: select
     hidden: false
-    name: 新加坡
+    name: SG
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Singapore.png"
     proxies:
-      - "新加坡-自动选择"
-      - "新加坡-负载均衡"
-      - 🇸🇬 新加坡 01
+      - "SG-Auto"
+      - "SG-Balance"
+      - 🇸🇬 SG 01
   - interval: 180
     timeout: 3000
     url: "https://cp.cloudflare.com/generate_204"
@@ -821,9 +821,9 @@ proxy-groups:
     tolerance: 50
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png"
     hidden: true
-    name: "新加坡-自动选择"
+    name: "SG-Auto"
     proxies:
-      - 🇸🇬 新加坡 01
+      - 🇸🇬 SG 01
   - interval: 180
     timeout: 3000
     url: "https://cp.cloudflare.com/generate_204"
@@ -833,17 +833,17 @@ proxy-groups:
     strategy: "sticky-sessions"
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Round_Robin_1.png"
     hidden: true
-    name: "新加坡-负载均衡"
+    name: "SG-Balance"
     proxies:
-      - 🇸🇬 新加坡 01
+      - 🇸🇬 SG 01
   - type: select
     hidden: false
-    name: 台湾
+    name: TW
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Taiwan.png"
     proxies:
-      - "台湾-自动选择"
-      - "台湾-负载均衡"
-      - 🇹🇼 台湾 01
+      - "TW-Auto"
+      - "TW-Balance"
+      - 🇹🇼 TW 01
   - interval: 180
     timeout: 3000
     url: "https://cp.cloudflare.com/generate_204"
@@ -853,9 +853,9 @@ proxy-groups:
     tolerance: 50
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png"
     hidden: true
-    name: "台湾-自动选择"
+    name: "TW-Auto"
     proxies:
-      - 🇹🇼 台湾 01
+      - 🇹🇼 TW 01
   - interval: 180
     timeout: 3000
     url: "https://cp.cloudflare.com/generate_204"
@@ -865,17 +865,17 @@ proxy-groups:
     strategy: "sticky-sessions"
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Round_Robin_1.png"
     hidden: true
-    name: "台湾-负载均衡"
+    name: "TW-Balance"
     proxies:
-      - 🇹🇼 台湾 01
+      - 🇹🇼 TW 01
   - type: select
     hidden: false
-    name: 韩国
+    name: KR
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Korea.png"
     proxies:
-      - "韩国-自动选择"
-      - "韩国-负载均衡"
-      - 🇰🇷 韩国 01
+      - "KR-Auto"
+      - "KR-Balance"
+      - 🇰🇷 KR 01
   - interval: 180
     timeout: 3000
     url: "https://cp.cloudflare.com/generate_204"
@@ -885,9 +885,9 @@ proxy-groups:
     tolerance: 50
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png"
     hidden: true
-    name: "韩国-自动选择"
+    name: "KR-Auto"
     proxies:
-      - 🇰🇷 韩国 01
+      - 🇰🇷 KR 01
   - interval: 180
     timeout: 3000
     url: "https://cp.cloudflare.com/generate_204"
@@ -897,17 +897,17 @@ proxy-groups:
     strategy: "sticky-sessions"
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Round_Robin_1.png"
     hidden: true
-    name: "韩国-负载均衡"
+    name: "KR-Balance"
     proxies:
-      - 🇰🇷 韩国 01
+      - 🇰🇷 KR 01
   - type: select
     hidden: false
-    name: 英国
+    name: UK
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/United_Kingdom.png"
     proxies:
-      - "英国-自动选择"
-      - "英国-负载均衡"
-      - 🇬🇧 英国 01
+      - "UK-Auto"
+      - "UK-Balance"
+      - 🇬🇧 UK 01
   - interval: 180
     timeout: 3000
     url: "https://cp.cloudflare.com/generate_204"
@@ -917,9 +917,9 @@ proxy-groups:
     tolerance: 50
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png"
     hidden: true
-    name: "英国-自动选择"
+    name: "UK-Auto"
     proxies:
-      - 🇬🇧 英国 01
+      - 🇬🇧 UK 01
   - interval: 180
     timeout: 3000
     url: "https://cp.cloudflare.com/generate_204"
@@ -929,17 +929,17 @@ proxy-groups:
     strategy: "sticky-sessions"
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Round_Robin_1.png"
     hidden: true
-    name: "英国-负载均衡"
+    name: "UK-Balance"
     proxies:
-      - 🇬🇧 英国 01
+      - 🇬🇧 UK 01
   - type: select
     hidden: false
-    name: 德国
+    name: DE
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Germany.png"
     proxies:
-      - "德国-自动选择"
-      - "德国-负载均衡"
-      - 🇩🇪 德国 01
+      - "DE-Auto"
+      - "DE-Balance"
+      - 🇩🇪 DE 01
   - interval: 180
     timeout: 3000
     url: "https://cp.cloudflare.com/generate_204"
@@ -949,9 +949,9 @@ proxy-groups:
     tolerance: 50
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png"
     hidden: true
-    name: "德国-自动选择"
+    name: "DE-Auto"
     proxies:
-      - 🇩🇪 德国 01
+      - 🇩🇪 DE 01
   - interval: 180
     timeout: 3000
     url: "https://cp.cloudflare.com/generate_204"
@@ -961,17 +961,17 @@ proxy-groups:
     strategy: "sticky-sessions"
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Round_Robin_1.png"
     hidden: true
-    name: "德国-负载均衡"
+    name: "DE-Balance"
     proxies:
-      - 🇩🇪 德国 01
+      - 🇩🇪 DE 01
   - type: select
     hidden: false
-    name: 法国
+    name: FR
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/France.png"
     proxies:
-      - "法国-自动选择"
-      - "法国-负载均衡"
-      - 🇫🇷 法国 01
+      - "FR-Auto"
+      - "FR-Balance"
+      - 🇫🇷 FR 01
   - interval: 180
     timeout: 3000
     url: "https://cp.cloudflare.com/generate_204"
@@ -981,9 +981,9 @@ proxy-groups:
     tolerance: 50
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png"
     hidden: true
-    name: "法国-自动选择"
+    name: "FR-Auto"
     proxies:
-      - 🇫🇷 法国 01
+      - 🇫🇷 FR 01
   - interval: 180
     timeout: 3000
     url: "https://cp.cloudflare.com/generate_204"
@@ -993,17 +993,17 @@ proxy-groups:
     strategy: "sticky-sessions"
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Round_Robin_1.png"
     hidden: true
-    name: "法国-负载均衡"
+    name: "FR-Balance"
     proxies:
-      - 🇫🇷 法国 01
+      - 🇫🇷 FR 01
   - type: select
     hidden: false
-    name: 加拿大
+    name: CA
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Canada.png"
     proxies:
-      - "加拿大-自动选择"
-      - "加拿大-负载均衡"
-      - 🇨🇦 加拿大 01
+      - "CA-Auto"
+      - "CA-Balance"
+      - 🇨🇦 CA 01
   - interval: 180
     timeout: 3000
     url: "https://cp.cloudflare.com/generate_204"
@@ -1013,9 +1013,9 @@ proxy-groups:
     tolerance: 50
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png"
     hidden: true
-    name: "加拿大-自动选择"
+    name: "CA-Auto"
     proxies:
-      - 🇨🇦 加拿大 01
+      - 🇨🇦 CA 01
   - interval: 180
     timeout: 3000
     url: "https://cp.cloudflare.com/generate_204"
@@ -1025,17 +1025,17 @@ proxy-groups:
     strategy: "sticky-sessions"
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Round_Robin_1.png"
     hidden: true
-    name: "加拿大-负载均衡"
+    name: "CA-Balance"
     proxies:
-      - 🇨🇦 加拿大 01
+      - 🇨🇦 CA 01
   - type: select
     hidden: false
-    name: 澳大利亚
+    name: AU
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Australia.png"
     proxies:
-      - "澳大利亚-自动选择"
-      - "澳大利亚-负载均衡"
-      - 🇦🇺 澳大利亚 01
+      - "AU-Auto"
+      - "AU-Balance"
+      - 🇦🇺 AU 01
   - interval: 180
     timeout: 3000
     url: "https://cp.cloudflare.com/generate_204"
@@ -1045,9 +1045,9 @@ proxy-groups:
     tolerance: 50
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png"
     hidden: true
-    name: "澳大利亚-自动选择"
+    name: "AU-Auto"
     proxies:
-      - 🇦🇺 澳大利亚 01
+      - 🇦🇺 AU 01
   - interval: 180
     timeout: 3000
     url: "https://cp.cloudflare.com/generate_204"
@@ -1057,17 +1057,17 @@ proxy-groups:
     strategy: "sticky-sessions"
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Round_Robin_1.png"
     hidden: true
-    name: "澳大利亚-负载均衡"
+    name: "AU-Balance"
     proxies:
-      - 🇦🇺 澳大利亚 01
+      - 🇦🇺 AU 01
   - type: select
     hidden: false
-    name: 印度
+    name: IN
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/India.png"
     proxies:
-      - "印度-自动选择"
-      - "印度-负载均衡"
-      - 🇮🇳 印度 01
+      - "IN-Auto"
+      - "IN-Balance"
+      - 🇮🇳 IN 01
   - interval: 180
     timeout: 3000
     url: "https://cp.cloudflare.com/generate_204"
@@ -1077,9 +1077,9 @@ proxy-groups:
     tolerance: 50
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png"
     hidden: true
-    name: "印度-自动选择"
+    name: "IN-Auto"
     proxies:
-      - 🇮🇳 印度 01
+      - 🇮🇳 IN 01
   - interval: 180
     timeout: 3000
     url: "https://cp.cloudflare.com/generate_204"
@@ -1089,17 +1089,17 @@ proxy-groups:
     strategy: "sticky-sessions"
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Round_Robin_1.png"
     hidden: true
-    name: "印度-负载均衡"
+    name: "IN-Balance"
     proxies:
-      - 🇮🇳 印度 01
+      - 🇮🇳 IN 01
   - type: select
     hidden: false
-    name: 土耳其
+    name: TR
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Turkey.png"
     proxies:
-      - "土耳其-自动选择"
-      - "土耳其-负载均衡"
-      - 🇹🇷 土耳其 01
+      - "TR-Auto"
+      - "TR-Balance"
+      - 🇹🇷 TR 01
   - interval: 180
     timeout: 3000
     url: "https://cp.cloudflare.com/generate_204"
@@ -1109,9 +1109,9 @@ proxy-groups:
     tolerance: 50
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png"
     hidden: true
-    name: "土耳其-自动选择"
+    name: "TR-Auto"
     proxies:
-      - 🇹🇷 土耳其 01
+      - 🇹🇷 TR 01
   - interval: 180
     timeout: 3000
     url: "https://cp.cloudflare.com/generate_204"
@@ -1121,17 +1121,17 @@ proxy-groups:
     strategy: "sticky-sessions"
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Round_Robin_1.png"
     hidden: true
-    name: "土耳其-负载均衡"
+    name: "TR-Balance"
     proxies:
-      - 🇹🇷 土耳其 01
+      - 🇹🇷 TR 01
   - type: select
     hidden: false
-    name: 巴西
+    name: BR
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Brazil.png"
     proxies:
-      - "巴西-自动选择"
-      - "巴西-负载均衡"
-      - 🇧🇷 巴西 01
+      - "BR-Auto"
+      - "BR-Balance"
+      - 🇧🇷 BR 01
   - interval: 180
     timeout: 3000
     url: "https://cp.cloudflare.com/generate_204"
@@ -1141,9 +1141,9 @@ proxy-groups:
     tolerance: 50
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png"
     hidden: true
-    name: "巴西-自动选择"
+    name: "BR-Auto"
     proxies:
-      - 🇧🇷 巴西 01
+      - 🇧🇷 BR 01
   - interval: 180
     timeout: 3000
     url: "https://cp.cloudflare.com/generate_204"
@@ -1153,17 +1153,17 @@ proxy-groups:
     strategy: "sticky-sessions"
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Round_Robin_1.png"
     hidden: true
-    name: "巴西-负载均衡"
+    name: "BR-Balance"
     proxies:
-      - 🇧🇷 巴西 01
+      - 🇧🇷 BR 01
   - type: select
     hidden: false
-    name: 阿根廷
+    name: AR
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Argentina.png"
     proxies:
-      - "阿根廷-自动选择"
-      - "阿根廷-负载均衡"
-      - 🇦🇷 阿根廷 01
+      - "AR-Auto"
+      - "AR-Balance"
+      - 🇦🇷 AR 01
   - interval: 180
     timeout: 3000
     url: "https://cp.cloudflare.com/generate_204"
@@ -1173,9 +1173,9 @@ proxy-groups:
     tolerance: 50
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png"
     hidden: true
-    name: "阿根廷-自动选择"
+    name: "AR-Auto"
     proxies:
-      - 🇦🇷 阿根廷 01
+      - 🇦🇷 AR 01
   - interval: 180
     timeout: 3000
     url: "https://cp.cloudflare.com/generate_204"
@@ -1185,17 +1185,17 @@ proxy-groups:
     strategy: "sticky-sessions"
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Round_Robin_1.png"
     hidden: true
-    name: "阿根廷-负载均衡"
+    name: "AR-Balance"
     proxies:
-      - 🇦🇷 阿根廷 01
+      - 🇦🇷 AR 01
   - type: select
     hidden: false
-    name: 俄罗斯
+    name: RU
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Russia.png"
     proxies:
-      - "俄罗斯-自动选择"
-      - "俄罗斯-负载均衡"
-      - 🇷🇺 俄罗斯 01
+      - "RU-Auto"
+      - "RU-Balance"
+      - 🇷🇺 RU 01
   - interval: 180
     timeout: 3000
     url: "https://cp.cloudflare.com/generate_204"
@@ -1205,9 +1205,9 @@ proxy-groups:
     tolerance: 50
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png"
     hidden: true
-    name: "俄罗斯-自动选择"
+    name: "RU-Auto"
     proxies:
-      - 🇷🇺 俄罗斯 01
+      - 🇷🇺 RU 01
   - interval: 180
     timeout: 3000
     url: "https://cp.cloudflare.com/generate_204"
@@ -1217,18 +1217,18 @@ proxy-groups:
     strategy: "sticky-sessions"
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Round_Robin_1.png"
     hidden: true
-    name: "俄罗斯-负载均衡"
+    name: "RU-Balance"
     proxies:
-      - 🇷🇺 俄罗斯 01
+      - 🇷🇺 RU 01
   - type: select
     hidden: false
-    name: 低倍率节点
+    name: "Low-Rate"
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Available_1.png"
     proxies:
-      - "低倍率节点-自动选择"
-      - "低倍率节点-负载均衡"
-      - 🇭🇰 香港 01 0.5x
-      - 🇸🇬 新加坡 01 省流
+      - "Low-Rate-Auto"
+      - "Low-Rate-Balance"
+      - 🇭🇰 HK 01 0.5x
+      - 🇸🇬 SG 01 省流
   - interval: 180
     timeout: 3000
     url: "https://cp.cloudflare.com/generate_204"
@@ -1238,10 +1238,10 @@ proxy-groups:
     tolerance: 50
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png"
     hidden: true
-    name: "低倍率节点-自动选择"
+    name: "Low-Rate-Auto"
     proxies:
-      - 🇭🇰 香港 01 0.5x
-      - 🇸🇬 新加坡 01 省流
+      - 🇭🇰 HK 01 0.5x
+      - 🇸🇬 SG 01 省流
   - interval: 180
     timeout: 3000
     url: "https://cp.cloudflare.com/generate_204"
@@ -1251,19 +1251,19 @@ proxy-groups:
     strategy: "sticky-sessions"
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Round_Robin_1.png"
     hidden: true
-    name: "低倍率节点-负载均衡"
+    name: "Low-Rate-Balance"
     proxies:
-      - 🇭🇰 香港 01 0.5x
-      - 🇸🇬 新加坡 01 省流
+      - 🇭🇰 HK 01 0.5x
+      - 🇸🇬 SG 01 省流
   - type: select
     hidden: false
-    name: 高倍率节点
+    name: "High-Rate"
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Airport.png"
     proxies:
-      - "高倍率节点-自动选择"
-      - "高倍率节点-负载均衡"
-      - 🇯🇵 日本 01 3x
-      - 🇺🇸 美国 01 5x
+      - "High-Rate-Auto"
+      - "High-Rate-Balance"
+      - 🇯🇵 JP 01 3x
+      - 🇺🇸 US 01 5x
   - interval: 180
     timeout: 3000
     url: "https://cp.cloudflare.com/generate_204"
@@ -1273,10 +1273,10 @@ proxy-groups:
     tolerance: 50
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png"
     hidden: true
-    name: "高倍率节点-自动选择"
+    name: "High-Rate-Auto"
     proxies:
-      - 🇯🇵 日本 01 3x
-      - 🇺🇸 美国 01 5x
+      - 🇯🇵 JP 01 3x
+      - 🇺🇸 US 01 5x
   - interval: 180
     timeout: 3000
     url: "https://cp.cloudflare.com/generate_204"
@@ -1286,17 +1286,17 @@ proxy-groups:
     strategy: "sticky-sessions"
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Round_Robin_1.png"
     hidden: true
-    name: "高倍率节点-负载均衡"
+    name: "High-Rate-Balance"
     proxies:
-      - 🇯🇵 日本 01 3x
-      - 🇺🇸 美国 01 5x
+      - 🇯🇵 JP 01 3x
+      - 🇺🇸 US 01 5x
   - type: select
     hidden: false
-    name: 其他节点
+    name: Others
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/World_Map.png"
     proxies:
-      - "其他节点-自动选择"
-      - "其他节点-负载均衡"
+      - "Others-Auto"
+      - "Others-Balance"
       - Random Node 01
       - 某地节点
   - interval: 180
@@ -1308,7 +1308,7 @@ proxy-groups:
     tolerance: 50
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png"
     hidden: true
-    name: "其他节点-自动选择"
+    name: "Others-Auto"
     proxies:
       - Random Node 01
       - 某地节点
@@ -1321,7 +1321,7 @@ proxy-groups:
     strategy: "sticky-sessions"
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Round_Robin_1.png"
     hidden: true
-    name: "其他节点-负载均衡"
+    name: "Others-Balance"
     proxies:
       - Random Node 01
       - 某地节点
@@ -1699,59 +1699,59 @@ dns:
     - "https://dns.alidns.com/dns-query"
     - "https://doh.pub/dns-query"
   nameserver:
-    - "https://dns.google/dns-query#默认代理"
-    - "https://dns.cloudflare.com/dns-query#默认代理"
+    - "https://dns.google/dns-query#Default"
+    - "https://dns.cloudflare.com/dns-query#Default"
   direct-nameserver:
     - 223.5.5.5
     - 119.29.29.29
   direct-nameserver-follow-policy: true
   nameserver-policy:
     "rule-set:private":
-      - "https://dns.alidns.com/dns-query#直连"
-      - "https://doh.pub/dns-query#直连"
+      - "https://dns.alidns.com/dns-query#Direct"
+      - "https://doh.pub/dns-query#Direct"
     "rule-set:cn":
-      - "https://dns.alidns.com/dns-query#直连"
-      - "https://doh.pub/dns-query#直连"
+      - "https://dns.alidns.com/dns-query#Direct"
+      - "https://doh.pub/dns-query#Direct"
     "rule-set:cn_additional":
-      - "https://dns.alidns.com/dns-query#直连"
-      - "https://doh.pub/dns-query#直连"
+      - "https://dns.alidns.com/dns-query#Direct"
+      - "https://doh.pub/dns-query#Direct"
     "rule-set:apple_cn":
-      - "https://dns.alidns.com/dns-query#直连"
-      - "https://doh.pub/dns-query#直连"
+      - "https://dns.alidns.com/dns-query#Direct"
+      - "https://doh.pub/dns-query#Direct"
     "rule-set:cloudflare_cn":
-      - "https://dns.alidns.com/dns-query#直连"
-      - "https://doh.pub/dns-query#直连"
+      - "https://dns.alidns.com/dns-query#Direct"
+      - "https://doh.pub/dns-query#Direct"
     "rule-set:games_cn":
-      - "https://dns.alidns.com/dns-query#直连"
-      - "https://doh.pub/dns-query#直连"
+      - "https://dns.alidns.com/dns-query#Direct"
+      - "https://doh.pub/dns-query#Direct"
     "rule-set:nvidia_cn":
-      - "https://dns.alidns.com/dns-query#直连"
-      - "https://doh.pub/dns-query#直连"
+      - "https://dns.alidns.com/dns-query#Direct"
+      - "https://doh.pub/dns-query#Direct"
     "rule-set:gfw":
-      - "https://dns.google/dns-query#默认代理"
-      - "https://dns.cloudflare.com/dns-query#默认代理"
+      - "https://dns.google/dns-query#Default"
+      - "https://dns.cloudflare.com/dns-query#Default"
 rules:
-  - "AND,((NETWORK,udp),(DST-PORT,443),(OR,((RULE-SET,cn_additional),(RULE-SET,cn_ip,no-resolve)))),直连"
-  - "AND,((NETWORK,udp),(DST-PORT,443)),QUIC处理"
+  - "AND,((NETWORK,udp),(DST-PORT,443),(OR,((RULE-SET,cn_additional),(RULE-SET,cn_ip,no-resolve)))),Direct"
+  - "AND,((NETWORK,udp),(DST-PORT,443)),QUIC"
   - "DOMAIN-SUFFIX,mcdn.bilivideo.com,REJECT"
   - "DOMAIN-SUFFIX,mcdn.bilivideo.cn,REJECT"
   - "DOMAIN-KEYWORD,mcdn.bili,REJECT"
-  - "RULE-SET,private,直连"
-  - "RULE-SET,private_ip,直连,no-resolve"
-  - "DOMAIN-SUFFIX,ibytedtos.com,直连"
-  - "DOMAIN-SUFFIX,bytecdn.cn,直连"
-  - "DOMAIN-SUFFIX,snssdk.com,直连"
-  - "DOMAIN-SUFFIX,iesdouyin.com,直连"
-  - "DOMAIN-SUFFIX,pstatp.com,直连"
-  - "DOMAIN-KEYWORD,douyin,直连"
-  - "RULE-SET,DownloadApps,直连"
-  - "RULE-SET,games_cn,直连"
-  - "RULE-SET,nvidia_cn,直连"
-  - "RULE-SET,cloudflare_cn,直连"
-  - "RULE-SET,apple_cn,直连"
-  - "DOMAIN,fsend.cn,直连"
-  - "DOMAIN-SUFFIX,jlc-jdgf.com,直连"
-  - "RULE-SET,adblockmihomolite,广告拦截"
+  - "RULE-SET,private,Direct"
+  - "RULE-SET,private_ip,Direct,no-resolve"
+  - "DOMAIN-SUFFIX,ibytedtos.com,Direct"
+  - "DOMAIN-SUFFIX,bytecdn.cn,Direct"
+  - "DOMAIN-SUFFIX,snssdk.com,Direct"
+  - "DOMAIN-SUFFIX,iesdouyin.com,Direct"
+  - "DOMAIN-SUFFIX,pstatp.com,Direct"
+  - "DOMAIN-KEYWORD,douyin,Direct"
+  - "RULE-SET,DownloadApps,Direct"
+  - "RULE-SET,games_cn,Direct"
+  - "RULE-SET,nvidia_cn,Direct"
+  - "RULE-SET,cloudflare_cn,Direct"
+  - "RULE-SET,apple_cn,Direct"
+  - "DOMAIN,fsend.cn,Direct"
+  - "DOMAIN-SUFFIX,jlc-jdgf.com,Direct"
+  - "RULE-SET,adblockmihomolite,AdBlock"
   - "RULE-SET,openai,AI"
   - "RULE-SET,anthropic,AI"
   - "RULE-SET,youtube,YouTube"
@@ -1773,11 +1773,11 @@ rules:
   - "RULE-SET,tiktok,TikTok"
   - "RULE-SET,netflix,Netflix"
   - "RULE-SET,netflix_ip,Netflix,no-resolve"
-  - "RULE-SET,cn_additional,直连"
-  - "RULE-SET,cn,直连"
-  - "RULE-SET,cn_ip,直连,no-resolve"
-  - "RULE-SET,gfw,默认代理"
-  - "DOMAIN-SUFFIX,cn,直连"
-  - "DOMAIN-SUFFIX,local,直连"
-  - "DOMAIN-SUFFIX,lan,直连"
-  - "MATCH,默认代理"
+  - "RULE-SET,cn_additional,Direct"
+  - "RULE-SET,cn,Direct"
+  - "RULE-SET,cn_ip,Direct,no-resolve"
+  - "RULE-SET,gfw,Default"
+  - "DOMAIN-SUFFIX,cn,Direct"
+  - "DOMAIN-SUFFIX,local,Direct"
+  - "DOMAIN-SUFFIX,lan,Direct"
+  - "MATCH,Default"
