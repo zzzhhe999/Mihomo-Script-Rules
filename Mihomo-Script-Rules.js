@@ -648,7 +648,7 @@ function main(config) {
     functionalGroups.push({
       ...selectBaseOption,
       name: 'Direct',
-      proxies: ['Direct | Dual Stack', 'Direct | IPv4 Only', 'Direct | IPv6 Only', 'Direct | IPv4 Preferred', 'Direct | IPv6 Preferred'],
+      proxies: ['Dual Stack', 'IPv4 Only', 'IPv6 Only', 'IPv4 Preferred', 'IPv6 Preferred'],
       url: 'https://connectivitycheck.platform.hicloud.com/generate_204',
       icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/China_Map.png',
     });
@@ -816,11 +816,11 @@ function main(config) {
     });
 
     config.proxies.push(
-      { name: 'Direct | Dual Stack', type: 'direct' },
-      { name: 'Direct | IPv4 Only', type: 'direct', 'ip-version': 'ipv4' },
-      { name: 'Direct | IPv6 Only', type: 'direct', 'ip-version': 'ipv6' },
-      { name: 'Direct | IPv4 Preferred', type: 'direct', 'ip-version': 'ipv4-prefer' },
-      { name: 'Direct | IPv6 Preferred', type: 'direct', 'ip-version': 'ipv6-prefer' }
+      { name: 'Dual Stack', type: 'direct' },
+      { name: 'IPv4 Only', type: 'direct', 'ip-version': 'ipv4' },
+      { name: 'IPv6 Only', type: 'direct', 'ip-version': 'ipv6' },
+      { name: 'IPv4 Preferred', type: 'direct', 'ip-version': 'ipv4-prefer' },
+      { name: 'IPv6 Preferred', type: 'direct', 'ip-version': 'ipv6-prefer' }
     );
 
     if (tunEnable) {
