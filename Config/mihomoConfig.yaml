@@ -1460,14 +1460,6 @@ rule-providers:
     url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/anthropic.mrs"
     path: ./ruleset/anthropic.mrs
     path-in-bundle: geo/geosite/anthropic.mrs
-  gemini:
-    type: http
-    interval: 86400
-    behavior: domain
-    format: mrs
-    url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/gemini.mrs"
-    path: ./ruleset/gemini.mrs
-    path-in-bundle: geo/geosite/gemini.mrs
   youtube:
     type: http
     interval: 86400
@@ -1770,7 +1762,6 @@ rules:
   - "RULE-SET,adblockmihomolite,AdBlock"
   - "RULE-SET,openai,AI"
   - "RULE-SET,anthropic,AI"
-  - "RULE-SET,gemini,AI"
   - "RULE-SET,youtube,YouTube"
   - "RULE-SET,googlefcm,FCM"
   - "RULE-SET,google,Google"
