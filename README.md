@@ -202,9 +202,11 @@
 ### 5.8 双栈 & TUN 模式
 
 - 注入三个直连节点：
+  - `Direct | Dual Stack` → IPv4/IPv6 自动选择
+  - `Direct | IPv4 Only` → 强制仅使用 IPv4
+  - `Direct | IPv6 Only` → 强制仅使用 IPv6
   - `Direct | IPv4 Preferred` → 优先使用 IPv4
   - `Direct | IPv6 Preferred` → 优先使用 IPv6
-  - `Direct | Dual Stack` → IPv4/IPv6 自动选择
 
 - TUN 模式一键开关（`tunEnable` 常量），电脑端推荐开启
 
