@@ -130,18 +130,18 @@ proxies:
     type: hy2
     server: 2.2.2.4
     port: 443
-  - name: "Direct | Dual Stack"
+  - name: Dual Stack
     type: direct
-  - name: "Direct | IPv4 Only"
+  - name: IPv4 Only
     type: direct
     ip-version: ipv4
-  - name: "Direct | IPv6 Only"
+  - name: IPv6 Only
     type: direct
     ip-version: ipv6
-  - name: "Direct | IPv4 Preferred"
+  - name: IPv4 Preferred
     type: direct
     ip-version: "ipv4-prefer"
-  - name: "Direct | IPv6 Preferred"
+  - name: IPv6 Preferred
     type: direct
     ip-version: "ipv6-prefer"
 mode: rule
@@ -234,11 +234,11 @@ proxy-groups:
     hidden: false
     name: Direct
     proxies:
-      - "Direct | Dual Stack"
-      - "Direct | IPv4 Only"
-      - "Direct | IPv6 Only"
-      - "Direct | IPv4 Preferred"
-      - "Direct | IPv6 Preferred"
+      - Dual Stack
+      - IPv4 Only
+      - IPv6 Only
+      - IPv4 Preferred
+      - IPv6 Preferred
     url: "https://connectivitycheck.platform.hicloud.com/generate_204"
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/China_Map.png"
   - interval: 180
