@@ -303,6 +303,7 @@ const serviceConfigs = [
     providers: {
       adblockmihomolite: {
         ...geositeMrs('ads', 'adblockmihomolite'),
+        'path-in-bundle': undefined,
         interval: 86400,
         url: 'https://fastly.jsdelivr.net/gh/217heidai/adblockfilters@main/rules/adblockmihomolite.mrs',
       },
