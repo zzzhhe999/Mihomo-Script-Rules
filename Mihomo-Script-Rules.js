@@ -297,6 +297,21 @@ const extractMultiplier = (name, isHigh) => {
 
 const serviceConfigs = [
   {
+    key: 'adblock',
+    name: 'AdBlock',
+    proxyMode: 'reject',
+    providers: {
+      adblockmihomolite: {
+        ...geositeMrs('ads', 'adblockmihomolite'),
+        'path-in-bundle': undefined,
+        interval: 86400,
+        url: 'https://fastly.jsdelivr.net/gh/217heidai/adblockfilters@main/rules/adblockmihomolite.mrs',
+      },
+    },
+    icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Advertising.png',
+    rules: ['RULE-SET,adblockmihomolite,AdBlock'],
+  },
+  {
     key: 'ai',
     name: 'AI',
     providers: {
@@ -419,21 +434,6 @@ const serviceConfigs = [
     icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Netflix.png',
     rules: ['RULE-SET,netflix,Netflix', 'RULE-SET,netflix_ip,Netflix,no-resolve'],
   },
-  {
-    key: 'adblock',
-    name: 'AdBlock',
-    proxyMode: 'reject',
-    providers: {
-      adblockmihomolite: {
-        ...geositeMrs('ads', 'adblockmihomolite'),
-        'path-in-bundle': undefined,
-        interval: 86400,
-        url: 'https://fastly.jsdelivr.net/gh/217heidai/adblockfilters@main/rules/adblockmihomolite.mrs',
-      },
-    },
-    icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Advertising.png',
-    rules: ['RULE-SET,adblockmihomolite,AdBlock'],
-  },
 ];
 
 const createRegionGroup = (name, icon, proxies) => {
@@ -447,7 +447,7 @@ const createRegionGroup = (name, icon, proxies) => {
 };
 
 function main(config) {
-  if (!config || typeof config !== 'object') {
+  if (!config || typeof config !== 'object' || Array.isArray(config)) {
     return { proxies: [], 'proxy-groups': [], rules: [] };
   }
   if (!Array.isArray(config.proxies)) {
@@ -455,25 +455,17 @@ function main(config) {
   }
 
   try {
-    if ('global-client-fingerprint' in config) {
-      delete config['global-client-fingerprint'];
-    }
-    if ('sub-rules' in config) {
-      delete config['sub-rules'];
-    }
+    delete config['global-client-fingerprint'];
+    delete config['sub-rules'];
 
     const rawProxies = config.proxies;
-    let hasValidProxy = false;
-
-    for (const p of rawProxies) {
+    const hasValidProxy = rawProxies.some((p) => {
       if (p && typeof p === 'object' && typeof p.type === 'string') {
         const pType = p.type.toLowerCase();
-        if (pType !== 'direct' && pType !== 'reject') {
-          hasValidProxy = true;
-          break;
-        }
+        return pType !== 'direct' && pType !== 'reject';
       }
-    }
+      return false;
+    });
 
     if (!hasValidProxy) {
       throw new Error('未发现有效代理节点数据');
@@ -625,12 +617,7 @@ function main(config) {
     const finalRules = quicEnable ? [...quicRules, ...rules] : [...rules];
     const finalRuleProviders = { ...baseRuleProviders };
 
-    const orderedServiceConfigs = [
-      ...serviceConfigs.filter((s) => s.key === 'adblock'),
-      ...serviceConfigs.filter((s) => s.key !== 'adblock'),
-    ];
-
-    for (const svc of orderedServiceConfigs) {
+    for (const svc of serviceConfigs) {
       if (!ruleOptionsEnable[svc.key]) continue;
 
       finalRules.push(...svc.rules);
@@ -680,15 +667,11 @@ function main(config) {
     const orderMap = new Map();
     functionalGroupDisplayOrder.forEach((name, index) => orderMap.set(name, index));
 
-    const functionalGroupsSorted = functionalGroups
-      .map((group, index) => ({ group, index }))
-      .sort((a, b) => {
-        const orderA = orderMap.has(a.group.name) ? orderMap.get(a.group.name) : Number.MAX_SAFE_INTEGER;
-        const orderB = orderMap.has(b.group.name) ? orderMap.get(b.group.name) : Number.MAX_SAFE_INTEGER;
-        if (orderA !== orderB) return orderA - orderB;
-        return a.index - b.index;
-      })
-      .map((item) => item.group);
+    const functionalGroupsSorted = functionalGroups.slice().sort((a, b) => {
+      const orderA = orderMap.has(a.name) ? orderMap.get(a.name) : Infinity;
+      const orderB = orderMap.has(b.name) ? orderMap.get(b.name) : Infinity;
+      return orderA - orderB;
+    });
 
     const globalGroupProxies = [
       ...functionalGroupsSorted.map((g) => g.name),
@@ -705,9 +688,7 @@ function main(config) {
     const chinaDNS = ['https://dns.alidns.com/dns-query#Direct', 'https://doh.pub/dns-query#Direct'];
     const foreignDNS = ['https://dns.google/dns-query#Default', 'https://dns.cloudflare.com/dns-query#Default'];
 
-    if ('experimental' in config) {
-      delete config.experimental;
-    }
+    delete config.experimental;
 
     Object.assign(config, {
       mode: 'rule',
