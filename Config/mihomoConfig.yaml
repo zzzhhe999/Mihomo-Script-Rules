@@ -1443,7 +1443,7 @@ rule-providers:
     format: mrs
     url: "https://fastly.jsdelivr.net/gh/217heidai/adblockfilters@main/rules/adblockmihomolite.mrs"
     path: ./ruleset/adblockmihomolite.mrs
-    path-in-bundle: geo/geosite/ads.mrs
+    path-in-bundle: null
   openai:
     type: http
     interval: 86400
