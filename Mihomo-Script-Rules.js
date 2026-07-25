@@ -302,10 +302,12 @@ const serviceConfigs = [
     proxyMode: 'reject',
     providers: {
       adblockmihomolite: {
-        ...geositeMrs('ads', 'adblockmihomolite'),
-        'path-in-bundle': undefined,
+        type: 'http',
         interval: 86400,
+        behavior: 'domain',
+        format: 'mrs',
         url: 'https://fastly.jsdelivr.net/gh/217heidai/adblockfilters@main/rules/adblockmihomolite.mrs',
+        path: './ruleset/adblockmihomolite.mrs',
       },
     },
     icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Advertising.png',
@@ -446,12 +448,8 @@ const createRegionGroup = (name, icon, proxies) => {
   ];
 };
 
-/**
- * 处理并分类所有代理节点：过滤、重命名、按地区/倍率分组
- * @param {Array} rawProxies - 原始代理节点数组
- * @param {Array} enabledDefinitions - 已启用的地区和倍率定义
- * @returns {{ processedProxies: Array, otherProxies: Array, regionGroups: Object }}
- */
+const FINGERPRINT_SUPPORTED = new Set(['vmess', 'vless', 'trojan', 'anytls']);
+
 function processProxies(rawProxies, enabledDefinitions) {
   const regionGroups = {};
   const regionFlags = {};
@@ -465,7 +463,6 @@ function processProxies(rawProxies, enabledDefinitions) {
   const processedProxies = [];
   const otherProxies = [];
   const regionCounters = new Map();
-  const fingerprintSupported = new Set(['vmess', 'vless', 'trojan', 'anytls']);
 
   for (const proxy of rawProxies) {
     if (!proxy || typeof proxy !== 'object' || Array.isArray(proxy)) continue;
@@ -477,21 +474,19 @@ function processProxies(rawProxies, enabledDefinitions) {
 
     const proxyType = typeof proxy.type === 'string' ? proxy.type.toLowerCase() : 'unknown';
 
-    if (fingerprintSupported.has(proxyType)) {
+    if (FINGERPRINT_SUPPORTED.has(proxyType)) {
       if (proxy['client-fingerprint'] == null) {
         proxy['client-fingerprint'] = 'chrome';
       }
     }
 
     let matchedNormalRegionName = '';
-    let matchedNormalRegion = false;
     const matchedGroups = [];
 
     for (const region of enabledDefinitions) {
       if (region.regex.test(originalName)) {
         matchedGroups.push(region.name);
         if (region.name !== NODE_RATE_LOW && region.name !== NODE_RATE_HIGH) {
-          matchedNormalRegion = true;
           if (matchedNormalRegionName === '') {
             matchedNormalRegionName = region.name;
           }
@@ -511,25 +506,29 @@ function processProxies(rawProxies, enabledDefinitions) {
       regionCounters.set(counterKey, count);
       const serial = String(count).padStart(2, '0');
       newName = `${flag} ${matchedNormalRegionName} ${serial}`;
-    }
 
-    if (isLow) {
-      newName += ` ${extractMultiplier(originalName, false)}`;
-    } else if (isHigh) {
-      newName += ` ${extractMultiplier(originalName, true)}`;
+      if (isLow) {
+        newName += ` ${extractMultiplier(originalName, false)}`;
+      } else if (isHigh) {
+        const mult = extractMultiplier(originalName, true);
+        if (mult) {
+          newName += ` ${mult}`;
+        }
+      }
     }
 
     proxy.name = newName;
     processedProxies.push(proxy);
 
+    const skipNormalGroup = isLow || isHigh;
     for (const groupName of matchedGroups) {
-      if ((isLow || isHigh) && groupName !== NODE_RATE_LOW && groupName !== NODE_RATE_HIGH) continue;
+      if (skipNormalGroup && groupName !== NODE_RATE_LOW && groupName !== NODE_RATE_HIGH) continue;
       if (groupName in regionGroups) {
         regionGroups[groupName].proxies.push(newName);
       }
     }
 
-    if (!matchedNormalRegion) otherProxies.push(newName);
+    if (matchedNormalRegionName === '') otherProxies.push(newName);
   }
 
   return { processedProxies, otherProxies, regionGroups };
@@ -635,12 +634,16 @@ function main(config) {
       finalRules.push(...svc.rules);
       Object.assign(finalRuleProviders, svc.providers);
 
-      const currentProxyMode = 'proxyMode' in svc ? svc.proxyMode : 'default';
+      const currentProxyMode = Object.prototype.hasOwnProperty.call(svc, 'proxyMode')
+        ? svc.proxyMode
+        : 'default';
       functionalGroups.push({
         ...selectBaseOption,
         name: svc.name,
         icon: svc.icon,
-        proxies: currentProxyMode in proxyModes ? proxyModes[currentProxyMode] : proxyModes['default'],
+        proxies: Object.prototype.hasOwnProperty.call(proxyModes, currentProxyMode)
+          ? proxyModes[currentProxyMode]
+          : proxyModes['default'],
       });
     }
 
