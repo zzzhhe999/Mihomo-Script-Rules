@@ -291,6 +291,7 @@ const extractMultiplier = (name, isHigh) => {
     const lowMatch = name.match(/省流|下载/);
     return lowMatch !== null ? lowMatch[0] : 'Low';
   }
+//
   const match = name.match(/(\d+(?:\.\d+)?)\s*[xX×倍]/u) || name.match(/[×*xX]\s*(\d+(?:\.\d+)?)/u);
   return match !== null ? `${match[1]}x` : '';
 };
@@ -450,6 +451,105 @@ const createRegionGroup = (name, icon, proxies) => {
 
 const FINGERPRINT_SUPPORTED = new Set(['vmess', 'vless', 'trojan', 'anytls']);
 
+function buildNetworkConfig(finalRuleProviders, tunEnable) {
+  const chinaDNS = ['https://dns.alidns.com/dns-query#Direct', 'https://doh.pub/dns-query#Direct'];
+  const foreignDNS = ['https://dns.google/dns-query#Default', 'https://dns.cloudflare.com/dns-query#Default'];
+
+  return {
+    hosts: {
+      'dns.alidns.com': ['223.5.5.5', '223.6.6.6', '2400:3200::1', '2400:3200:baba::1'],
+      'doh.pub': ['1.12.12.12', '120.53.53.53'],
+      'dns.cloudflare.com': ['1.1.1.1', '1.0.0.1'],
+      'dns.google': ['8.8.8.8', '8.8.4.4', '2001:4860:4860::8888', '2001:4860:4860::8844'],
+      'cn.bing.com': 'global.bing.com',
+      'services.googleapis.cn': ['services.googleapis.com'],
+      '+.mcdn.bilivideo.com': ['0.0.0.0'],
+      '+.mcdn.bilivideo.cn': ['0.0.0.0'],
+      '+.edge.mountaintoys.cn': ['0.0.0.0'],
+    },
+    ntp: {
+      enable: true,
+      'write-to-system': false,
+      server: 'ntp.aliyun.com',
+      port: 123,
+      interval: 30,
+      'dialer-proxy': 'DIRECT',
+    },
+    sniffer: {
+      enable: true,
+      'force-dns-mapping': true,
+      'parse-pure-ip': true,
+      'override-destination': true,
+      sniff: {
+        HTTP: { ports: [80, '8080-8880'] },
+        TLS: { ports: [443, 8443] },
+        QUIC: { ports: [443, 8443] },
+      },
+      'skip-domain': ['+.mijia.com', '+.push.apple.com', 'gs.apple.com', 'gsp-ssl.ls.apple.com', '+.lan', '+.local'],
+    },
+    dns: {
+      enable: true,
+      ipv6: true,
+      listen: ':1053',
+      'cache-algorithm': 'arc',
+      'use-hosts': true,
+      'use-system-hosts': true,
+      'prefer-h3': false,
+      'enhanced-mode': 'fake-ip',
+      'fake-ip-range': '198.18.0.1/16',
+      'fake-ip-filter': ['rule-set:private', 'rule-set:fakeip_filter'],
+      'default-nameserver': ['223.5.5.5', '1.12.12.12'],
+      'proxy-server-nameserver': [
+        'https://dns.alidns.com/dns-query#Direct',
+        'https://doh.pub/dns-query#Direct',
+      ],
+      nameserver: foreignDNS,
+      'direct-nameserver': ['system', '223.5.5.5', '119.29.29.29'],
+      'direct-nameserver-follow-policy': true,
+      'nameserver-policy': {
+        'rule-set:private': chinaDNS,
+        'rule-set:cn': chinaDNS,
+        'rule-set:cn_additional': chinaDNS,
+        'rule-set:apple_cn': chinaDNS,
+        'rule-set:cloudflare_cn': chinaDNS,
+        'rule-set:microsoft_cn': chinaDNS,
+        'rule-set:games_cn': chinaDNS,
+        'rule-set:nvidia_cn': chinaDNS,
+        'rule-set:gfw': foreignDNS,
+      },
+    },
+    tun: tunEnable
+      ? {
+          enable: true,
+          stack: 'mixed',
+          'auto-route': true,
+          'strict-route': true,
+          'auto-redirect': false,
+          'auto-detect-interface': true,
+          'endpoint-independent-nat': true,
+          'dns-hijack': ['any:53', 'tcp://any:53'],
+          'udp-timeout': 300,
+        }
+      : undefined,
+  };
+}
+
+function collectTopLevelGroups(generatedRegionGroups, rateGroupNames) {
+  const groupNamesOfSelect = [];
+  const autoTestProxies = [];
+  const loadBalanceProxies = [];
+
+  for (const g of generatedRegionGroups) {
+    if (rateGroupNames.has(g.name)) continue;
+
+    if (g.type === 'select') groupNamesOfSelect.push(g.name);
+    else if (g.type === 'url-test') autoTestProxies.push(g.name);
+    else if (g.type === 'load-balance') loadBalanceProxies.push(g.name);
+  }
+
+  return { groupNamesOfSelect, autoTestProxies, loadBalanceProxies };
+}
+
 function processProxies(rawProxies, enabledDefinitions) {
   const regionGroups = {};
   const regionFlags = {};
@@ -465,70 +565,74 @@ function processProxies(rawProxies, enabledDefinitions) {
   const regionCounters = new Map();
 
   for (const proxy of rawProxies) {
-    if (!proxy || typeof proxy !== 'object' || Array.isArray(proxy)) continue;
+    try {
+      if (!proxy || typeof proxy !== 'object' || Array.isArray(proxy)) continue;
 
-    const originalName = proxy.name;
-    if (typeof originalName !== 'string' || originalName.trim() === '') continue;
+      const originalName = proxy.name;
+      if (typeof originalName !== 'string' || originalName.trim() === '') continue;
 
-    if (excludeFilterEnable && excludeFilter.test(originalName)) continue;
+      if (excludeFilterEnable && excludeFilter.test(originalName)) continue;
 
-    const proxyType = typeof proxy.type === 'string' ? proxy.type.toLowerCase() : 'unknown';
+      const proxyType = typeof proxy.type === 'string' ? proxy.type.toLowerCase() : 'unknown';
 
-    if (FINGERPRINT_SUPPORTED.has(proxyType)) {
-      if (proxy['client-fingerprint'] == null) {
-        proxy['client-fingerprint'] = 'chrome';
+      if (FINGERPRINT_SUPPORTED.has(proxyType)) {
+        if (proxy['client-fingerprint'] == null) {
+          proxy['client-fingerprint'] = 'chrome';
+        }
       }
-    }
 
-    let matchedNormalRegionName = '';
-    const matchedGroups = [];
+      var matchedNormalRegionName = null;
+      const matchedGroups = [];
 
-    for (const region of enabledDefinitions) {
-      if (region.regex.test(originalName)) {
-        matchedGroups.push(region.name);
-        if (region.name !== NODE_RATE_LOW && region.name !== NODE_RATE_HIGH) {
-          if (matchedNormalRegionName === '') {
-            matchedNormalRegionName = region.name;
+      for (const region of enabledDefinitions) {
+        if (region.regex.test(originalName)) {
+          matchedGroups.push(region.name);
+          if (region.name !== NODE_RATE_LOW && region.name !== NODE_RATE_HIGH) {
+            if (matchedNormalRegionName === null) {
+              matchedNormalRegionName = region.name;
+            }
           }
         }
       }
-    }
 
-    const isLow = matchedGroups.includes(NODE_RATE_LOW);
-    const isHigh = matchedGroups.includes(NODE_RATE_HIGH);
-    let newName = originalName;
+      const isLow = matchedGroups.includes(NODE_RATE_LOW);
+      const isHigh = matchedGroups.includes(NODE_RATE_HIGH);
+      let newName = originalName;
 
-    if (matchedNormalRegionName !== '') {
-      const flag = regionFlags[matchedNormalRegionName] || '🏳️';
-      const counterKey = (isLow || isHigh) ? `${matchedNormalRegionName}_multi` : matchedNormalRegionName;
-      const count = (regionCounters.get(counterKey) || 0) + 1;
+      if (matchedNormalRegionName !== null) {
+        const flag = regionFlags[matchedNormalRegionName] || '🏳️';
+        const counterKey = (isLow || isHigh) ? `${matchedNormalRegionName}_multi` : matchedNormalRegionName;
+        const count = (regionCounters.get(counterKey) ?? 0) + 1;
 
-      regionCounters.set(counterKey, count);
-      const serial = String(count).padStart(2, '0');
-      newName = `${flag} ${matchedNormalRegionName} ${serial}`;
+        regionCounters.set(counterKey, count);
+        const serial = String(count).padStart(2, '0');
+        newName = `${flag} ${matchedNormalRegionName} ${serial}`;
 
-      if (isLow) {
-        newName += ` ${extractMultiplier(originalName, false)}`;
-      } else if (isHigh) {
-        const mult = extractMultiplier(originalName, true);
-        if (mult) {
-          newName += ` ${mult}`;
+        if (isLow) {
+          newName += ` ${extractMultiplier(originalName, false)}`;
+        } else if (isHigh) {
+          const mult = extractMultiplier(originalName, true);
+          if (mult) {
+            newName += ` ${mult}`;
+          }
         }
       }
-    }
 
-    proxy.name = newName;
-    processedProxies.push(proxy);
+      proxy.name = newName;
+      processedProxies.push(proxy);
 
-    const skipNormalGroup = isLow || isHigh;
-    for (const groupName of matchedGroups) {
-      if (skipNormalGroup && groupName !== NODE_RATE_LOW && groupName !== NODE_RATE_HIGH) continue;
-      if (groupName in regionGroups) {
-        regionGroups[groupName].proxies.push(newName);
+      const skipNormalGroup = isLow || isHigh;
+      for (const groupName of matchedGroups) {
+        if (skipNormalGroup && groupName !== NODE_RATE_LOW && groupName !== NODE_RATE_HIGH) continue;
+        if (groupName in regionGroups) {
+          regionGroups[groupName].proxies.push(newName);
+        }
       }
-    }
 
-    if (matchedNormalRegionName === '') otherProxies.push(newName);
+      if (matchedNormalRegionName === null) otherProxies.push(newName);
+    } catch (e) {
+      print('[Mihomo-Script-Rules] processProxies: skip invalid proxy:', e.message || String(e));
+    }
   }
 
   return { processedProxies, otherProxies, regionGroups };
@@ -583,17 +687,11 @@ function main(config) {
       );
     }
 
-    const groupNamesOfSelect = [];
-    const autoTestProxies = [];
-    const loadBalanceProxies = [];
-
-    for (const g of generatedRegionGroups) {
-      if (!g.name.includes('-Rate')) {
-        if (g.type === 'select') groupNamesOfSelect.push(g.name);
-        else if (g.type === 'url-test') autoTestProxies.push(g.name);
-        else if (g.type === 'load-balance') loadBalanceProxies.push(g.name);
-      }
-    }
+    const rateGroupNames = new Set([NODE_RATE_LOW, NODE_RATE_HIGH]);
+    const { groupNamesOfSelect, autoTestProxies, loadBalanceProxies } = collectTopLevelGroups(
+      generatedRegionGroups,
+      rateGroupNames
+    );
 
     const proxyModes = {
       default: ['Default', 'Direct', 'Auto', 'Balance', ...groupNamesOfSelect],
@@ -634,16 +732,13 @@ function main(config) {
       finalRules.push(...svc.rules);
       Object.assign(finalRuleProviders, svc.providers);
 
-      const currentProxyMode = Object.prototype.hasOwnProperty.call(svc, 'proxyMode')
-        ? svc.proxyMode
-        : 'default';
+      const hasCustomProxyMode = Object.prototype.hasOwnProperty.call(svc, 'proxyMode');
+      const currentProxyMode = hasCustomProxyMode ? svc.proxyMode : 'default';
       functionalGroups.push({
         ...selectBaseOption,
         name: svc.name,
         icon: svc.icon,
-        proxies: Object.prototype.hasOwnProperty.call(proxyModes, currentProxyMode)
-          ? proxyModes[currentProxyMode]
-          : proxyModes['default'],
+        proxies: proxyModes[currentProxyMode] ?? proxyModes['default'],
       });
     }
 
@@ -700,8 +795,7 @@ function main(config) {
       icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Global.png',
     };
 
-    const chinaDNS = ['https://dns.alidns.com/dns-query#Direct', 'https://doh.pub/dns-query#Direct'];
-    const foreignDNS = ['https://dns.google/dns-query#Default', 'https://dns.cloudflare.com/dns-query#Default'];
+    const networkConfig = buildNetworkConfig(finalRuleProviders, tunEnable);
 
     delete config.experimental;
 
@@ -724,69 +818,17 @@ function main(config) {
       },
       'proxy-groups': [globalGroup, ...functionalGroupsSorted, ...generatedRegionGroups],
       'rule-providers': finalRuleProviders,
-      hosts: {
-        'dns.alidns.com': ['223.5.5.5', '223.6.6.6', '2400:3200::1', '2400:3200:baba::1'],
-        'doh.pub': ['1.12.12.12', '120.53.53.53'],
-        'dns.cloudflare.com': ['1.1.1.1', '1.0.0.1'],
-        'dns.google': ['8.8.8.8', '8.8.4.4', '2001:4860:4860::8888', '2001:4860:4860::8844'],
-        'cn.bing.com': 'global.bing.com',
-        'services.googleapis.cn': ['services.googleapis.com'],
-        '+.mcdn.bilivideo.com': ['0.0.0.0'],
-        '+.mcdn.bilivideo.cn': ['0.0.0.0'],
-        '+.edge.mountaintoys.cn': ['0.0.0.0'],
-      },
-      ntp: {
-        enable: true,
-        'write-to-system': false,
-        server: 'ntp.aliyun.com',
-        port: 123,
-        interval: 30,
-        'dialer-proxy': 'DIRECT',
-      },
-      sniffer: {
-        enable: true,
-        'force-dns-mapping': true,
-        'parse-pure-ip': true,
-        'override-destination': true,
-        sniff: {
-          HTTP: { ports: [80, '8080-8880'] },
-          TLS: { ports: [443, 8443] },
-          QUIC: { ports: [443, 8443] },
-        },
-        'skip-domain': ['+.mijia.com', '+.push.apple.com', 'gs.apple.com', 'gsp-ssl.ls.apple.com', '+.lan', '+.local'],
-      },
-      dns: {
-        enable: true,
-        ipv6: true,
-        listen: ':1053',
-        'cache-algorithm': 'arc',
-        'use-hosts': true,
-        'use-system-hosts': true,
-        'prefer-h3': false,
-        'enhanced-mode': 'fake-ip',
-        'fake-ip-range': '198.18.0.1/16',
-        'fake-ip-filter': ['rule-set:private', 'rule-set:fakeip_filter'],
-        'default-nameserver': ['223.5.5.5', '1.12.12.12'],
-        'proxy-server-nameserver': [
-          'https://dns.alidns.com/dns-query#Direct',
-          'https://doh.pub/dns-query#Direct',
-        ],
-        nameserver: foreignDNS,
-        'direct-nameserver': ['system', '223.5.5.5', '119.29.29.29'],
-        'direct-nameserver-follow-policy': true,
-        'nameserver-policy': {
-          'rule-set:private': chinaDNS,
-          'rule-set:cn': chinaDNS,
-          'rule-set:cn_additional': chinaDNS,
-          'rule-set:apple_cn': chinaDNS,
-          'rule-set:cloudflare_cn': chinaDNS,
-          'rule-set:microsoft_cn': chinaDNS,
-          'rule-set:games_cn': chinaDNS,
-          'rule-set:nvidia_cn': chinaDNS,
-          'rule-set:gfw': foreignDNS,
-        },
-      },
+      hosts: networkConfig.hosts,
+      ntp: networkConfig.ntp,
+      sniffer: networkConfig.sniffer,
+      dns: networkConfig.dns,
     });
+
+    if (networkConfig.tun) {
+      config.tun = networkConfig.tun;
+    } else if ('tun' in config) {
+      delete config.tun;
+    }
 
     config.proxies.push(
       { name: 'Dual Stack', type: 'direct' },
@@ -795,22 +837,6 @@ function main(config) {
       { name: 'IPv4 Preferred', type: 'direct', 'ip-version': 'ipv4-prefer' },
       { name: 'IPv6 Preferred', type: 'direct', 'ip-version': 'ipv6-prefer' }
     );
-
-    if (tunEnable) {
-      config.tun = {
-        enable: true,
-        stack: 'mixed',
-        'auto-route': true,
-        'strict-route': true,
-        'auto-redirect': false,
-        'auto-detect-interface': true,
-        'endpoint-independent-nat': true,
-        'dns-hijack': ['any:53', 'tcp://any:53'],
-        'udp-timeout': 300,
-      };
-    } else if ('tun' in config) {
-      delete config.tun;
-    }
 
     config.rules = [
       ...finalRules,
