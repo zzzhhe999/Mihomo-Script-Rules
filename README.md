@@ -46,6 +46,7 @@
 > 本脚本基于 ES2020 现代语法深度重构，完美兼容 QuickJS 引擎。采用防御性编程与无损合并（Merge）机制，能安全隔离机场下发的脏数据（如空节点、缺失协议），并在保留用户原有自定义规则的前提下进行配置挂载，彻底杜绝引擎崩溃与客户端假死，保障高频执行下的绝对稳定。
 
 > **两种模式：**
+> 
 > - **脚本**（`Mihomo-Script-Rules.js`）：根据节点名动态生成地区策略组，自动化程度最高，推荐大多数用户使用。
 > - **纯配置**（`Config/mihomoConfig.yaml`）：静态配置，适用于不支持 JS 脚本的客户端，需自行填入节点。
 
@@ -55,11 +56,11 @@
 
 ### 2.1 策略组：处理前 vs 处理后
 
-| 维度 | 处理前 | 处理后 |
+| 维度  | 处理前 | 处理后 |
 | --- | --- | --- |
 | 顶级分组 | 列表杂乱 | 按国家/地区 → 按应用 |
-| 地区分组 | 无 | 共 16 个国家/地区 |
-| 应用分组 | 无 | 16 个独立应用策略组 |
+| 地区分组 | 无   | 共 16 个国家/地区 |
+| 应用分组 | 无   | 16 个独立应用策略组 |
 | 节点选择 | 手动选择 | 按地区自动测速 → 自动选最快节点 |
 | 节点命名 | 信息杂乱 | `HK 01` `JP 03 0.5x` |
 
@@ -84,22 +85,22 @@
 
 脚本为以下 **16 个服务/应用** 自动创建独立策略组，各自使用专属规则集精准分流：
 
-| 服务 | 策略组名称 | 规则来源 | 特殊处理 |
+| 服务  | 策略组名称 | 规则来源 | 特殊处理 |
 | --- | --- | --- | --- |
 | AI 服务 | `AI` | `geosite:anthropic/openai` | ChatGPT、Claude |
-| YouTube | `YouTube` | `geosite:youtube` | — |
+| YouTube | `YouTube` | `geosite:youtube` | —   |
 | FCM 推送 | `FCM` | `geosite:googlefcm` | 保障 Android 推送 |
 | Google | `Google` | `geosite:google` + `geoip:google` | 域名 + IP 双重匹配 |
-| GitHub | `GitHub` | `geosite:github` | — |
-| Microsoft | `Microsoft` | `geosite:microsoft` | — |
-| Apple | `Apple` | `geosite:apple` | — |
+| GitHub | `GitHub` | `geosite:github` | —   |
+| Microsoft | `Microsoft` | `geosite:microsoft` | —   |
+| Apple | `Apple` | `geosite:apple` | —   |
 | Telegram | `Telegram` | `geosite:telegram` + `geoip:telegram` | 域名 + IP 双重匹配 |
 | Cloudflare | `Cloudflare` | `geosite:cloudflare` + `geoip:cloudflare` | 域名 + IP 双重匹配 |
-| Steam | `Steam` | `geosite:steam` | — |
-| X | `X` | `geosite:twitter` + `geoip:twitter` | 域名 + IP 双重匹配 |
-| Instagram | `Instagram` | `geosite:instagram` | — |
-| Spotify | `Spotify` | `geosite:spotify` | — |
-| TikTok | `TikTok` | `geosite:tiktok` | — |
+| Steam | `Steam` | `geosite:steam` | —   |
+| X   | `X` | `geosite:twitter` + `geoip:twitter` | 域名 + IP 双重匹配 |
+| Instagram | `Instagram` | `geosite:instagram` | —   |
+| Spotify | `Spotify` | `geosite:spotify` | —   |
+| TikTok | `TikTok` | `geosite:tiktok` | —   |
 | Netflix | `Netflix` | `geosite:netflix` + `geoip:netflix` | 域名 + IP 双重匹配 |
 | 广告拦截 | `AdBlock` | `adblockmihomolite` | 默认 REJECT，可切换直连 |
 
@@ -122,18 +123,18 @@
 ### 5.1 节点智能归类与统一命名
 
 - 根据节点名称中的关键词（中文、英文、国旗 Emoji）自动识别所属国家/地区
-
+  
 - 自动剥离机场广告、联系方式、流量信息等杂余内容（内置 50+ 条过滤正则）
-
+  
 - 倍率自动识别：低倍率（0.0x ~ 0.5x）、高倍率（2x+）节点自动标记
-
+  
 - 统一命名格式：`[国旗] [地区名（世界各国和地区名称代码）] [序号] [倍率]`
-
+  
   - 普通节点：`🇭🇰 HK 01`
   - 低倍率节点：`🇯🇵 JP 02 0.5x`
   - 高倍率节点：`🇺🇸 US 03 3x`
-
 - 无法识别地区的节点保留原名，统一归入 `Others` 策略组
+  
 
 ### 5.2 低质节点过滤
 
@@ -144,12 +145,13 @@
 ### 5.3 策略组分流
 
 - 每个地区生成 3 层策略组：**手动选择节点** → **Auto** → **Balance**
-
+  
 - 自动测速间隔 180 秒，延迟容忍度 50ms，3 次失败后切换
-
+  
 - Balance 采用 `sticky-sessions` 策略，同域名固定走同一节点
-
+  
 - 全局 GLOBAL 组包含所有功能组和地区组
+  
 
 ### 5.4 DNS 防污染
 
@@ -159,24 +161,26 @@
 ```
 
 - **Fake-IP 模式**，缓存算法 ARC
-
+  
 - `nameserver-policy` 精准分流：gfw 列表走国外 DNS，cn/private 列表走国内 DNS
-
+  
 - `proxy-server-nameserver` 兜底：避免代理服务器 DNS 请求走代理本身
-
+  
 - `direct-nameserver-follow-policy`：直连请求跟随策略选择 DNS
-
+  
 - **纯净默认解析**：从默认 `nameserver` 数组中彻底剥离国内 DNS，防止并发查询时遭 GFW 抢答污染，确保未知境外域名的解析绝对安全。
+  
 
 ### 5.5 AdBlock（广告拦截）
 
 - 深度集成 [adblockmihomolite](https://github.com/217heidai/adblockfilters) 规则集
-
+  
 - 每 24 小时自动更新一次规则
-
+  
 - 策略组 `AdBlock` 默认 REJECT，可切换到 DIRECT 放行
-
-- **强制远程更新**：通过显式抹除配置中的 `path-in-bundle` 属性，强制内核无视本地老旧的内置规则库，确保每次均从 GitHub 远端精准拉取最新规则。
+  
+- **强制远程更新**：不声明 `path-in-bundle`，强制内核无视本地缓存规则，确保每次均从 GitHub 远端精准拉取最新规则。
+  
 
 ### 5.6 自动补全客户端指纹
 
@@ -201,13 +205,14 @@
 ### 5.8 双栈 & TUN 模式
 
 - 注入五个直连节点：
+  
   - `Dual Stack` → IPv4/IPv6 自动选择
   - `IPv4 Only` → 强制仅使用 IPv4
   - `IPv6 Only` → 强制仅使用 IPv6
   - `IPv4 Preferred` → 优先使用 IPv4
   - `IPv6 Preferred` → 优先使用 IPv6
-
 - TUN 模式一键开关（`tunEnable` 常量），电脑端推荐开启
+  
 
 ### 5.9 规则自动更新
 
@@ -221,26 +226,28 @@
 ### 5.10 极致的防御性架构与无损接管
 
 - **防崩溃兜底**：每一处外部输入都经过显式类型校验 —— `typeof` 检查确保非对象输入不崩溃、`Array.isArray()` 保障数组操作安全、`== null` 兜底处理缺失字段。整个主流程包裹在 `try/catch` 中，极端异常下返回最小可用配置（空代理 + 空规则），确保网络绝不因脚本报错而断连。异常时除返回兜底配置外，会通过 `print()` 向 mihomo 日志输出错误信息，便于排查问题。
-
+  
 - **全量显式校验链**：节点对象遍历时依次校验 `proxy` 非空、`proxy.name` 为字符串、`proxy.type` 为字符串，任意一项不符即跳过，绝不抛出 `TypeError`。
-
+  
 - **无损配置合并**：摒弃粗暴的顶层字段覆盖，采用 `Object.assign` 与扩展运算符 (`...`)，在注入策略组的同时，完美保留用户在客户端内自定义的直连规则、前置代理等个性化配置。
-
+  
 - **QuickJS 兼容**：严格限制在 ES2020 语法子集内，不使用 QuickJS 不支持或行为不一致的语法，确保在各客户端（Bettbox、FlClash 等）的 QuickJS 引擎中稳定执行。
+  
 
 ### 5.11 其他
 
 - **Sniffer 域名嗅探**：HTTP/TLS/QUIC 自动嗅探真实域名
-
+  
 - **NTP 时间同步**：每 30 分钟通过阿里 NTP 同步，防止系统时间不准导致证书错误
-
+  
 - **Hosts 硬编码**：防止 DNS 污染导致 DNS 服务器本身解析失败
-
+  
 - **节点图标**：每个策略组配有 Qure 精美图标
-
+  
 - **测速 URL 国内外分流**：国外节点用 Cloudflare，国内节点用华为
-
+  
 - **统一延迟测试**：`unified-delay` 开启，TCP 并发测试
+  
 
 ---
 
@@ -309,10 +316,11 @@ https://fastly.jsdelivr.net/gh/zzzhhe999/Mihomo-Script-Rules@main/Config/mihomoC
 #### 6.2.2 使用方式
 
 1. 下载上述 yaml 文件
-
+  
 2. 将文件中 `proxies` 部分替换为你自己的节点（从机场订阅获取）
-
+  
 3. 导入到客户端，手动填入节点
+  
 
 > **纯配置与脚本的差异**：纯配置无法根据节点名自动生成地区策略组，未匹配到节点的策略组会回退到 REJECT。如果客户端支持脚本，强烈建议用方式一。
 
@@ -320,15 +328,15 @@ https://fastly.jsdelivr.net/gh/zzzhhe999/Mihomo-Script-Rules@main/Config/mihomoC
 
 ## 7.客户端兼容性
 
-| 客户端 | 兼容性 | 备注 |
+| 客户端 | 兼容性 | 备注  |
 | --- | --- | --- |
-| [Bettbox](https://github.com/appshubcc/Bettbox) | 完美 | **强烈推荐**，原生支持 JS 脚本，完美契合本脚本的 QuickJS 防御性架构 |
-| [FlClash](https://github.com/chen08209/FlClash) | 完美 | 推荐，原生支持 JS 脚本预处理，执行效率极高 |
-| [Clash Verge Rev](https://github.com/clash-verge-rev/clash-verge-rev) | 兼容 | 需在配置编辑中手动设置预处理脚本 |
-| [Clash Nyanpasu](https://github.com/libnyanpasu/clash-nyanpasu) | 兼容 | 同上 |
-| [Clash Verge](https://github.com/clash-verge-rev/clash-verge-rev) | 旧版 | 旧版可能不支持，建议升级到 Verge Rev |
+| [Bettbox](https://github.com/appshubcc/Bettbox) | 完美  | **强烈推荐**，原生支持 JS 脚本，完美契合本脚本的 QuickJS 防御性架构 |
+| [FlClash](https://github.com/chen08209/FlClash) | 完美  | 推荐，原生支持 JS 脚本预处理，执行效率极高 |
+| [Clash Verge Rev](https://github.com/clash-verge-rev/clash-verge-rev) | 兼容  | 需在配置编辑中手动设置预处理脚本 |
+| [Clash Nyanpasu](https://github.com/libnyanpasu/clash-nyanpasu) | 兼容  | 同上  |
+| [Clash Verge](https://github.com/clash-verge-rev/clash-verge-rev) | 旧版  | 旧版可能不支持，建议升级到 Verge Rev |
 | Stash / Shadowrocket | 不兼容 | JS 预处理语法不同，建议用 sub-store 中转或使用纯配置 |
-| Surge / Quantumult X | 不兼容 | 同上 |
+| Surge / Quantumult X | 不兼容 | 同上  |
 
 ### 7.1 Stash / Shadowrocket / Surge 等其他客户端
 
@@ -394,7 +402,7 @@ const regionDefinitionsEnable = {
 
 ### 8.3 全局开关
 
-| 常量 | 作用 | 默认值 | 推荐 |
+| 常量  | 作用  | 默认值 | 推荐  |
 | --- | --- | --- | --- |
 | `excludeFilterEnable` | 是否开启杂质节点过滤 | `true` | 始终开启 |
 | `tunEnable` | TUN 模式开关 | `false` | 电脑端建议 `true`，手机端保持 `false` |
@@ -412,10 +420,11 @@ const excludeFilter = /群|返利|循环|官[网址]|客服|网站|网址|获取
 ## 9.脚本维护与更新
 
 - 本脚本持续维护
-
+  
 - 规则集（geosite/geoip/广告拦截）由上游项目自动更新，脚本本身无需频繁改动
-
+  
 - 如果你发现某个服务的分流规则过时或有更好的替代规则集，欢迎提 **Issue**
+  
 
 ---
 
@@ -423,7 +432,7 @@ const excludeFilter = /群|返利|循环|官[网址]|客服|网站|网址|获取
 
 本项目的诞生离不开以下优秀开源项目：
 
-| 项目 | 用途 |
+| 项目  | 用途  |
 | --- | --- |
 | [MyClash](https://github.com/AIsouler/MyClash) | 原始代码来源，核心逻辑参考 |
 | [Mihomo](https://github.com/MetaCubeX/mihomo) | 内核支持 |
@@ -446,4 +455,3 @@ const excludeFilter = /群|返利|循环|官[网址]|客服|网站|网址|获取
 <p align="center">
   <sub>Made with ❤️ by <a href="https://github.com/zzzhhe999">zzzhhe999</a> | 如果觉得好用，给个 ⭐ Star 吧！</sub>
 </p>
-
