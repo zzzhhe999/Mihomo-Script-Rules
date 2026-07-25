@@ -1428,6 +1428,14 @@ rule-providers:
     url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/cloudflare@cn.mrs"
     path: ./ruleset/cloudflare_cn.mrs
     path-in-bundle: "geo/geosite/cloudflare@cn.mrs"
+  microsoft_cn:
+    type: http
+    interval: 86400
+    behavior: domain
+    format: mrs
+    url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/microsoft@cn.mrs"
+    path: ./ruleset/microsoft_cn.mrs
+    path-in-bundle: "geo/geosite/microsoft@cn.mrs"
   apple_cn:
     type: http
     interval: 86400
@@ -1629,6 +1637,14 @@ hosts:
     - "2001:4860:4860::8888"
     - "2001:4860:4860::8844"
   cn.bing.com: global.bing.com
+  services.googleapis.cn:
+    - services.googleapis.com
+  "+.mcdn.bilivideo.com":
+    - 0.0.0.0
+  "+.mcdn.bilivideo.cn":
+    - 0.0.0.0
+  "+.edge.mountaintoys.cn":
+    - 0.0.0.0
 ntp:
   enable: true
   write-to-system: false
@@ -1667,48 +1683,24 @@ dns:
   listen: ":1053"
   cache-algorithm: arc
   use-hosts: true
-  use-system-hosts: false
+  use-system-hosts: true
   prefer-h3: false
   enhanced-mode: "fake-ip"
   fake-ip-range: 198.18.0.1/16
   fake-ip-filter:
-    - "*.lan"
-    - "*.local"
-    - dns.msftncsi.com
-    - www.msftncsi.com
-    - www.msftconnecttest.com
-    - connectivitycheck.gstatic.com
-    - connectivitycheck.android.com
-    - connectivitycheck.platform.hicloud.com
-    - "time.*.com"
-    - "time.*.gov"
-    - "time.*.edu.cn"
-    - "time.*.apple.com"
-    - "time-ios.apple.com"
-    - time1.cloud.tencent.com
-    - "ntp.*.com"
-    - ntp.aliyun.com
-    - pool.ntp.org
-    - "*.ntp.org"
-    - +.msftconnecttest.com
-    - +.msftncsi.com
-    - +.srv.nintendo.net
-    - +.stun.playstation.net
-    - +.xboxlive.com
-    - +.ipv6.microsoft.com
+    - "rule-set:private"
     - "rule-set:fakeip_filter"
   default-nameserver:
     - 223.5.5.5
     - 1.12.12.12
   proxy-server-nameserver:
-    - 223.5.5.5
-    - 1.12.12.12
-    - "https://dns.alidns.com/dns-query"
-    - "https://doh.pub/dns-query"
+    - "https://dns.alidns.com/dns-query#Direct"
+    - "https://doh.pub/dns-query#Direct"
   nameserver:
     - "https://dns.google/dns-query#Default"
     - "https://dns.cloudflare.com/dns-query#Default"
   direct-nameserver:
+    - system
     - 223.5.5.5
     - 119.29.29.29
   direct-nameserver-follow-policy: true
@@ -1728,6 +1720,9 @@ dns:
     "rule-set:cloudflare_cn":
       - "https://dns.alidns.com/dns-query#Direct"
       - "https://doh.pub/dns-query#Direct"
+    "rule-set:microsoft_cn":
+      - "https://dns.alidns.com/dns-query#Direct"
+      - "https://doh.pub/dns-query#Direct"
     "rule-set:games_cn":
       - "https://dns.alidns.com/dns-query#Direct"
       - "https://doh.pub/dns-query#Direct"
@@ -1740,8 +1735,6 @@ dns:
 rules:
   - "AND,((NETWORK,udp),(DST-PORT,443),(OR,((RULE-SET,cn_additional),(RULE-SET,cn_ip,no-resolve)))),Direct"
   - "AND,((NETWORK,udp),(DST-PORT,443)),QUIC"
-  - "DOMAIN-SUFFIX,mcdn.bilivideo.com,REJECT"
-  - "DOMAIN-SUFFIX,mcdn.bilivideo.cn,REJECT"
   - "DOMAIN-KEYWORD,mcdn.bili,REJECT"
   - "RULE-SET,private,Direct"
   - "RULE-SET,private_ip,Direct,no-resolve"
@@ -1754,6 +1747,7 @@ rules:
   - "RULE-SET,DownloadApps,Direct"
   - "RULE-SET,games_cn,Direct"
   - "RULE-SET,nvidia_cn,Direct"
+  - "RULE-SET,microsoft_cn,Direct"
   - "RULE-SET,cloudflare_cn,Direct"
   - "RULE-SET,apple_cn,Direct"
   - "DOMAIN,fsend.cn,Direct"
