@@ -152,7 +152,10 @@ bind-address: "*"
 unified-delay: true
 tcp-concurrent: true
 find-process-mode: strict
-geodata-mode: false
+geodata-mode: true
+geodata:
+  geosite: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/geosite.dat"
+  geoip: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/geoip.dat"
 external-controller: "127.0.0.1:9090"
 external-ui: ui
 external-ui-url: "https://github.com/Zephyruso/zashboard/releases/latest/download/dist.zip"
@@ -1352,62 +1355,6 @@ rule-providers:
     format: mrs
     url: "https://fastly.jsdelivr.net/gh/wwqgtxx/clash-rules@release/fakeip-filter.mrs"
     path: "./ruleset/fakeip-filter.mrs"
-  epicgames:
-    type: http
-    interval: 86400
-    behavior: domain
-    format: mrs
-    url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/epicgames.mrs"
-    path: ./ruleset/epicgames.mrs
-    path-in-bundle: geo/geosite/epicgames.mrs
-  nvidia_cn:
-    type: http
-    interval: 86400
-    behavior: domain
-    format: mrs
-    url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/nvidia@cn.mrs"
-    path: "./ruleset/nvidia@cn.mrs"
-    path-in-bundle: "geo/geosite/nvidia@cn.mrs"
-  games_cn:
-    type: http
-    interval: 86400
-    behavior: domain
-    format: mrs
-    url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/category-games@cn.mrs"
-    path: "./ruleset/category-games@cn.mrs"
-    path-in-bundle: "geo/geosite/category-games@cn.mrs"
-  private:
-    type: http
-    interval: 86400
-    behavior: domain
-    format: mrs
-    url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/private.mrs"
-    path: ./ruleset/private.mrs
-    path-in-bundle: geo/geosite/private.mrs
-  private_ip:
-    type: http
-    interval: 86400
-    behavior: ipcidr
-    format: mrs
-    url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geoip/private.mrs"
-    path: ./ruleset/private_ip.mrs
-    path-in-bundle: geo/geoip/private.mrs
-  gfw:
-    type: http
-    interval: 86400
-    behavior: domain
-    format: mrs
-    url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/gfw.mrs"
-    path: ./ruleset/gfw.mrs
-    path-in-bundle: geo/geosite/gfw.mrs
-  cn_additional:
-    type: http
-    interval: 86400
-    behavior: domain
-    format: mrs
-    url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/geolocation-cn.mrs"
-    path: "./ruleset/geolocation-cn.mrs"
-    path-in-bundle: "geo/geosite/geolocation-cn.mrs"
   cn:
     type: http
     interval: 86400
@@ -1416,38 +1363,6 @@ rule-providers:
     url: "https://fastly.jsdelivr.net/gh/wwqgtxx/clash-rules@release/direct.mrs"
     path: ./ruleset/cn.mrs
     path-in-bundle: geo/geosite/cn.mrs
-  cn_ip:
-    type: http
-    interval: 86400
-    behavior: ipcidr
-    format: mrs
-    url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geoip/cn.mrs"
-    path: ./ruleset/cn_ip.mrs
-    path-in-bundle: geo/geoip/cn.mrs
-  cloudflare_cn:
-    type: http
-    interval: 86400
-    behavior: domain
-    format: mrs
-    url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/cloudflare@cn.mrs"
-    path: ./ruleset/cloudflare_cn.mrs
-    path-in-bundle: "geo/geosite/cloudflare@cn.mrs"
-  microsoft_cn:
-    type: http
-    interval: 86400
-    behavior: domain
-    format: mrs
-    url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/microsoft@cn.mrs"
-    path: ./ruleset/microsoft_cn.mrs
-    path-in-bundle: "geo/geosite/microsoft@cn.mrs"
-  apple_cn:
-    type: http
-    interval: 86400
-    behavior: domain
-    format: mrs
-    url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/apple@cn.mrs"
-    path: ./ruleset/apple_cn.mrs
-    path-in-bundle: "geo/geosite/apple@cn.mrs"
   adblockmihomolite:
     type: http
     interval: 86400
@@ -1455,174 +1370,6 @@ rule-providers:
     format: mrs
     url: "https://fastly.jsdelivr.net/gh/217heidai/adblockfilters@main/rules/adblockmihomolite.mrs"
     path: ./ruleset/adblockmihomolite.mrs
-  openai:
-    type: http
-    interval: 86400
-    behavior: domain
-    format: mrs
-    url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/openai.mrs"
-    path: ./ruleset/openai.mrs
-    path-in-bundle: geo/geosite/openai.mrs
-  anthropic:
-    type: http
-    interval: 86400
-    behavior: domain
-    format: mrs
-    url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/anthropic.mrs"
-    path: ./ruleset/anthropic.mrs
-    path-in-bundle: geo/geosite/anthropic.mrs
-  youtube:
-    type: http
-    interval: 86400
-    behavior: domain
-    format: mrs
-    url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/youtube.mrs"
-    path: ./ruleset/youtube.mrs
-    path-in-bundle: geo/geosite/youtube.mrs
-  googlefcm:
-    type: http
-    interval: 86400
-    behavior: domain
-    format: mrs
-    url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/googlefcm.mrs"
-    path: ./ruleset/googlefcm.mrs
-    path-in-bundle: geo/geosite/googlefcm.mrs
-  google:
-    type: http
-    interval: 86400
-    behavior: domain
-    format: mrs
-    url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/google.mrs"
-    path: ./ruleset/google.mrs
-    path-in-bundle: geo/geosite/google.mrs
-  google_ip:
-    type: http
-    interval: 86400
-    behavior: ipcidr
-    format: mrs
-    url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geoip/google.mrs"
-    path: ./ruleset/google_ip.mrs
-    path-in-bundle: geo/geoip/google.mrs
-  github:
-    type: http
-    interval: 86400
-    behavior: domain
-    format: mrs
-    url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/github.mrs"
-    path: ./ruleset/github.mrs
-    path-in-bundle: geo/geosite/github.mrs
-  microsoft:
-    type: http
-    interval: 86400
-    behavior: domain
-    format: mrs
-    url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/microsoft.mrs"
-    path: ./ruleset/microsoft.mrs
-    path-in-bundle: geo/geosite/microsoft.mrs
-  apple:
-    type: http
-    interval: 86400
-    behavior: domain
-    format: mrs
-    url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/apple.mrs"
-    path: ./ruleset/apple.mrs
-    path-in-bundle: geo/geosite/apple.mrs
-  telegram:
-    type: http
-    interval: 86400
-    behavior: domain
-    format: mrs
-    url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/telegram.mrs"
-    path: ./ruleset/telegram.mrs
-    path-in-bundle: geo/geosite/telegram.mrs
-  telegram_ip:
-    type: http
-    interval: 86400
-    behavior: ipcidr
-    format: mrs
-    url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geoip/telegram.mrs"
-    path: ./ruleset/telegram_ip.mrs
-    path-in-bundle: geo/geoip/telegram.mrs
-  cloudflare:
-    type: http
-    interval: 86400
-    behavior: domain
-    format: mrs
-    url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/cloudflare.mrs"
-    path: ./ruleset/cloudflare.mrs
-    path-in-bundle: geo/geosite/cloudflare.mrs
-  cloudflare_ip:
-    type: http
-    interval: 86400
-    behavior: ipcidr
-    format: mrs
-    url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geoip/cloudflare.mrs"
-    path: ./ruleset/cloudflare_ip.mrs
-    path-in-bundle: geo/geoip/cloudflare.mrs
-  steam:
-    type: http
-    interval: 86400
-    behavior: domain
-    format: mrs
-    url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/steam.mrs"
-    path: ./ruleset/steam.mrs
-    path-in-bundle: geo/geosite/steam.mrs
-  twitter:
-    type: http
-    interval: 86400
-    behavior: domain
-    format: mrs
-    url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/twitter.mrs"
-    path: ./ruleset/twitter.mrs
-    path-in-bundle: geo/geosite/twitter.mrs
-  twitter_ip:
-    type: http
-    interval: 86400
-    behavior: ipcidr
-    format: mrs
-    url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geoip/twitter.mrs"
-    path: ./ruleset/twitter_ip.mrs
-    path-in-bundle: geo/geoip/twitter.mrs
-  instagram:
-    type: http
-    interval: 86400
-    behavior: domain
-    format: mrs
-    url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/instagram.mrs"
-    path: ./ruleset/instagram.mrs
-    path-in-bundle: geo/geosite/instagram.mrs
-  spotify:
-    type: http
-    interval: 86400
-    behavior: domain
-    format: mrs
-    url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/spotify.mrs"
-    path: ./ruleset/spotify.mrs
-    path-in-bundle: geo/geosite/spotify.mrs
-  tiktok:
-    type: http
-    interval: 86400
-    behavior: domain
-    format: mrs
-    url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/tiktok.mrs"
-    path: ./ruleset/tiktok.mrs
-    path-in-bundle: geo/geosite/tiktok.mrs
-  netflix:
-    type: http
-    interval: 86400
-    behavior: domain
-    format: mrs
-    url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/netflix.mrs"
-    path: ./ruleset/netflix.mrs
-    path-in-bundle: geo/geosite/netflix.mrs
-  netflix_ip:
-    type: http
-    interval: 86400
-    behavior: ipcidr
-    format: mrs
-    url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geoip/netflix.mrs"
-    path: ./ruleset/netflix_ip.mrs
-    path-in-bundle: geo/geoip/netflix.mrs
 hosts:
   dns.alidns.com:
     - 223.5.5.5
@@ -1692,7 +1439,7 @@ dns:
   enhanced-mode: "fake-ip"
   fake-ip-range: 198.18.0.1/16
   fake-ip-filter:
-    - "rule-set:private"
+    - "geosite:private"
     - "rule-set:fakeip_filter"
   default-nameserver:
     - 223.5.5.5
@@ -1709,39 +1456,39 @@ dns:
     - 119.29.29.29
   direct-nameserver-follow-policy: true
   nameserver-policy:
-    "rule-set:private":
+    "geosite:private":
       - "https://dns.alidns.com/dns-query#Direct"
       - "https://doh.pub/dns-query#Direct"
     "rule-set:cn":
       - "https://dns.alidns.com/dns-query#Direct"
       - "https://doh.pub/dns-query#Direct"
-    "rule-set:cn_additional":
+    "geosite:geolocation-cn":
       - "https://dns.alidns.com/dns-query#Direct"
       - "https://doh.pub/dns-query#Direct"
-    "rule-set:apple_cn":
+    "geosite:apple@cn":
       - "https://dns.alidns.com/dns-query#Direct"
       - "https://doh.pub/dns-query#Direct"
-    "rule-set:cloudflare_cn":
+    "geosite:cloudflare@cn":
       - "https://dns.alidns.com/dns-query#Direct"
       - "https://doh.pub/dns-query#Direct"
-    "rule-set:microsoft_cn":
+    "geosite:microsoft@cn":
       - "https://dns.alidns.com/dns-query#Direct"
       - "https://doh.pub/dns-query#Direct"
-    "rule-set:games_cn":
+    "geosite:category-games@cn":
       - "https://dns.alidns.com/dns-query#Direct"
       - "https://doh.pub/dns-query#Direct"
-    "rule-set:nvidia_cn":
+    "geosite:nvidia@cn":
       - "https://dns.alidns.com/dns-query#Direct"
       - "https://doh.pub/dns-query#Direct"
-    "rule-set:gfw":
+    "geosite:gfw":
       - "https://dns.google/dns-query#Default"
       - "https://dns.cloudflare.com/dns-query#Default"
 rules:
-  - "AND,((NETWORK,udp),(DST-PORT,443),(OR,((RULE-SET,cn_additional),(RULE-SET,cn_ip,no-resolve)))),Direct"
+  - "AND,((NETWORK,udp),(DST-PORT,443),(OR,((GEOSITE,geolocation-cn),(GEOIP,cn,no-resolve)))),Direct"
   - "AND,((NETWORK,udp),(DST-PORT,443)),QUIC"
   - "DOMAIN-KEYWORD,mcdn.bili,REJECT"
-  - "RULE-SET,private,Direct"
-  - "RULE-SET,private_ip,Direct,no-resolve"
+  - "GEOSITE,private,Direct"
+  - "GEOIP,private,Direct,no-resolve"
   - "DOMAIN-SUFFIX,ibytedtos.com,Direct"
   - "DOMAIN-SUFFIX,bytecdn.cn,Direct"
   - "DOMAIN-SUFFIX,snssdk.com,Direct"
@@ -1749,39 +1496,39 @@ rules:
   - "DOMAIN-SUFFIX,pstatp.com,Direct"
   - "DOMAIN-KEYWORD,douyin,Direct"
   - "RULE-SET,DownloadApps,Direct"
-  - "RULE-SET,games_cn,Direct"
-  - "RULE-SET,nvidia_cn,Direct"
-  - "RULE-SET,microsoft_cn,Direct"
-  - "RULE-SET,cloudflare_cn,Direct"
-  - "RULE-SET,apple_cn,Direct"
+  - "GEOSITE,category-games@cn,Direct"
+  - "GEOSITE,nvidia@cn,Direct"
+  - "GEOSITE,microsoft@cn,Direct"
+  - "GEOSITE,cloudflare@cn,Direct"
+  - "GEOSITE,apple@cn,Direct"
   - "DOMAIN,fsend.cn,Direct"
   - "DOMAIN-SUFFIX,jlc-jdgf.com,Direct"
   - "RULE-SET,adblockmihomolite,AdBlock"
-  - "RULE-SET,openai,AI"
-  - "RULE-SET,anthropic,AI"
-  - "RULE-SET,youtube,YouTube"
-  - "RULE-SET,googlefcm,FCM"
-  - "RULE-SET,google,Google"
-  - "RULE-SET,google_ip,Google,no-resolve"
-  - "RULE-SET,github,GitHub"
-  - "RULE-SET,microsoft,Microsoft"
-  - "RULE-SET,apple,Apple"
-  - "RULE-SET,telegram,Telegram"
-  - "RULE-SET,telegram_ip,Telegram,no-resolve"
-  - "RULE-SET,cloudflare,Cloudflare"
-  - "RULE-SET,cloudflare_ip,Cloudflare,no-resolve"
-  - "RULE-SET,steam,Steam"
-  - "RULE-SET,twitter,X"
-  - "RULE-SET,twitter_ip,X,no-resolve"
-  - "RULE-SET,instagram,Instagram"
-  - "RULE-SET,spotify,Spotify"
-  - "RULE-SET,tiktok,TikTok"
-  - "RULE-SET,netflix,Netflix"
-  - "RULE-SET,netflix_ip,Netflix,no-resolve"
-  - "RULE-SET,cn_additional,Direct"
+  - "GEOSITE,openai,AI"
+  - "GEOSITE,anthropic,AI"
+  - "GEOSITE,youtube,YouTube"
+  - "GEOSITE,googlefcm,FCM"
+  - "GEOSITE,google,Google"
+  - "GEOIP,google,Google,no-resolve"
+  - "GEOSITE,github,GitHub"
+  - "GEOSITE,microsoft,Microsoft"
+  - "GEOSITE,apple,Apple"
+  - "GEOSITE,telegram,Telegram"
+  - "GEOIP,telegram,Telegram,no-resolve"
+  - "GEOSITE,cloudflare,Cloudflare"
+  - "GEOIP,cloudflare,Cloudflare,no-resolve"
+  - "GEOSITE,steam,Steam"
+  - "GEOSITE,twitter,X"
+  - "GEOIP,twitter,X,no-resolve"
+  - "GEOSITE,instagram,Instagram"
+  - "GEOSITE,spotify,Spotify"
+  - "GEOSITE,tiktok,TikTok"
+  - "GEOSITE,netflix,Netflix"
+  - "GEOIP,netflix,Netflix,no-resolve"
+  - "GEOSITE,geolocation-cn,Direct"
   - "RULE-SET,cn,Direct"
-  - "RULE-SET,cn_ip,Direct,no-resolve"
-  - "RULE-SET,gfw,Default"
+  - "GEOIP,cn,Direct,no-resolve"
+  - "GEOSITE,gfw,Default"
   - "DOMAIN-SUFFIX,cn,Direct"
   - "DOMAIN-SUFFIX,local,Direct"
   - "DOMAIN-SUFFIX,lan,Direct"
