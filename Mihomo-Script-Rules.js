@@ -46,14 +46,14 @@ const tunEnable = false;
 const quicEnable = true;
 
 const quicRules = [
-  'AND,((NETWORK,udp),(DST-PORT,443),(OR,((RULE-SET,cn_additional),(RULE-SET,cn_ip,no-resolve)))),Direct',
+  'AND,((NETWORK,udp),(DST-PORT,443),(OR,((GEOSITE,geolocation-cn),(GEOIP,cn,no-resolve)))),Direct',
   'AND,((NETWORK,udp),(DST-PORT,443)),QUIC',
 ];
 
 const rules = [
   'DOMAIN-KEYWORD,mcdn.bili,REJECT',
-  'RULE-SET,private,Direct',
-  'RULE-SET,private_ip,Direct,no-resolve',
+  'GEOSITE,private,Direct',
+  'GEOIP,private,Direct,no-resolve',
   'DOMAIN-SUFFIX,ibytedtos.com,Direct',
   'DOMAIN-SUFFIX,bytecdn.cn,Direct',
   'DOMAIN-SUFFIX,snssdk.com,Direct',
@@ -61,11 +61,11 @@ const rules = [
   'DOMAIN-SUFFIX,pstatp.com,Direct',
   'DOMAIN-KEYWORD,douyin,Direct',
   'RULE-SET,DownloadApps,Direct',
-  'RULE-SET,games_cn,Direct',
-  'RULE-SET,nvidia_cn,Direct',
-  'RULE-SET,microsoft_cn,Direct',
-  'RULE-SET,cloudflare_cn,Direct',
-  'RULE-SET,apple_cn,Direct',
+  'GEOSITE,category-games@cn,Direct',
+  'GEOSITE,nvidia@cn,Direct',
+  'GEOSITE,microsoft@cn,Direct',
+  'GEOSITE,cloudflare@cn,Direct',
+  'GEOSITE,apple@cn,Direct',
   'DOMAIN,fsend.cn,Direct',
   'DOMAIN-SUFFIX,jlc-jdgf.com,Direct',
 ];
@@ -204,22 +204,6 @@ const ruleProviderCommonClassical = {
   behavior: 'classical',
 };
 
-const geositeMrs = (geositePath, pathName) => ({
-  ...ruleProviderCommonDomain,
-  ...ruleProviderFormatMrs,
-  url: `https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/${geositePath}.mrs`,
-  path: `./ruleset/${pathName}.mrs`,
-  'path-in-bundle': `geo/geosite/${geositePath}.mrs`,
-});
-
-const geoipMrs = (geoipPath, pathName) => ({
-  ...ruleProviderCommonIpcidr,
-  ...ruleProviderFormatMrs,
-  url: `https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geoip/${geoipPath}.mrs`,
-  path: `./ruleset/${pathName}.mrs`,
-  'path-in-bundle': `geo/geoip/${geoipPath}.mrs`,
-});
-
 const baseRuleProviders = {
   DownloadApps: {
     ...ruleProviderCommonClassical,
@@ -233,13 +217,6 @@ const baseRuleProviders = {
     url: 'https://fastly.jsdelivr.net/gh/wwqgtxx/clash-rules@release/fakeip-filter.mrs',
     path: './ruleset/fakeip-filter.mrs',
   },
-  epicgames: geositeMrs('epicgames', 'epicgames'),
-  nvidia_cn: geositeMrs('nvidia@cn', 'nvidia@cn'),
-  games_cn: geositeMrs('category-games@cn', 'category-games@cn'),
-  private: geositeMrs('private', 'private'),
-  private_ip: geoipMrs('private', 'private_ip'),
-  gfw: geositeMrs('gfw', 'gfw'),
-  cn_additional: geositeMrs('geolocation-cn', 'geolocation-cn'),
   cn: {
     ...ruleProviderCommonDomain,
     ...ruleProviderFormatMrs,
@@ -247,10 +224,6 @@ const baseRuleProviders = {
     path: './ruleset/cn.mrs',
     'path-in-bundle': 'geo/geosite/cn.mrs',
   },
-  cn_ip: geoipMrs('cn', 'cn_ip'),
-  cloudflare_cn: geositeMrs('cloudflare@cn', 'cloudflare_cn'),
-  microsoft_cn: geositeMrs('microsoft@cn', 'microsoft_cn'),
-  apple_cn: geositeMrs('apple@cn', 'apple_cn'),
 };
 
 const groupBaseOption = {
@@ -317,125 +290,107 @@ const serviceConfigs = [
   {
     key: 'ai',
     name: 'AI',
-    providers: {
-      openai: geositeMrs('openai', 'openai'),
-      anthropic: geositeMrs('anthropic', 'anthropic'),
-    },
+    providers: {},
     icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/ChatGPT.png',
-    rules: ['RULE-SET,openai,AI', 'RULE-SET,anthropic,AI'],
+    rules: ['GEOSITE,openai,AI', 'GEOSITE,anthropic,AI'],
   },
   {
     key: 'youtube',
     name: 'YouTube',
-    providers: { youtube: geositeMrs('youtube', 'youtube') },
+    providers: {},
     icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/YouTube.png',
-    rules: ['RULE-SET,youtube,YouTube'],
+    rules: ['GEOSITE,youtube,YouTube'],
   },
   {
     key: 'googlefcm',
     name: 'FCM',
-    providers: { googlefcm: geositeMrs('googlefcm', 'googlefcm') },
+    providers: {},
     icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Google.png',
-    rules: ['RULE-SET,googlefcm,FCM'],
+    rules: ['GEOSITE,googlefcm,FCM'],
   },
   {
     key: 'google',
     name: 'Google',
-    providers: {
-      google: geositeMrs('google', 'google'),
-      google_ip: geoipMrs('google', 'google_ip'),
-    },
+    providers: {},
     icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Google_Search.png',
-    rules: ['RULE-SET,google,Google', 'RULE-SET,google_ip,Google,no-resolve'],
+    rules: ['GEOSITE,google,Google', 'GEOIP,google,Google,no-resolve'],
   },
   {
     key: 'github',
     name: 'GitHub',
-    providers: { github: geositeMrs('github', 'github') },
+    providers: {},
     icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/GitHub.png',
-    rules: ['RULE-SET,github,GitHub'],
+    rules: ['GEOSITE,github,GitHub'],
   },
   {
     key: 'microsoft',
     name: 'Microsoft',
-    providers: { microsoft: geositeMrs('microsoft', 'microsoft') },
+    providers: {},
     icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Microsoft.png',
-    rules: ['RULE-SET,microsoft,Microsoft'],
+    rules: ['GEOSITE,microsoft,Microsoft'],
   },
   {
     key: 'apple',
     name: 'Apple',
-    providers: { apple: geositeMrs('apple', 'apple') },
+    providers: {},
     icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Apple.png',
-    rules: ['RULE-SET,apple,Apple'],
+    rules: ['GEOSITE,apple,Apple'],
   },
   {
     key: 'telegram',
     name: 'Telegram',
-    providers: {
-      telegram: geositeMrs('telegram', 'telegram'),
-      telegram_ip: geoipMrs('telegram', 'telegram_ip'),
-    },
+    providers: {},
     icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Telegram.png',
-    rules: ['RULE-SET,telegram,Telegram', 'RULE-SET,telegram_ip,Telegram,no-resolve'],
+    rules: ['GEOSITE,telegram,Telegram', 'GEOIP,telegram,Telegram,no-resolve'],
   },
   {
     key: 'cloudflare',
     name: 'Cloudflare',
-    providers: {
-      cloudflare: geositeMrs('cloudflare', 'cloudflare'),
-      cloudflare_ip: geoipMrs('cloudflare', 'cloudflare_ip'),
-    },
+    providers: {},
     icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Cloudflare.png',
-    rules: ['RULE-SET,cloudflare,Cloudflare', 'RULE-SET,cloudflare_ip,Cloudflare,no-resolve'],
+    rules: ['GEOSITE,cloudflare,Cloudflare', 'GEOIP,cloudflare,Cloudflare,no-resolve'],
   },
   {
     key: 'steam',
     name: 'Steam',
-    providers: { steam: geositeMrs('steam', 'steam') },
+    providers: {},
     icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Steam.png',
-    rules: ['RULE-SET,steam,Steam'],
+    rules: ['GEOSITE,steam,Steam'],
   },
   {
     key: 'twitter',
     name: 'X',
-    providers: {
-      twitter: geositeMrs('twitter', 'twitter'),
-      twitter_ip: geoipMrs('twitter', 'twitter_ip'),
-    },
+    providers: {},
     icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/X.png',
-    rules: ['RULE-SET,twitter,X', 'RULE-SET,twitter_ip,X,no-resolve'],
+    rules: ['GEOSITE,twitter,X', 'GEOIP,twitter,X,no-resolve'],
   },
   {
     key: 'instagram',
     name: 'Instagram',
-    providers: { instagram: geositeMrs('instagram', 'instagram') },
+    providers: {},
     icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Instagram.png',
-    rules: ['RULE-SET,instagram,Instagram'],
+    rules: ['GEOSITE,instagram,Instagram'],
   },
   {
     key: 'spotify',
     name: 'Spotify',
-    providers: { spotify: geositeMrs('spotify', 'spotify') },
+    providers: {},
     icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Spotify.png',
-    rules: ['RULE-SET,spotify,Spotify'],
+    rules: ['GEOSITE,spotify,Spotify'],
   },
   {
     key: 'tiktok',
     name: 'TikTok',
-    providers: { tiktok: geositeMrs('tiktok', 'tiktok') },
+    providers: {},
     icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/TikTok.png',
-    rules: ['RULE-SET,tiktok,TikTok'],
+    rules: ['GEOSITE,tiktok,TikTok'],
   },
   {
     key: 'netflix',
     name: 'Netflix',
-    providers: {
-      netflix: geositeMrs('netflix', 'netflix'),
-      netflix_ip: geoipMrs('netflix', 'netflix_ip'),
-    },
+    providers: {},
     icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Netflix.png',
-    rules: ['RULE-SET,netflix,Netflix', 'RULE-SET,netflix_ip,Netflix,no-resolve'],
+    rules: ['GEOSITE,netflix,Netflix', 'GEOIP,netflix,Netflix,no-resolve'],
   },
 ];
 
@@ -497,7 +452,8 @@ function buildNetworkConfig(finalRuleProviders, tunEnable) {
       'prefer-h3': false,
       'enhanced-mode': 'fake-ip',
       'fake-ip-range': '198.18.0.1/16',
-      'fake-ip-filter': ['rule-set:private', 'rule-set:fakeip_filter'],
+      // [geodata] rule-set:private → geosite:private
+      'fake-ip-filter': ['geosite:private', 'rule-set:fakeip_filter'],
       'default-nameserver': ['223.5.5.5', '1.12.12.12'],
       'proxy-server-nameserver': [
         'https://dns.alidns.com/dns-query#Direct',
@@ -507,15 +463,15 @@ function buildNetworkConfig(finalRuleProviders, tunEnable) {
       'direct-nameserver': ['system', '223.5.5.5', '119.29.29.29'],
       'direct-nameserver-follow-policy': true,
       'nameserver-policy': {
-        'rule-set:private': chinaDNS,
-        'rule-set:cn': chinaDNS,
-        'rule-set:cn_additional': chinaDNS,
-        'rule-set:apple_cn': chinaDNS,
-        'rule-set:cloudflare_cn': chinaDNS,
-        'rule-set:microsoft_cn': chinaDNS,
-        'rule-set:games_cn': chinaDNS,
-        'rule-set:nvidia_cn': chinaDNS,
-        'rule-set:gfw': foreignDNS,
+        'geosite:private': chinaDNS,          
+        'rule-set:cn': chinaDNS,               
+        'geosite:geolocation-cn': chinaDNS,   
+        'geosite:apple@cn': chinaDNS,        
+        'geosite:cloudflare@cn': chinaDNS,   
+        'geosite:microsoft@cn': chinaDNS,
+        'geosite:category-games@cn': chinaDNS,
+        'geosite:nvidia@cn': chinaDNS,       
+        'geosite:gfw': foreignDNS,            
       },
     },
     tun: tunEnable
@@ -808,7 +764,11 @@ function main(config) {
       'unified-delay': true,
       'tcp-concurrent': true,
       'find-process-mode': 'strict',
-      'geodata-mode': false,
+      'geodata-mode': true,
+      geodata: {
+        geosite: 'https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/geosite.dat',
+        geoip: 'https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/geoip.dat',
+      },
       'external-controller': '127.0.0.1:9090',
       'external-ui': 'ui',
       'external-ui-url': 'https://github.com/Zephyruso/zashboard/releases/latest/download/dist.zip',
@@ -840,10 +800,10 @@ function main(config) {
 
     config.rules = [
       ...finalRules,
-      'RULE-SET,cn_additional,Direct',
+      'GEOSITE,geolocation-cn,Direct',
       'RULE-SET,cn,Direct',
-      'RULE-SET,cn_ip,Direct,no-resolve',
-      'RULE-SET,gfw,Default',
+      'GEOIP,cn,Direct,no-resolve',
+      'GEOSITE,gfw,Default',
       'DOMAIN-SUFFIX,cn,Direct',
       'DOMAIN-SUFFIX,local,Direct',
       'DOMAIN-SUFFIX,lan,Direct',
