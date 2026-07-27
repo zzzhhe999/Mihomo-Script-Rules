@@ -15,6 +15,9 @@ const ruleOptionsEnable = {
   tiktok: true,
   netflix: true,
   adblock: true,
+  emby: true,
+  pikpak: true,
+  ehentai: true,
 };
 
 const regionDefinitionsEnable = {
@@ -430,6 +433,27 @@ const serviceConfigs = [
     icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Netflix.png',
     rules: ['GEOSITE,netflix,Netflix', 'GEOIP,netflix,Netflix,no-resolve'],
   },
+  {
+    key: 'emby',
+    name: 'Emby',
+    providers: {},
+    icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Emby.png',
+    rules: ['GEOSITE,category-emby,Emby', 'DOMAIN-SUFFIX,mb3admin.com,Emby', 'DOMAIN-KEYWORD,emby,Emby'],
+  },
+  {
+    key: 'pikpak',
+    name: 'PikPak',
+    providers: {},
+    icon: 'https://fastly.jsdelivr.net/gh/lige47/QuanX-icon-rule@main/icon/03CNSoft/pikpak.png',
+    rules: ['GEOSITE,pikpak,PikPak'],
+  },
+  {
+    key: 'ehentai',
+    name: 'EHentai',
+    providers: {},
+    icon: 'https://fastly.jsdelivr.net/gh/lige47/QuanX-icon-rule@main/icon/04ProxySoft/exhentai.png',
+    rules: ['GEOSITE,ehentai,EHentai'],
+  },
 ];
 
 const createRegionGroup = (name, icon, proxies) => {
@@ -827,6 +851,9 @@ function main(config) {
       'Instagram',
       'Netflix',
       'Spotify',
+      'Emby',
+      'PikPak',
+      'EHentai',
     ];
 
     const orderMap = new Map();
