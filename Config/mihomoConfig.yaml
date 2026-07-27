@@ -248,6 +248,9 @@ proxy-groups:
       - Instagram
       - Netflix
       - Spotify
+      - Emby
+      - PikPak
+      - EHentai
       - HK
       - "HK-Auto"
       - "HK-Balance"
@@ -784,6 +787,84 @@ proxy-groups:
     hidden: false
     name: Spotify
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Spotify.png"
+    proxies:
+      - Default
+      - Direct
+      - Auto
+      - Balance
+      - HK
+      - JP
+      - US
+      - SG
+      - TW
+      - KR
+      - UK
+      - DE
+      - FR
+      - CA
+      - AU
+      - IN
+      - TR
+      - BR
+      - AR
+      - RU
+      - Others
+  - type: select
+    hidden: false
+    name: Emby
+    icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Emby.png"
+    proxies:
+      - Default
+      - Direct
+      - Auto
+      - Balance
+      - HK
+      - JP
+      - US
+      - SG
+      - TW
+      - KR
+      - UK
+      - DE
+      - FR
+      - CA
+      - AU
+      - IN
+      - TR
+      - BR
+      - AR
+      - RU
+      - Others
+  - type: select
+    hidden: false
+    name: PikPak
+    icon: "https://fastly.jsdelivr.net/gh/lige47/QuanX-icon-rule@main/icon/03CNSoft/pikpak.png"
+    proxies:
+      - Default
+      - Direct
+      - Auto
+      - Balance
+      - HK
+      - JP
+      - US
+      - SG
+      - TW
+      - KR
+      - UK
+      - DE
+      - FR
+      - CA
+      - AU
+      - IN
+      - TR
+      - BR
+      - AR
+      - RU
+      - Others
+  - type: select
+    hidden: false
+    name: EHentai
+    icon: "https://fastly.jsdelivr.net/gh/lige47/QuanX-icon-rule@main/icon/04ProxySoft/exhentai.png"
     proxies:
       - Default
       - Direct
@@ -1568,6 +1649,11 @@ rules:
   - "GEOSITE,tiktok,TikTok"
   - "GEOSITE,netflix,Netflix"
   - "GEOIP,netflix,Netflix,no-resolve"
+  - "GEOSITE,category-emby,Emby"
+  - "DOMAIN-SUFFIX,mb3admin.com,Emby"
+  - "DOMAIN-KEYWORD,emby,Emby"
+  - "GEOSITE,pikpak,PikPak"
+  - "GEOSITE,ehentai,EHentai"
   - "GEOSITE,geolocation-cn,Direct"
   - "GEOSITE,gfw,Default"
   - "GEOIP,cn,Direct"
