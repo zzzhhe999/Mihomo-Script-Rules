@@ -192,12 +192,6 @@ const ruleProviderCommonDomain = {
   behavior: 'domain',
 };
 
-const ruleProviderCommonIpcidr = {
-  type: 'http',
-  interval: 86400,
-  behavior: 'ipcidr',
-};
-
 const ruleProviderCommonClassical = {
   type: 'http',
   interval: 86400,
@@ -264,10 +258,54 @@ const extractMultiplier = (name, isHigh) => {
     const lowMatch = name.match(/省流|下载/);
     return lowMatch !== null ? lowMatch[0] : 'Low';
   }
-//
   const match = name.match(/(\d+(?:\.\d+)?)\s*[xX×倍]/u) || name.match(/[×*xX]\s*(\d+(?:\.\d+)?)/u);
   return match !== null ? `${match[1]}x` : '';
 };
+
+function matchDomainPattern(pattern, domains) {
+  if (typeof pattern !== 'string') return false;
+  pattern = pattern.toLowerCase();
+
+  if (!pattern.includes('*') && !pattern.startsWith('+.') && !pattern.startsWith('.')) {
+    return domains.has(pattern);
+  }
+
+  if (pattern.startsWith('+.')) {
+    const suffix = pattern.slice(2);
+    for (const domain of domains) {
+      if (domain === suffix || domain.endsWith('.' + suffix)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  if (pattern.startsWith('.')) {
+    const suffix = pattern.slice(1);
+    for (const domain of domains) {
+      if (domain !== suffix && domain.endsWith('.' + suffix)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  const patternParts = pattern.split('.');
+  for (const domain of domains) {
+    const domainParts = domain.split('.');
+    if (patternParts.length !== domainParts.length) continue;
+    let matched = true;
+    for (let i = 0; i < patternParts.length; i++) {
+      if (patternParts[i] !== '*' && patternParts[i] !== domainParts[i]) {
+        matched = false;
+        break;
+      }
+    }
+    if (matched) return true;
+  }
+
+  return false;
+}
 
 const serviceConfigs = [
   {
@@ -406,7 +444,7 @@ const createRegionGroup = (name, icon, proxies) => {
 
 const FINGERPRINT_SUPPORTED = new Set(['vmess', 'vless', 'trojan', 'anytls']);
 
-function buildNetworkConfig(finalRuleProviders, tunEnable) {
+function buildNetworkConfig(finalRuleProviders, tunEnable, privateDNS, proxyServerPolicy, proxyServerHosts) {
   const chinaDNS = ['https://dns.alidns.com/dns-query#Direct', 'https://doh.pub/dns-query#Direct'];
   const foreignDNS = ['https://dns.google/dns-query#Default', 'https://dns.cloudflare.com/dns-query#Default'];
 
@@ -421,6 +459,7 @@ function buildNetworkConfig(finalRuleProviders, tunEnable) {
       '+.mcdn.bilivideo.com': ['0.0.0.0'],
       '+.mcdn.bilivideo.cn': ['0.0.0.0'],
       '+.edge.mountaintoys.cn': ['0.0.0.0'],
+      ...proxyServerHosts,
     },
     ntp: {
       enable: true,
@@ -452,27 +491,29 @@ function buildNetworkConfig(finalRuleProviders, tunEnable) {
       'prefer-h3': false,
       'enhanced-mode': 'fake-ip',
       'fake-ip-range': '198.18.0.1/16',
-      // [geodata] rule-set:private → geosite:private
       'fake-ip-filter': ['geosite:private', 'rule-set:fakeip_filter'],
       'default-nameserver': ['223.5.5.5', '1.12.12.12'],
       'proxy-server-nameserver': [
-        'https://dns.alidns.com/dns-query#Direct',
-        'https://doh.pub/dns-query#Direct',
+        ...chinaDNS,
+        ...privateDNS,
       ],
       nameserver: foreignDNS,
       'direct-nameserver': ['system', '223.5.5.5', '119.29.29.29'],
       'direct-nameserver-follow-policy': true,
       'nameserver-policy': {
-        'geosite:private': chinaDNS,          
-        'rule-set:cn': chinaDNS,               
-        'geosite:geolocation-cn': chinaDNS,   
-        'geosite:apple@cn': chinaDNS,        
-        'geosite:cloudflare@cn': chinaDNS,   
+        'geosite:private': chinaDNS,
+        'rule-set:cn': chinaDNS,
+        'geosite:geolocation-cn': chinaDNS,
+        'geosite:apple@cn': chinaDNS,
+        'geosite:cloudflare@cn': chinaDNS,
         'geosite:microsoft@cn': chinaDNS,
         'geosite:category-games@cn': chinaDNS,
-        'geosite:nvidia@cn': chinaDNS,       
-        'geosite:gfw': foreignDNS,            
+        'geosite:nvidia@cn': chinaDNS,
+        'geosite:gfw': foreignDNS,
       },
+      ...(Object.keys(proxyServerPolicy).length > 0 && {
+        'proxy-server-nameserver-policy': proxyServerPolicy,
+      }),
     },
     tun: tunEnable
       ? {
@@ -537,7 +578,7 @@ function processProxies(rawProxies, enabledDefinitions) {
         }
       }
 
-      var matchedNormalRegionName = null;
+      let matchedNormalRegionName = null;
       const matchedGroups = [];
 
       for (const region of enabledDefinitions) {
@@ -603,10 +644,13 @@ function main(config) {
   }
 
   try {
-    delete config['global-client-fingerprint'];
-    delete config['sub-rules'];
+    const newConfig = { ...config };
 
-    const rawProxies = config.proxies;
+    delete newConfig['global-client-fingerprint'];
+    delete newConfig['sub-rules'];
+    delete newConfig['experimental'];
+
+    const rawProxies = newConfig.proxies;
     const hasValidProxy = rawProxies.some((p) => {
       if (p && typeof p === 'object' && typeof p.type === 'string') {
         const pType = p.type.toLowerCase();
@@ -623,7 +667,62 @@ function main(config) {
 
     const { processedProxies, otherProxies, regionGroups } = processProxies(rawProxies, enabledDefinitions);
 
-    config.proxies = processedProxies;
+    newConfig.proxies = processedProxies;
+
+    const originalDnsConfig = config.dns || {};
+
+    const commonDnsList = [
+      '223.5.5.5', '223.6.6.6', '119.29.29.29', '1.12.12.12', '120.53.53.53',
+      '114.114.114.114', '180.76.76.76', '1.2.4.8', '116.116.116.116',
+      '101.226.4.6', '123.125.81.6', '180.184.1.1', '180.184.2.2',
+      '1.1.1.1', '1.0.0.1', '8.8.8.8', '8.8.4.4', '9.9.9.9', '149.112.112.112',
+      '208.67.222.222', '208.67.220.220', '94.140.14.14', '94.140.15.15',
+      '76.76.2.0', '76.76.10.0', '185.228.168.9', '185.228.169.9',
+      '77.88.8.8', '77.88.8.1', '156.154.70.1', '156.154.71.1',
+      '127.0.0.1',
+      'alidns', 'doh.pub', 'dot.pub', 'dnspod', 'dns.baidu',
+      'dns.google', 'cloudflare', 'quad9', 'opendns', 'nextdns', 'adguard',
+      'system',
+    ];
+
+    const isCommonDns = (dns) => {
+      if (dns == null) return true;
+      const value = String(dns).toLowerCase();
+      return commonDnsList.some((keyword) => value.includes(keyword));
+    };
+
+    const privateDNS = [
+      ...new Set([
+        ...(Array.isArray(originalDnsConfig['nameserver']) ? originalDnsConfig['nameserver'] : []),
+        ...(Array.isArray(originalDnsConfig['proxy-server-nameserver']) ? originalDnsConfig['proxy-server-nameserver'] : []),
+      ]),
+    ].filter((dns) => !isCommonDns(dns));
+
+    const proxyDomains = new Set(
+      processedProxies
+        .filter((proxy) => typeof proxy.server === 'string')
+        .map((proxy) => proxy.server.toLowerCase()),
+    );
+
+    const proxyServerPolicy = {};
+    for (const policy of [
+      originalDnsConfig['nameserver-policy'] || {},
+      originalDnsConfig['proxy-server-nameserver-policy'] || {},
+    ]) {
+      for (const [domain, dns] of Object.entries(policy)) {
+        if (matchDomainPattern(domain, proxyDomains)) {
+          proxyServerPolicy[domain] = dns;
+        }
+      }
+    }
+
+    const originalHosts = config.hosts || {};
+    const proxyServerHosts = {};
+    for (const [domain, value] of Object.entries(originalHosts)) {
+      if (matchDomainPattern(domain, proxyDomains)) {
+        proxyServerHosts[domain] = value;
+      }
+    }
 
     const generatedRegionGroups = [];
     for (const def of enabledDefinitions) {
@@ -638,15 +737,15 @@ function main(config) {
         ...createRegionGroup(
           'Others',
           'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/World_Map.png',
-          otherProxies
-        )
+          otherProxies,
+        ),
       );
     }
 
     const rateGroupNames = new Set([NODE_RATE_LOW, NODE_RATE_HIGH]);
     const { groupNamesOfSelect, autoTestProxies, loadBalanceProxies } = collectTopLevelGroups(
       generatedRegionGroups,
-      rateGroupNames
+      rateGroupNames,
     );
 
     const proxyModes = {
@@ -751,54 +850,50 @@ function main(config) {
       icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Global.png',
     };
 
-    const networkConfig = buildNetworkConfig(finalRuleProviders, tunEnable);
+    const networkConfig = buildNetworkConfig(finalRuleProviders, tunEnable, privateDNS, proxyServerPolicy, proxyServerHosts);
 
-    delete config.experimental;
-
-    Object.assign(config, {
-      mode: 'rule',
-      'mixed-port': 7890,
-      'allow-lan': true,
-      ipv6: true,
-      'bind-address': '*',
-      'unified-delay': true,
-      'tcp-concurrent': true,
-      'find-process-mode': 'strict',
-      'geodata-mode': true,
-      geodata: {
-        geosite: 'https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/geosite.dat',
-        geoip: 'https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/geoip.dat',
-      },
-      'external-controller': '127.0.0.1:9090',
-      'external-ui': 'ui',
-      'external-ui-url': 'https://github.com/Zephyruso/zashboard/releases/latest/download/dist.zip',
-      profile: {
-        'store-selected': true,
-        'store-fake-ip': true,
-      },
-      'proxy-groups': [globalGroup, ...functionalGroupsSorted, ...generatedRegionGroups],
-      'rule-providers': finalRuleProviders,
-      hosts: networkConfig.hosts,
-      ntp: networkConfig.ntp,
-      sniffer: networkConfig.sniffer,
-      dns: networkConfig.dns,
-    });
+    newConfig['mode'] = 'rule';
+    newConfig['mixed-port'] = 7890;
+    newConfig['allow-lan'] = true;
+    newConfig['ipv6'] = true;
+    newConfig['bind-address'] = '*';
+    newConfig['unified-delay'] = true;
+    newConfig['tcp-concurrent'] = true;
+    newConfig['find-process-mode'] = 'strict';
+    newConfig['geodata-mode'] = true;
+    newConfig['geodata'] = {
+      geosite: 'https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/geosite.dat',
+      geoip: 'https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/geoip.dat',
+    };
+    newConfig['external-controller'] = '127.0.0.1:9090';
+    newConfig['external-ui'] = 'ui';
+    newConfig['external-ui-url'] = 'https://github.com/Zephyruso/zashboard/releases/latest/download/dist.zip';
+    newConfig['profile'] = {
+      'store-selected': true,
+      'store-fake-ip': true,
+    };
+    newConfig['proxy-groups'] = [globalGroup, ...functionalGroupsSorted, ...generatedRegionGroups];
+    newConfig['rule-providers'] = finalRuleProviders;
+    newConfig['hosts'] = networkConfig.hosts;
+    newConfig['ntp'] = networkConfig.ntp;
+    newConfig['sniffer'] = networkConfig.sniffer;
+    newConfig['dns'] = networkConfig.dns;
 
     if (networkConfig.tun) {
-      config.tun = networkConfig.tun;
-    } else if ('tun' in config) {
-      delete config.tun;
+      newConfig['tun'] = networkConfig.tun;
+    } else if ('tun' in newConfig) {
+      delete newConfig['tun'];
     }
 
-    config.proxies.push(
+    newConfig.proxies.push(
       { name: 'Dual Stack', type: 'direct' },
       { name: 'IPv4 Only', type: 'direct', 'ip-version': 'ipv4' },
       { name: 'IPv6 Only', type: 'direct', 'ip-version': 'ipv6' },
       { name: 'IPv4 Preferred', type: 'direct', 'ip-version': 'ipv4-prefer' },
-      { name: 'IPv6 Preferred', type: 'direct', 'ip-version': 'ipv6-prefer' }
+      { name: 'IPv6 Preferred', type: 'direct', 'ip-version': 'ipv6-prefer' },
     );
 
-    config.rules = [
+    newConfig['rules'] = [
       ...finalRules,
       'GEOSITE,geolocation-cn,Direct',
       'RULE-SET,cn,Direct',
@@ -810,7 +905,7 @@ function main(config) {
       'MATCH,Default',
     ];
 
-    return config;
+    return newConfig;
   } catch (error) {
     print('[Mihomo-Script-Rules] Error in main():', error.message || String(error));
     return { proxies: [], 'proxy-groups': [], rules: [] };
