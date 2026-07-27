@@ -4,16 +4,20 @@
   <img src="https://img.shields.io/github/stars/zzzhhe999/Mihomo-Script-Rules?style=flat-square&color=yellow" alt="Stars">
   <img src="https://img.shields.io/github/license/zzzhhe999/Mihomo-Script-Rules?style=flat-square&color=blue" alt="License">
   <img src="https://img.shields.io/github/languages/top/zzzhhe999/Mihomo-Script-Rules?style=flat-square" alt="Language">
-  <img src="https://img.shields.io/badge/Mihomo-v1.19%2B-brightgreen?style=flat-square" alt="Mihomo">
+  <img src="https://img.shields.io/badge/Bettbox-QuickJS%20%7C%20ES2020-brightgreen?style=flat-square" alt="Bettbox">
   <img src="https://img.shields.io/badge/PRs-welcome-brightgreen?style=flat-square" alt="PRs Welcome">
 </p>
 
 <p align="center">
-  <b>🚀 一键接管机场原始订阅，自动重命名、过滤、分流、DNS 防污染，开箱即用，支持自行选择功能。</b>
+  <b>🚀 为 Bettbox 深度优化的订阅预处理脚本 · QuickJS 引擎 · ES2020 语法 · 一键接管机场原始订阅</b>
 </p>
 
 <p align="center">
-  <b>📦 提供「脚本」与「纯配置」两种形态，适配不同客户端 · GitHub Actions 全自动化维护</b>
+  <b>自动重命名、过滤、分流、DNS 防污染，开箱即用，支持自行选择功能。</b>
+</p>
+
+<p align="center">
+  <b>📦 提供「脚本」与「纯配置」两种形态 · GitHub Actions 全自动化维护</b>
 </p>
 
 ---
@@ -36,18 +40,18 @@
 
 ## 1.简介
 
-这是一个为 **Mihomo (Clash Meta)** 内核设计的 **JavaScript 订阅预处理脚本**，同时提供自动生成的 **YAML 纯配置文件**。
+这是一个为 **Bettbox（Mihomo 内核 / QuickJS 引擎）** 深度优化的 **JavaScript 订阅预处理脚本**，同时提供自动生成的 **YAML 纯配置文件**。
 
 大多数机场的原始订阅配置节点名称带有广告尾巴、过期通知混在节点列表里、缺少分流策略，DNS 容易泄漏污染，无法满足较高的使用需求。
 
 本项目主要用于接管机场的原始订阅配置，通过自动执行**节点重命名、无效节点过滤、精细化策略组分流、智能 DNS 配置**，彻底解决原始订阅杂乱无章的问题，提供开箱即用的网络体验。
 
 > **核心工程优势：**
-> 本脚本基于 ES2020 现代语法深度重构，完美兼容 QuickJS 引擎。采用防御性编程与无损合并（Merge）机制，能安全隔离机场下发的脏数据（如空节点、缺失协议），并在保留用户原有自定义规则的前提下进行配置挂载，彻底杜绝引擎崩溃与客户端假死，保障高频执行下的绝对稳定。
+> 本脚本严格限定 **ES2020 语法子集**，全面兼容 Bettbox 内嵌的 **QuickJS 引擎**。采用不可变配置（浅拷贝 `{ ...config }` 返回新对象，不污染原始输入）与防御性编程，能安全隔离机场下发的脏数据（如空节点、缺失协议），并在保留用户原有自定义规则的前提下进行配置挂载，彻底杜绝引擎崩溃与客户端假死，保障高频执行下的绝对稳定。
 
 > **两种模式：**
 > 
-> - **脚本**（`Mihomo-Script-Rules.js`）：根据节点名动态生成地区策略组，自动化程度最高，推荐大多数用户使用。
+> - **脚本**（`Mihomo-Script-Rules.js`）：根据节点名动态生成地区策略组，自动化程度最高，推荐 Bettbox 用户使用。
 > - **纯配置**（`Config/mihomoConfig.yaml`）：静态配置，适用于不支持 JS 脚本的客户端，需自行填入节点。
 
 ---
@@ -164,12 +168,13 @@
   
 - `nameserver-policy` 精准分流：gfw 列表走国外 DNS，cn/private 列表走国内 DNS
   
-- `proxy-server-nameserver` 兜底：避免代理服务器 DNS 请求走代理本身
+- `proxy-server-nameserver` 动态拼接：在默认阿里 + 腾讯 DoH 基础上，自动提取用户私有 DNS 服务器并注入，确保代理节点的域名解析使用正确的 DNS 通道
   
 - `direct-nameserver-follow-policy`：直连请求跟随策略选择 DNS
   
-- **纯净默认解析**：从默认 `nameserver` 数组中彻底剥离国内 DNS，防止并发查询时遭 GFW 抢答污染，确保未知境外域名的解析绝对安全。
+- **纯净默认解析**：`nameserver` 数组仅保留 Google + Cloudflare DoH，杜绝国内 DNS 参与默认解析，防止 GFW 抢答污染未知境外域名
   
+- **代理节点 DNS 感知**：自动提取代理节点的 `server` 域名，与用户自定义的 `nameserver-policy` / `proxy-server-nameserver-policy` 做交叉匹配，将匹配到的策略注入 `proxy-server-nameserver-policy`；同时将相关 hosts 映射注入到全局 hosts 中，确保代理节点域名的解析完全遵循用户意图
 
 ### 5.5 AdBlock（广告拦截）
 
@@ -190,14 +195,16 @@
 
 ### 5.7 QUIC 管控
 
-```
-'AND,((NETWORK,udp),(DST-PORT,443),(OR,((RULE-SET,cn_additional),(RULE-SET,cn_ip,no-resolve)))),Direct',
+```js
+'AND,((NETWORK,udp),(DST-PORT,443),(OR,((GEOSITE,geolocation-cn),(GEOIP,cn,no-resolve)))),Direct',
 'AND,((NETWORK,udp),(DST-PORT,443)),QUIC'
 ```
 
+> `geosite:geolocation-cn` 和 `geoip:cn` 数据来源于 [MetaCubeX/meta-rules-dat](https://github.com/MetaCubeX/meta-rules-dat)。
+
 - **流量集中管控：** UDP 443 (QUIC) 流量集中拦截到独立策略组，默认走代理。可手动切换到 REJECT 彻底阻断 QUIC，解决部分环境下 QUIC 导致网页加载卡顿的问题。
 - **国内外差异化处理：**
-  - **🇨🇳 国内流量（默认放行）**：匹配到国内域名或 IP 的 QUIC 流量会直接走 **Direct**，保障国内应用（如淘宝、抖音、微信等）的极致加载速度。
+  - **🇨🇳 国内流量（默认放行）**：匹配到 `geosite:geolocation-cn` 或 `geoip:cn` 的 QUIC 流量直接走 **Direct**，保障国内应用（如淘宝、抖音、微信等）的极致加载速度。
   - **🌐 境外流量（手动管控）**：未匹配到国内规则的 QUIC 流量统一进入 `QUIC` 策略组，提供两种选项：
     - `Default`（默认代理）：允许 QUIC 流量正常通过代理服务器。
     - `REJECT`：强制阻断 QUIC。如果你在观看 YouTube 或使用 Google 搜索时遇到无限转圈、加载卡顿，建议选此项，迫使应用回退到更稳定的 TCP 连接。
@@ -205,12 +212,12 @@
 ### 5.8 双栈 & TUN 模式
 
 - 注入五个直连节点：
-  
   - `Dual Stack` → IPv4/IPv6 自动选择
   - `IPv4 Only` → 强制仅使用 IPv4
   - `IPv6 Only` → 强制仅使用 IPv6
   - `IPv4 Preferred` → 优先使用 IPv4
   - `IPv6 Preferred` → 优先使用 IPv6
+
 - TUN 模式一键开关（`tunEnable` 常量），电脑端推荐开启
   
 
@@ -227,12 +234,11 @@
 
 - **防崩溃兜底**：每一处外部输入都经过显式类型校验 —— `typeof` 检查确保非对象输入不崩溃、`Array.isArray()` 保障数组操作安全、`== null` 兜底处理缺失字段。整个主流程包裹在 `try/catch` 中，极端异常下返回最小可用配置（空代理 + 空规则），确保网络绝不因脚本报错而断连。异常时除返回兜底配置外，会通过 `print()` 向 mihomo 日志输出错误信息，便于排查问题。
   
-- **全量显式校验链**：节点对象遍历时依次校验 `proxy` 非空、`proxy.name` 为字符串、`proxy.type` 为字符串，任意一项不符即跳过，绝不抛出 `TypeError`。
+- **全量显式校验链**：节点对象遍历时依次校验 `proxy` 非空、`proxy.name` 为字符串、`proxy.type` 为字符串，任意一项不符即跳过，绝不抛出 `TypeError`。DNS 配置读取时对 `nameserver`、`proxy-server-nameserver` 做 `Array.isArray()` 守卫，防止字符串被 spread 拆成字符数组。
   
-- **无损配置合并**：摒弃粗暴的顶层字段覆盖，采用 `Object.assign` 与扩展运算符 (`...`)，在注入策略组的同时，完美保留用户在客户端内自定义的直连规则、前置代理等个性化配置。
+- **不可变配置合并**：采用浅拷贝 (`{ ...config }`) + 显式属性赋值，在注入策略组的同时完美保留用户在客户端内自定义的直连规则、前置代理等个性化配置，且**不修改原始 `config` 对象**，避免副作用污染调用方。
   
-- **QuickJS 兼容**：严格限制在 ES2020 语法子集内，不使用 QuickJS 不支持或行为不一致的语法，确保在各客户端（Bettbox、FlClash 等）的 QuickJS 引擎中稳定执行。
-  
+- **QuickJS / ES2020 兼容**：严格限制在 ES2020 语法子集内，使用 `print()` / `console.log()` 等 QuickJS 内置全局函数输出日志，不使用 `require` / `fetch` / `Buffer` 等 Node.js API，杜绝 `??=` / `String.replaceAll` / `Array.at` 等 ES2021+ 语法，确保在 Bettbox 的 QuickJS 引擎中稳定执行。
 
 ### 5.11 其他
 
@@ -257,7 +263,9 @@
 
 ### 6.1 脚本（推荐）
 
-适用于支持 JS 预处理的客户端（Bettbox / FlClash / Clash Verge Rev 等）。脚本会根据节点名动态生成地区策略组，自动化程度最高。
+适用于支持 JS 预处理的客户端（Bettbox / FlClash 等）。脚本会根据节点名动态生成地区策略组，自动化程度最高。
+
+> **Bettbox 用户优先使用脚本模式**：本脚本针对 Bettbox 的 QuickJS 引擎做了全面的语法兼容和防御性处理，是推荐的最佳搭配。
 
 #### 6.1.1 获取脚本链接
 
@@ -275,7 +283,7 @@ https://fastly.jsdelivr.net/gh/zzzhhe999/Mihomo-Script-Rules@main/Mihomo-Script-
 
 #### 6.1.2 在客户端中导入
 
-**Bettbox / FlClash：**
+**Bettbox**
 
 Ⅰ 进入 APP → 点击底部 **更多**
 
@@ -287,13 +295,15 @@ https://fastly.jsdelivr.net/gh/zzzhhe999/Mihomo-Script-Rules@main/Mihomo-Script-
 
 Ⅴ **代理** 页可选择节点及策略
 
-**Clash Verge / Clash Nyanpasu / Clash Verge Rev：**
+**Clash Verge Rev：**
 
 Ⅰ 进入 **配置** 页面 → 找到你的订阅配置
 
 Ⅱ 点击编辑 → 在 **预处理脚本** 处填入脚本链接
 
 Ⅲ 保存并更新订阅
+
+> ⚠️ Clash Verge Rev 使用 **boa_engine** 而非 QuickJS，脚本中的 `print()` 调用在该引擎下可能不被支持。如果你在 CVR 上遇到日志缺失，不影响核心功能但建议优先使用 Bettbox。
 
 ### 6.2 纯配置文件
 
@@ -330,13 +340,13 @@ https://fastly.jsdelivr.net/gh/zzzhhe999/Mihomo-Script-Rules@main/Config/mihomoC
 
 | 客户端 | 兼容性 | 备注  |
 | --- | --- | --- |
-| [Bettbox](https://github.com/appshubcc/Bettbox) | 完美  | **强烈推荐**，原生支持 JS 脚本，完美契合本脚本的 QuickJS 防御性架构 |
-| [FlClash](https://github.com/chen08209/FlClash) | 完美  | 推荐，原生支持 JS 脚本预处理，执行效率极高 |
-| [Clash Verge Rev](https://github.com/clash-verge-rev/clash-verge-rev) | 兼容  | 需在配置编辑中手动设置预处理脚本 |
-| [Clash Nyanpasu](https://github.com/libnyanpasu/clash-nyanpasu) | 兼容  | 同上  |
-| [Clash Verge](https://github.com/clash-verge-rev/clash-verge-rev) | 旧版  | 旧版可能不支持，建议升级到 Verge Rev |
-| Stash / Shadowrocket | 不兼容 | JS 预处理语法不同，建议用 sub-store 中转或使用纯配置 |
-| Surge / Quantumult X | 不兼容 | 同上  |
+| [Bettbox](https://github.com/appshubcc/Bettbox) | ⭐ 完美 | **强烈推荐**。QuickJS 引擎，与本脚本的 ES2020 防御性架构完全匹配 |
+| [FlClash](https://github.com/chen08209/FlClash) | ⭐ 完美 | 推荐，原生支持 JS 脚本预处理，执行效率极高 |
+| [Clash Verge Rev](https://github.com/clash-verge-rev/clash-verge-rev) | ⚠️ 可用 | 使用 **boa_engine**（非 QuickJS），`print()` 可能不兼容，核心功能正常但日志输出可能缺失 |
+| [Clash Nyanpasu](https://github.com/libnyanpasu/clash-nyanpasu) | ⚠️ 可用 | 同上，需自行验证 |
+| [Clash Verge](https://github.com/clash-verge-rev/clash-verge-rev) | ❌ 旧版 | 旧版可能不支持，建议升级到 Verge Rev |
+| Stash / Shadowrocket | ❌ 不兼容 | JS 预处理语法不同，建议用 sub-store 中转或使用纯配置 |
+| Surge / Quantumult X | ❌ 不兼容 | 同上  |
 
 ### 7.1 Stash / Shadowrocket / Surge 等其他客户端
 
@@ -434,13 +444,13 @@ const excludeFilter = /群|返利|循环|官[网址]|客服|网站|网址|获取
 
 | 项目  | 用途  |
 | --- | --- |
+| [Bettbox](https://github.com/appshubcc/Bettbox) | 推荐客户端 |
 | [MyClash](https://github.com/AIsouler/MyClash) | 原始代码来源，核心逻辑参考 |
 | [Mihomo](https://github.com/MetaCubeX/mihomo) | 内核支持 |
 | [Qure](https://github.com/Koolson/Qure) | 精美图标库 |
 | [Meta 规则集](https://github.com/MetaCubeX/meta-rules-dat) | geosite / geoip 规则数据 |
 | [Clash 规则集](https://github.com/wwqgtxx/clash-rules) | 直连 / fakeip / GFW 规则 |
 | [广告过滤规则](https://github.com/217heidai/adblockfilters) | Mihomo 广告拦截规则 |
-| [Bettbox](https://github.com/appshubcc/Bettbox) | 推荐客户端 |
 
 ---
 
