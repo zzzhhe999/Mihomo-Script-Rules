@@ -38,6 +38,7 @@ jobs:
             const src = fs.readFileSync('Mihomo-Script-Rules.js', 'utf8');
             const tmp = path.join(process.cwd(), '_tmp_verify.cjs');
             fs.writeFileSync(tmp, src + '\nmodule.exports = { main };\n');
+            globalThis.print = console.log;
             const { main } = require(tmp);
             const config = {
               proxies: [
@@ -59,6 +60,19 @@ jobs:
 
       - name: 生成 mihomoConfig.yaml
         run: node generate-yaml.cjs
+
+      - name: YAML 语法校验
+        run: |
+          node -e "
+            const fs = require('fs');
+            const yaml = fs.readFileSync('Config/mihomoConfig.yaml', 'utf8');
+            if (yaml.length < 100) throw new Error('YAML 文件过短，疑似生成失败');
+            const requiredKeys = ['proxies:', 'proxy-groups:', 'rules:', 'rule-providers:', 'dns:'];
+            for (const k of requiredKeys) {
+              if (!yaml.includes(k)) throw new Error('缺少必要字段: ' + k);
+            }
+            console.log('✅ YAML 完整校验通过 (' + yaml.length + ' 字符)');
+          "
 
       - name: 检查 yaml 是否有变化，有则自动提交
         run: |
