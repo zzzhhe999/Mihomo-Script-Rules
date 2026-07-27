@@ -127,7 +127,7 @@ proxies:
     port: 443
     client-fingerprint: chrome
   - name: 🇯🇵 JP 03
-    type: hy2
+    type: hysteria2
     server: 2.2.2.4
     port: 443
   - name: Dual Stack
@@ -145,6 +145,66 @@ proxies:
     type: direct
     ip-version: "ipv6-prefer"
 mode: rule
+dns:
+  enable: true
+  ipv6: true
+  listen: ":1053"
+  cache-algorithm: arc
+  use-hosts: true
+  use-system-hosts: true
+  prefer-h3: false
+  enhanced-mode: "fake-ip"
+  fake-ip-range: 198.18.0.1/16
+  fake-ip-filter:
+    - "geosite:private"
+    - "rule-set:fakeip_filter"
+  default-nameserver:
+    - 223.5.5.5
+    - 1.12.12.12
+  proxy-server-nameserver:
+    - "https://dns.alidns.com/dns-query#Direct"
+    - "https://doh.pub/dns-query#Direct"
+    - "https://my-private-dns.example.com/dns-query"
+    - "tls://1.2.3.4:853"
+  nameserver:
+    - "https://dns.google/dns-query#Default"
+    - "https://dns.cloudflare.com/dns-query#Default"
+  direct-nameserver:
+    - system
+    - 223.5.5.5
+    - 119.29.29.29
+  direct-nameserver-follow-policy: true
+  nameserver-policy:
+    "geosite:private":
+      - "https://dns.alidns.com/dns-query#Direct"
+      - "https://doh.pub/dns-query#Direct"
+    "rule-set:cn":
+      - "https://dns.alidns.com/dns-query#Direct"
+      - "https://doh.pub/dns-query#Direct"
+    "geosite:geolocation-cn":
+      - "https://dns.alidns.com/dns-query#Direct"
+      - "https://doh.pub/dns-query#Direct"
+    "geosite:apple@cn":
+      - "https://dns.alidns.com/dns-query#Direct"
+      - "https://doh.pub/dns-query#Direct"
+    "geosite:cloudflare@cn":
+      - "https://dns.alidns.com/dns-query#Direct"
+      - "https://doh.pub/dns-query#Direct"
+    "geosite:microsoft@cn":
+      - "https://dns.alidns.com/dns-query#Direct"
+      - "https://doh.pub/dns-query#Direct"
+    "geosite:category-games@cn":
+      - "https://dns.alidns.com/dns-query#Direct"
+      - "https://doh.pub/dns-query#Direct"
+    "geosite:nvidia@cn":
+      - "https://dns.alidns.com/dns-query#Direct"
+      - "https://doh.pub/dns-query#Direct"
+    "geosite:gfw":
+      - "https://dns.google/dns-query#Default"
+      - "https://dns.cloudflare.com/dns-query#Default"
+  proxy-server-nameserver-policy:
+    1.1.1.1:
+      - "https://dns.alidns.com/dns-query#Direct"
 mixed-port: 7890
 allow-lan: true
 ipv6: true
@@ -189,24 +249,62 @@ proxy-groups:
       - Netflix
       - Spotify
       - HK
+      - "HK-Auto"
+      - "HK-Balance"
       - JP
+      - "JP-Auto"
+      - "JP-Balance"
       - US
+      - "US-Auto"
+      - "US-Balance"
       - SG
+      - "SG-Auto"
+      - "SG-Balance"
       - TW
+      - "TW-Auto"
+      - "TW-Balance"
       - KR
+      - "KR-Auto"
+      - "KR-Balance"
       - UK
+      - "UK-Auto"
+      - "UK-Balance"
       - DE
+      - "DE-Auto"
+      - "DE-Balance"
       - FR
+      - "FR-Auto"
+      - "FR-Balance"
       - CA
+      - "CA-Auto"
+      - "CA-Balance"
       - AU
+      - "AU-Auto"
+      - "AU-Balance"
       - IN
+      - "IN-Auto"
+      - "IN-Balance"
       - TR
+      - "TR-Auto"
+      - "TR-Balance"
       - BR
+      - "BR-Auto"
+      - "BR-Balance"
       - AR
+      - "AR-Auto"
+      - "AR-Balance"
       - RU
+      - "RU-Auto"
+      - "RU-Balance"
       - "Low-Rate"
+      - "Low-Rate-Auto"
+      - "Low-Rate-Balance"
       - "High-Rate"
+      - "High-Rate-Auto"
+      - "High-Rate-Balance"
       - Others
+      - "Others-Auto"
+      - "Others-Balance"
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Global.png"
   - type: select
     hidden: false
@@ -1428,61 +1526,6 @@ sniffer:
     - "gsp-ssl.ls.apple.com"
     - +.lan
     - +.local
-dns:
-  enable: true
-  ipv6: true
-  listen: ":1053"
-  cache-algorithm: arc
-  use-hosts: true
-  use-system-hosts: true
-  prefer-h3: false
-  enhanced-mode: "fake-ip"
-  fake-ip-range: 198.18.0.1/16
-  fake-ip-filter:
-    - "geosite:private"
-    - "rule-set:fakeip_filter"
-  default-nameserver:
-    - 223.5.5.5
-    - 1.12.12.12
-  proxy-server-nameserver:
-    - "https://dns.alidns.com/dns-query#Direct"
-    - "https://doh.pub/dns-query#Direct"
-  nameserver:
-    - "https://dns.google/dns-query#Default"
-    - "https://dns.cloudflare.com/dns-query#Default"
-  direct-nameserver:
-    - system
-    - 223.5.5.5
-    - 119.29.29.29
-  direct-nameserver-follow-policy: true
-  nameserver-policy:
-    "geosite:private":
-      - "https://dns.alidns.com/dns-query#Direct"
-      - "https://doh.pub/dns-query#Direct"
-    "rule-set:cn":
-      - "https://dns.alidns.com/dns-query#Direct"
-      - "https://doh.pub/dns-query#Direct"
-    "geosite:geolocation-cn":
-      - "https://dns.alidns.com/dns-query#Direct"
-      - "https://doh.pub/dns-query#Direct"
-    "geosite:apple@cn":
-      - "https://dns.alidns.com/dns-query#Direct"
-      - "https://doh.pub/dns-query#Direct"
-    "geosite:cloudflare@cn":
-      - "https://dns.alidns.com/dns-query#Direct"
-      - "https://doh.pub/dns-query#Direct"
-    "geosite:microsoft@cn":
-      - "https://dns.alidns.com/dns-query#Direct"
-      - "https://doh.pub/dns-query#Direct"
-    "geosite:category-games@cn":
-      - "https://dns.alidns.com/dns-query#Direct"
-      - "https://doh.pub/dns-query#Direct"
-    "geosite:nvidia@cn":
-      - "https://dns.alidns.com/dns-query#Direct"
-      - "https://doh.pub/dns-query#Direct"
-    "geosite:gfw":
-      - "https://dns.google/dns-query#Default"
-      - "https://dns.cloudflare.com/dns-query#Default"
 rules:
   - "AND,((NETWORK,udp),(DST-PORT,443),(OR,((GEOSITE,geolocation-cn),(GEOIP,cn,no-resolve)))),Direct"
   - "AND,((NETWORK,udp),(DST-PORT,443)),QUIC"
@@ -1526,10 +1569,6 @@ rules:
   - "GEOSITE,netflix,Netflix"
   - "GEOIP,netflix,Netflix,no-resolve"
   - "GEOSITE,geolocation-cn,Direct"
-  - "RULE-SET,cn,Direct"
-  - "GEOIP,cn,Direct,no-resolve"
   - "GEOSITE,gfw,Default"
-  - "DOMAIN-SUFFIX,cn,Direct"
-  - "DOMAIN-SUFFIX,local,Direct"
-  - "DOMAIN-SUFFIX,lan,Direct"
+  - "GEOIP,cn,Direct"
   - "MATCH,Default"
