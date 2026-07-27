@@ -840,7 +840,7 @@ function main(config) {
 
     const globalGroupProxies = [
       ...functionalGroupsSorted.map((g) => g.name),
-      ...generatedRegionGroups.filter((g) => g.type === 'select').map((g) => g.name),
+      ...generatedRegionGroups.map((g) => g.name),
     ];
 
     const globalGroup = {
@@ -896,12 +896,8 @@ function main(config) {
     newConfig['rules'] = [
       ...finalRules,
       'GEOSITE,geolocation-cn,Direct',
-      'RULE-SET,cn,Direct',
-      'GEOIP,cn,Direct,no-resolve',
       'GEOSITE,gfw,Default',
-      'DOMAIN-SUFFIX,cn,Direct',
-      'DOMAIN-SUFFIX,local,Direct',
-      'DOMAIN-SUFFIX,lan,Direct',
+      'GEOIP,cn,Direct',
       'MATCH,Default',
     ];
 
