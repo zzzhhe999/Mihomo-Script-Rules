@@ -79,9 +79,20 @@ function makeSampleConfig() {
       { name: '某地节点', type: 'vless', server: '20.20.20.2', port: 443 },
       { name: '剩余流量100G', type: 'vmess', server: '0.0.0.1', port: 443 },
       { name: '官网 www.example.com', type: 'vmess', server: '0.0.0.2', port: 443 },
-      { name: '🇯🇵 日本 hy2', type: 'hy2', server: '2.2.2.4', port: 443 },
+      { name: '🇯🇵 日本 hysteria2', type: 'hysteria2', server: '2.2.2.4', port: 443 },
     ],
     mode: 'rule',
+    // 示例 DNS 配置：演示代理节点 DNS 感知功能
+    dns: {
+      nameserver: ['https://my-private-dns.example.com/dns-query'],
+      'proxy-server-nameserver': ['tls://1.2.3.4:853'],
+      'nameserver-policy': {
+        '1.1.1.1': ['https://dns.alidns.com/dns-query#Direct'],
+      },
+      hosts: {
+        '1.1.1.1': 'my-proxy.example.com',
+      },
+    },
   };
 }
 
@@ -90,9 +101,12 @@ function main() {
   const scriptPath = path.join(__dirname, 'Mihomo-Script-Rules.js');
   const src = fs.readFileSync(scriptPath, 'utf8');
   const exportSrc = src + '\nmodule.exports = { main };\n';
-  const tmpPath = path.join(__dirname, '_tmp_script_export.cjs');
+  const tmpPath = path.join(__dirname, `_tmp_script_export_${process.pid}.cjs`);
   fs.writeFileSync(tmpPath, exportSrc);
   delete require.cache[require.resolve(tmpPath)];
+
+  // QuickJS 脚本内部使用 print() 输出日志，Node.js 无此全局函数，需注入 polyfill
+  globalThis.print = console.log;
   const { main: scriptMain } = require(tmpPath);
   fs.unlinkSync(tmpPath);
 
