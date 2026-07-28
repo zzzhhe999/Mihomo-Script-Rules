@@ -894,7 +894,7 @@ proxy-groups:
   - type: select
     hidden: false
     name: HK
-    icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Hong_Kong.png"
+    icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/HK.png"
     proxies:
       - "HK-Auto"
       - "HK-Balance"
@@ -936,7 +936,7 @@ proxy-groups:
   - type: select
     hidden: false
     name: JP
-    icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Japan.png"
+    icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/JP.png"
     proxies:
       - "JP-Auto"
       - "JP-Balance"
@@ -978,7 +978,7 @@ proxy-groups:
   - type: select
     hidden: false
     name: US
-    icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/United_States.png"
+    icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/US.png"
     proxies:
       - "US-Auto"
       - "US-Balance"
@@ -1017,7 +1017,7 @@ proxy-groups:
   - type: select
     hidden: false
     name: SG
-    icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Singapore.png"
+    icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/SG.png"
     proxies:
       - "SG-Auto"
       - "SG-Balance"
@@ -1053,7 +1053,7 @@ proxy-groups:
   - type: select
     hidden: false
     name: TW
-    icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Taiwan.png"
+    icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/TW.png"
     proxies:
       - "TW-Auto"
       - "TW-Balance"
@@ -1089,7 +1089,7 @@ proxy-groups:
   - type: select
     hidden: false
     name: KR
-    icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Korea.png"
+    icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/KR.png"
     proxies:
       - "KR-Auto"
       - "KR-Balance"
@@ -1125,7 +1125,7 @@ proxy-groups:
   - type: select
     hidden: false
     name: UK
-    icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/United_Kingdom.png"
+    icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/UK.png"
     proxies:
       - "UK-Auto"
       - "UK-Balance"
@@ -1161,7 +1161,7 @@ proxy-groups:
   - type: select
     hidden: false
     name: DE
-    icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Germany.png"
+    icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/DE.png"
     proxies:
       - "DE-Auto"
       - "DE-Balance"
@@ -1197,7 +1197,7 @@ proxy-groups:
   - type: select
     hidden: false
     name: FR
-    icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/France.png"
+    icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/FR.png"
     proxies:
       - "FR-Auto"
       - "FR-Balance"
@@ -1233,7 +1233,7 @@ proxy-groups:
   - type: select
     hidden: false
     name: CA
-    icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Canada.png"
+    icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/CA.png"
     proxies:
       - "CA-Auto"
       - "CA-Balance"
@@ -1269,7 +1269,7 @@ proxy-groups:
   - type: select
     hidden: false
     name: AU
-    icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Australia.png"
+    icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/AU.png"
     proxies:
       - "AU-Auto"
       - "AU-Balance"
@@ -1305,7 +1305,7 @@ proxy-groups:
   - type: select
     hidden: false
     name: IN
-    icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/India.png"
+    icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/IN.png"
     proxies:
       - "IN-Auto"
       - "IN-Balance"
@@ -1341,7 +1341,7 @@ proxy-groups:
   - type: select
     hidden: false
     name: TR
-    icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Turkey.png"
+    icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/TR.png"
     proxies:
       - "TR-Auto"
       - "TR-Balance"
@@ -1377,7 +1377,7 @@ proxy-groups:
   - type: select
     hidden: false
     name: BR
-    icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Brazil.png"
+    icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/BR.png"
     proxies:
       - "BR-Auto"
       - "BR-Balance"
@@ -1413,7 +1413,7 @@ proxy-groups:
   - type: select
     hidden: false
     name: AR
-    icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Argentina.png"
+    icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/AR.png"
     proxies:
       - "AR-Auto"
       - "AR-Balance"
@@ -1449,7 +1449,7 @@ proxy-groups:
   - type: select
     hidden: false
     name: RU
-    icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Russia.png"
+    icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/RU.png"
     proxies:
       - "RU-Auto"
       - "RU-Balance"
