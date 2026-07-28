@@ -1,23 +1,25 @@
+const Compatible_With_Bettbox ={ruleOptionsEnable: true,}; 
+
 const ruleOptionsEnable = {
-  ai: true,
-  youtube: true,
-  googlefcm: true,
-  google: true,
-  github: true,
-  microsoft: true,
-  apple: true,
-  telegram: true,
-  twitter: true,
-  instagram: true,
-  steam: true,
-  cloudflare: true,
-  spotify: true,
-  tiktok: true,
-  netflix: true,
-  adblock: true,
-  emby: true,
-  pikpak: true,
-  ehentai: true,
+  AI: true,
+  YouTube: true,
+  FCM: true,
+  Google: true,
+  GitHub: true,
+  Microsoft: true,
+  Apple: true,
+  Telegram: true,
+  X: true,
+  Instagram: true,
+  Steam: true,
+  Cloudflare: true,
+  Spotify: true,
+  TikTok: true,
+  Netflix: true,
+  AdBlock: true,
+  Emby: true,
+  PikPak: true,
+  EHentai: true,
 };
 
 const regionDefinitionsEnable = {
@@ -88,97 +90,97 @@ const regionDefinitions = [
   {
     name: 'HK',
     regex: /🇭🇰|香港|港(?!口)|\bHK\b|hong\s*kong/i,
-    icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Hong_Kong.png',
+    icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/HK.png',
     flag: '🇭🇰',
   },
   {
     name: 'JP',
     regex: /🇯🇵|日本|东京|大阪|埼玉|\bJP\b|japan/i,
-    icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Japan.png',
+    icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/JP.png',
     flag: '🇯🇵',
   },
   {
     name: 'US',
     regex: /🇺🇸|美国|美区|洛杉矶|圣何塞|西雅图|纽约|芝加哥|达拉斯|\bUS\b|america|united\s*states/i,
-    icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/United_States.png',
+    icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/US.png',
     flag: '🇺🇸',
   },
   {
     name: 'SG',
     regex: /🇸🇬|新加坡|狮城|\bSG\b|singapore/i,
-    icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Singapore.png',
+    icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/SG.png',
     flag: '🇸🇬',
   },
   {
     name: 'TW',
     regex: /🇹🇼|台湾|台北|高雄|\bTW\b|taiwan/i,
-    icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Taiwan.png',
+    icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/TW.png',
     flag: '🇹🇼',
   },
   {
     name: 'KR',
     regex: /🇰🇷|韩国|首尔|春川|\bKR\b|korea/i,
-    icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Korea.png',
+    icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/KR.png',
     flag: '🇰🇷',
   },
   {
     name: 'UK',
     regex: /🇬🇧|英国|伦敦|\bUK\b|\bGB\b|britain|united\s*kingdom/i,
-    icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/United_Kingdom.png',
+    icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/UK.png',
     flag: '🇬🇧',
   },
   {
     name: 'DE',
     regex: /🇩🇪|德国|法兰克福|柏林|\bDE\b|germany/i,
-    icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Germany.png',
+    icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/DE.png',
     flag: '🇩🇪',
   },
   {
     name: 'FR',
     regex: /🇫🇷|法国|巴黎|\bFR\b|france/i,
-    icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/France.png',
+    icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/FR.png',
     flag: '🇫🇷',
   },
   {
     name: 'CA',
     regex: /🇨🇦|加拿大|多伦多|温哥华|蒙特利尔|\bCA\b|canada/i,
-    icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Canada.png',
+    icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/CA.png',
     flag: '🇨🇦',
   },
   {
     name: 'AU',
     regex: /🇦🇺|澳大利亚|澳洲|悉尼|墨尔本|\bAU\b|australia/i,
-    icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Australia.png',
+    icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/AU.png',
     flag: '🇦🇺',
   },
   {
     name: 'IN',
     regex: /🇮🇳|印度|孟买|金奈|\bIN\b|india/i,
-    icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/India.png',
+    icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/IN.png',
     flag: '🇮🇳',
   },
   {
     name: 'TR',
     regex: /🇹🇷|土耳其|伊斯坦布尔|\bTR\b|turkey/i,
-    icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Turkey.png',
+    icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/TR.png',
     flag: '🇹🇷',
   },
   {
     name: 'BR',
     regex: /🇧🇷|巴西|圣保罗|\bBR\b|brazil/i,
-    icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Brazil.png',
+    icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/BR.png',
     flag: '🇧🇷',
   },
   {
     name: 'AR',
     regex: /🇦🇷|阿根廷|布宜诺斯艾利斯|\bAR\b|argentina/i,
-    icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Argentina.png',
+    icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/AR.png',
     flag: '🇦🇷',
   },
   {
     name: 'RU',
     regex: /🇷🇺|俄罗斯|莫斯科|圣彼得堡|\bRU\b|russia/i,
-    icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Russia.png',
+    icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/RU.png',
     flag: '🇷🇺',
   },
   {
@@ -817,7 +819,7 @@ function main(config) {
     const finalRuleProviders = { ...baseRuleProviders };
 
     for (const svc of serviceConfigs) {
-      if (!ruleOptionsEnable[svc.key]) continue;
+      if (!ruleOptionsEnable[svc.name]) continue;
 
       finalRules.push(...svc.rules);
       Object.assign(finalRuleProviders, svc.providers);
@@ -938,4 +940,3 @@ function main(config) {
     print('[Mihomo-Script-Rules] Error in main():', error.message || String(error));
     return { proxies: [], 'proxy-groups': [], rules: [] };
   }
-}
