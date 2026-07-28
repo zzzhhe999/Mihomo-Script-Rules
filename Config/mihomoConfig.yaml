@@ -350,8 +350,10 @@ proxy-groups:
     url: "https://cp.cloudflare.com/generate_204"
     lazy: true
     max-failed-times: 3
+    empty-fallback: REJECT
     type: "url-test"
     tolerance: 50
+    exclude-type: DIRECT
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png"
     hidden: true
     name: Auto
@@ -380,8 +382,10 @@ proxy-groups:
     url: "https://cp.cloudflare.com/generate_204"
     lazy: true
     max-failed-times: 1
+    empty-fallback: REJECT
     type: "load-balance"
     strategy: "sticky-sessions"
+    exclude-type: DIRECT
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Round_Robin_1.png"
     hidden: true
     name: Balance
@@ -902,8 +906,10 @@ proxy-groups:
     url: "https://cp.cloudflare.com/generate_204"
     lazy: true
     max-failed-times: 3
+    empty-fallback: REJECT
     type: "url-test"
     tolerance: 50
+    exclude-type: DIRECT
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png"
     hidden: true
     name: "HK-Auto"
@@ -916,8 +922,10 @@ proxy-groups:
     url: "https://cp.cloudflare.com/generate_204"
     lazy: true
     max-failed-times: 1
+    empty-fallback: REJECT
     type: "load-balance"
     strategy: "sticky-sessions"
+    exclude-type: DIRECT
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Round_Robin_1.png"
     hidden: true
     name: "HK-Balance"
@@ -940,8 +948,10 @@ proxy-groups:
     url: "https://cp.cloudflare.com/generate_204"
     lazy: true
     max-failed-times: 3
+    empty-fallback: REJECT
     type: "url-test"
     tolerance: 50
+    exclude-type: DIRECT
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png"
     hidden: true
     name: "JP-Auto"
@@ -954,8 +964,10 @@ proxy-groups:
     url: "https://cp.cloudflare.com/generate_204"
     lazy: true
     max-failed-times: 1
+    empty-fallback: REJECT
     type: "load-balance"
     strategy: "sticky-sessions"
+    exclude-type: DIRECT
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Round_Robin_1.png"
     hidden: true
     name: "JP-Balance"
@@ -977,8 +989,10 @@ proxy-groups:
     url: "https://cp.cloudflare.com/generate_204"
     lazy: true
     max-failed-times: 3
+    empty-fallback: REJECT
     type: "url-test"
     tolerance: 50
+    exclude-type: DIRECT
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png"
     hidden: true
     name: "US-Auto"
@@ -990,8 +1004,10 @@ proxy-groups:
     url: "https://cp.cloudflare.com/generate_204"
     lazy: true
     max-failed-times: 1
+    empty-fallback: REJECT
     type: "load-balance"
     strategy: "sticky-sessions"
+    exclude-type: DIRECT
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Round_Robin_1.png"
     hidden: true
     name: "US-Balance"
@@ -1011,8 +1027,10 @@ proxy-groups:
     url: "https://cp.cloudflare.com/generate_204"
     lazy: true
     max-failed-times: 3
+    empty-fallback: REJECT
     type: "url-test"
     tolerance: 50
+    exclude-type: DIRECT
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png"
     hidden: true
     name: "SG-Auto"
@@ -1023,8 +1041,10 @@ proxy-groups:
     url: "https://cp.cloudflare.com/generate_204"
     lazy: true
     max-failed-times: 1
+    empty-fallback: REJECT
     type: "load-balance"
     strategy: "sticky-sessions"
+    exclude-type: DIRECT
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Round_Robin_1.png"
     hidden: true
     name: "SG-Balance"
@@ -1043,8 +1063,10 @@ proxy-groups:
     url: "https://cp.cloudflare.com/generate_204"
     lazy: true
     max-failed-times: 3
+    empty-fallback: REJECT
     type: "url-test"
     tolerance: 50
+    exclude-type: DIRECT
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png"
     hidden: true
     name: "TW-Auto"
@@ -1055,8 +1077,10 @@ proxy-groups:
     url: "https://cp.cloudflare.com/generate_204"
     lazy: true
     max-failed-times: 1
+    empty-fallback: REJECT
     type: "load-balance"
     strategy: "sticky-sessions"
+    exclude-type: DIRECT
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Round_Robin_1.png"
     hidden: true
     name: "TW-Balance"
@@ -1075,8 +1099,10 @@ proxy-groups:
     url: "https://cp.cloudflare.com/generate_204"
     lazy: true
     max-failed-times: 3
+    empty-fallback: REJECT
     type: "url-test"
     tolerance: 50
+    exclude-type: DIRECT
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png"
     hidden: true
     name: "KR-Auto"
@@ -1087,8 +1113,10 @@ proxy-groups:
     url: "https://cp.cloudflare.com/generate_204"
     lazy: true
     max-failed-times: 1
+    empty-fallback: REJECT
     type: "load-balance"
     strategy: "sticky-sessions"
+    exclude-type: DIRECT
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Round_Robin_1.png"
     hidden: true
     name: "KR-Balance"
@@ -1107,8 +1135,10 @@ proxy-groups:
     url: "https://cp.cloudflare.com/generate_204"
     lazy: true
     max-failed-times: 3
+    empty-fallback: REJECT
     type: "url-test"
     tolerance: 50
+    exclude-type: DIRECT
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png"
     hidden: true
     name: "UK-Auto"
@@ -1119,8 +1149,10 @@ proxy-groups:
     url: "https://cp.cloudflare.com/generate_204"
     lazy: true
     max-failed-times: 1
+    empty-fallback: REJECT
     type: "load-balance"
     strategy: "sticky-sessions"
+    exclude-type: DIRECT
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Round_Robin_1.png"
     hidden: true
     name: "UK-Balance"
@@ -1139,8 +1171,10 @@ proxy-groups:
     url: "https://cp.cloudflare.com/generate_204"
     lazy: true
     max-failed-times: 3
+    empty-fallback: REJECT
     type: "url-test"
     tolerance: 50
+    exclude-type: DIRECT
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png"
     hidden: true
     name: "DE-Auto"
@@ -1151,8 +1185,10 @@ proxy-groups:
     url: "https://cp.cloudflare.com/generate_204"
     lazy: true
     max-failed-times: 1
+    empty-fallback: REJECT
     type: "load-balance"
     strategy: "sticky-sessions"
+    exclude-type: DIRECT
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Round_Robin_1.png"
     hidden: true
     name: "DE-Balance"
@@ -1171,8 +1207,10 @@ proxy-groups:
     url: "https://cp.cloudflare.com/generate_204"
     lazy: true
     max-failed-times: 3
+    empty-fallback: REJECT
     type: "url-test"
     tolerance: 50
+    exclude-type: DIRECT
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png"
     hidden: true
     name: "FR-Auto"
@@ -1183,8 +1221,10 @@ proxy-groups:
     url: "https://cp.cloudflare.com/generate_204"
     lazy: true
     max-failed-times: 1
+    empty-fallback: REJECT
     type: "load-balance"
     strategy: "sticky-sessions"
+    exclude-type: DIRECT
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Round_Robin_1.png"
     hidden: true
     name: "FR-Balance"
@@ -1203,8 +1243,10 @@ proxy-groups:
     url: "https://cp.cloudflare.com/generate_204"
     lazy: true
     max-failed-times: 3
+    empty-fallback: REJECT
     type: "url-test"
     tolerance: 50
+    exclude-type: DIRECT
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png"
     hidden: true
     name: "CA-Auto"
@@ -1215,8 +1257,10 @@ proxy-groups:
     url: "https://cp.cloudflare.com/generate_204"
     lazy: true
     max-failed-times: 1
+    empty-fallback: REJECT
     type: "load-balance"
     strategy: "sticky-sessions"
+    exclude-type: DIRECT
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Round_Robin_1.png"
     hidden: true
     name: "CA-Balance"
@@ -1235,8 +1279,10 @@ proxy-groups:
     url: "https://cp.cloudflare.com/generate_204"
     lazy: true
     max-failed-times: 3
+    empty-fallback: REJECT
     type: "url-test"
     tolerance: 50
+    exclude-type: DIRECT
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png"
     hidden: true
     name: "AU-Auto"
@@ -1247,8 +1293,10 @@ proxy-groups:
     url: "https://cp.cloudflare.com/generate_204"
     lazy: true
     max-failed-times: 1
+    empty-fallback: REJECT
     type: "load-balance"
     strategy: "sticky-sessions"
+    exclude-type: DIRECT
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Round_Robin_1.png"
     hidden: true
     name: "AU-Balance"
@@ -1267,8 +1315,10 @@ proxy-groups:
     url: "https://cp.cloudflare.com/generate_204"
     lazy: true
     max-failed-times: 3
+    empty-fallback: REJECT
     type: "url-test"
     tolerance: 50
+    exclude-type: DIRECT
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png"
     hidden: true
     name: "IN-Auto"
@@ -1279,8 +1329,10 @@ proxy-groups:
     url: "https://cp.cloudflare.com/generate_204"
     lazy: true
     max-failed-times: 1
+    empty-fallback: REJECT
     type: "load-balance"
     strategy: "sticky-sessions"
+    exclude-type: DIRECT
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Round_Robin_1.png"
     hidden: true
     name: "IN-Balance"
@@ -1299,8 +1351,10 @@ proxy-groups:
     url: "https://cp.cloudflare.com/generate_204"
     lazy: true
     max-failed-times: 3
+    empty-fallback: REJECT
     type: "url-test"
     tolerance: 50
+    exclude-type: DIRECT
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png"
     hidden: true
     name: "TR-Auto"
@@ -1311,8 +1365,10 @@ proxy-groups:
     url: "https://cp.cloudflare.com/generate_204"
     lazy: true
     max-failed-times: 1
+    empty-fallback: REJECT
     type: "load-balance"
     strategy: "sticky-sessions"
+    exclude-type: DIRECT
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Round_Robin_1.png"
     hidden: true
     name: "TR-Balance"
@@ -1331,8 +1387,10 @@ proxy-groups:
     url: "https://cp.cloudflare.com/generate_204"
     lazy: true
     max-failed-times: 3
+    empty-fallback: REJECT
     type: "url-test"
     tolerance: 50
+    exclude-type: DIRECT
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png"
     hidden: true
     name: "BR-Auto"
@@ -1343,8 +1401,10 @@ proxy-groups:
     url: "https://cp.cloudflare.com/generate_204"
     lazy: true
     max-failed-times: 1
+    empty-fallback: REJECT
     type: "load-balance"
     strategy: "sticky-sessions"
+    exclude-type: DIRECT
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Round_Robin_1.png"
     hidden: true
     name: "BR-Balance"
@@ -1363,8 +1423,10 @@ proxy-groups:
     url: "https://cp.cloudflare.com/generate_204"
     lazy: true
     max-failed-times: 3
+    empty-fallback: REJECT
     type: "url-test"
     tolerance: 50
+    exclude-type: DIRECT
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png"
     hidden: true
     name: "AR-Auto"
@@ -1375,8 +1437,10 @@ proxy-groups:
     url: "https://cp.cloudflare.com/generate_204"
     lazy: true
     max-failed-times: 1
+    empty-fallback: REJECT
     type: "load-balance"
     strategy: "sticky-sessions"
+    exclude-type: DIRECT
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Round_Robin_1.png"
     hidden: true
     name: "AR-Balance"
@@ -1395,8 +1459,10 @@ proxy-groups:
     url: "https://cp.cloudflare.com/generate_204"
     lazy: true
     max-failed-times: 3
+    empty-fallback: REJECT
     type: "url-test"
     tolerance: 50
+    exclude-type: DIRECT
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png"
     hidden: true
     name: "RU-Auto"
@@ -1407,8 +1473,10 @@ proxy-groups:
     url: "https://cp.cloudflare.com/generate_204"
     lazy: true
     max-failed-times: 1
+    empty-fallback: REJECT
     type: "load-balance"
     strategy: "sticky-sessions"
+    exclude-type: DIRECT
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Round_Robin_1.png"
     hidden: true
     name: "RU-Balance"
@@ -1428,8 +1496,10 @@ proxy-groups:
     url: "https://cp.cloudflare.com/generate_204"
     lazy: true
     max-failed-times: 3
+    empty-fallback: REJECT
     type: "url-test"
     tolerance: 50
+    exclude-type: DIRECT
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png"
     hidden: true
     name: "Low-Rate-Auto"
@@ -1441,8 +1511,10 @@ proxy-groups:
     url: "https://cp.cloudflare.com/generate_204"
     lazy: true
     max-failed-times: 1
+    empty-fallback: REJECT
     type: "load-balance"
     strategy: "sticky-sessions"
+    exclude-type: DIRECT
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Round_Robin_1.png"
     hidden: true
     name: "Low-Rate-Balance"
@@ -1463,8 +1535,10 @@ proxy-groups:
     url: "https://cp.cloudflare.com/generate_204"
     lazy: true
     max-failed-times: 3
+    empty-fallback: REJECT
     type: "url-test"
     tolerance: 50
+    exclude-type: DIRECT
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png"
     hidden: true
     name: "High-Rate-Auto"
@@ -1476,8 +1550,10 @@ proxy-groups:
     url: "https://cp.cloudflare.com/generate_204"
     lazy: true
     max-failed-times: 1
+    empty-fallback: REJECT
     type: "load-balance"
     strategy: "sticky-sessions"
+    exclude-type: DIRECT
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Round_Robin_1.png"
     hidden: true
     name: "High-Rate-Balance"
@@ -1498,8 +1574,10 @@ proxy-groups:
     url: "https://cp.cloudflare.com/generate_204"
     lazy: true
     max-failed-times: 3
+    empty-fallback: REJECT
     type: "url-test"
     tolerance: 50
+    exclude-type: DIRECT
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png"
     hidden: true
     name: "Others-Auto"
@@ -1511,8 +1589,10 @@ proxy-groups:
     url: "https://cp.cloudflare.com/generate_204"
     lazy: true
     max-failed-times: 1
+    empty-fallback: REJECT
     type: "load-balance"
     strategy: "sticky-sessions"
+    exclude-type: DIRECT
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Round_Robin_1.png"
     hidden: true
     name: "Others-Balance"
