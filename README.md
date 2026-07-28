@@ -64,7 +64,7 @@
 | --- | --- | --- |
 | 顶级分组 | 列表杂乱 | 按国家/地区 → 按应用 |
 | 地区分组 | 无   | 共 16 个国家/地区 |
-| 应用分组 | 无   | 16 个独立应用策略组 |
+| 应用分组 | 无   | 19 个独立应用策略组 |
 | 节点选择 | 手动选择 | 按地区自动测速 → 自动选最快节点 |
 | 节点命名 | 信息杂乱 | `HK 01` `JP 03 0.5x` |
 
@@ -87,7 +87,7 @@
 
 ## 3.支持的服务/应用
 
-脚本为以下 **16 个服务/应用** 自动创建独立策略组，各自使用专属规则集精准分流：
+脚本为以下 **19 个服务/应用** 自动创建独立策略组，各自使用专属规则集精准分流：
 
 | 服务  | 策略组名称 | 规则来源 | 特殊处理 |
 | --- | --- | --- | --- |
@@ -106,6 +106,9 @@
 | Spotify | `Spotify` | `geosite:spotify` | —   |
 | TikTok | `TikTok` | `geosite:tiktok` | —   |
 | Netflix | `Netflix` | `geosite:netflix` + `geoip:netflix` | 域名 + IP 双重匹配 |
+| Emby | `Emby` | `geosite:category-emby` + `DOMAIN-SUFFIX,mb3admin.com` + `DOMAIN-KEYWORD,emby` | 域名 + 关键词多重匹配 |
+| PikPak | `PikPak` | `geosite:pikpak` | —   |
+| EHentai | `EHentai` | `geosite:ehentai` | —   |
 | 广告拦截 | `AdBlock` | `adblockmihomolite` | 默认 REJECT，可切换直连 |
 
 > 常规服务策略组提供 `Default`（跟随系统）、`Direct`（直连）、`Auto`（自动测速）、`Balance`（负载均衡）及各地地区组选项；`AdBlock` 提供 `REJECT`（拦截）和 `DIRECT`（放行）。
@@ -364,22 +367,25 @@ https://fastly.jsdelivr.net/gh/zzzhhe999/Mihomo-Script-Rules@main/Config/mihomoC
 
 ```javascript
 const ruleOptionsEnable = {
-  ai: true,           // AI 服务 (ChatGPT, Claude, Gemini…)
-  youtube: true,      // YouTube
-  googlefcm: true,    // FCM 推送 (Android 必备)
-  google: true,       // Google 搜索
-  github: true,       // GitHub
-  microsoft: true,    // Microsoft 服务
-  apple: true,        // Apple 服务
-  telegram: true,     // Telegram
-  twitter: true,      // X (Twitter)
-  instagram: true,    // Instagram
-  steam: true,        // Steam
-  cloudflare: true,   // Cloudflare
-  spotify: true,      // Spotify
-  tiktok: true,       // TikTok
-  netflix: true,      // Netflix
-  adblock: true,      // 广告拦截
+  AI: true,           // AI 服务 (ChatGPT, Claude, Gemini…)
+  YouTube: true,      // YouTube
+  FCM: true,          // FCM 推送 (Android 必备)
+  Google: true,       // Google 搜索
+  GitHub: true,       // GitHub
+  Microsoft: true,    // Microsoft 服务
+  Apple: true,        // Apple 服务
+  Telegram: true,     // Telegram
+  X: true,            // X (Twitter)
+  Instagram: true,    // Instagram
+  Steam: true,        // Steam
+  Cloudflare: true,   // Cloudflare
+  Spotify: true,      // Spotify
+  TikTok: true,       // TikTok
+  Netflix: true,      // Netflix
+  AdBlock: true,      // 广告拦截
+  Emby: true,         // Emby 媒体服务器
+  PikPak: true,       // PikPak 网盘
+  EHentai: true,      // E-Hentai
 };
 ```
 
@@ -415,6 +421,7 @@ const regionDefinitionsEnable = {
 | 常量  | 作用  | 默认值 | 推荐  |
 | --- | --- | --- | --- |
 | `excludeFilterEnable` | 是否开启杂质节点过滤 | `true` | 始终开启 |
+| `quicEnable` | QUIC 管控开关 | `true` | 建议保持开启 |
 | `tunEnable` | TUN 模式开关 | `false` | 电脑端建议 `true`，手机端保持 `false` |
 
 ### 8.4 杂质过滤正则 (`excludeFilter`)
