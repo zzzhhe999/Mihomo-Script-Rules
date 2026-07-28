@@ -374,8 +374,6 @@ proxy-groups:
       - "BR-Auto"
       - "AR-Auto"
       - "RU-Auto"
-      - "Low-Rate-Auto"
-      - "High-Rate-Auto"
       - "Others-Auto"
   - interval: 180
     timeout: 3000
@@ -406,8 +404,6 @@ proxy-groups:
       - "BR-Balance"
       - "AR-Balance"
       - "RU-Balance"
-      - "Low-Rate-Balance"
-      - "High-Rate-Balance"
       - "Others-Balance"
   - type: select
     hidden: false
