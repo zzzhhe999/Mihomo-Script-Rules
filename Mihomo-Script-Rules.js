@@ -1,4 +1,4 @@
-const Compatible_With_Bettbox ={ruleOptionsEnable: true,}; 
+const Compatible_With_Bettbox = { ruleOptionsEnable : true }; 
 
 const ruleOptionsEnable = {
   AI: true,
@@ -481,7 +481,7 @@ const createRegionGroup = (name, icon, proxies) => {
 
 const FINGERPRINT_SUPPORTED = new Set(['vmess', 'vless', 'trojan', 'anytls']);
 
-function buildNetworkConfig(finalRuleProviders, tunEnable, privateDNS, proxyServerPolicy, proxyServerHosts) {
+function buildNetworkConfig(tunEnable, privateDNS, proxyServerPolicy, proxyServerHosts) {
   const chinaDNS = ['https://dns.alidns.com/dns-query#Direct', 'https://doh.pub/dns-query#Direct'];
   const foreignDNS = ['https://dns.google/dns-query#Default', 'https://dns.cloudflare.com/dns-query#Default'];
 
@@ -574,7 +574,18 @@ function collectTopLevelGroups(generatedRegionGroups, rateGroupNames) {
   const loadBalanceProxies = [];
 
   for (const g of generatedRegionGroups) {
-    if (rateGroupNames.has(g.name)) continue;
+    // 同时跳过倍率地区的 select / Auto / Balance 子组，防止泄露到顶层
+    var isRateGroup = false;
+    var _rateNames = rateGroupNames.values();
+    var _entry;
+    while ((_entry = _rateNames.next()) && !_entry.done) {
+      var rn = _entry.value;
+      if (g.name === rn || g.name.indexOf(rn + '-') === 0) {
+        isRateGroup = true;
+        break;
+      }
+    }
+    if (isRateGroup) continue;
 
     if (g.type === 'select') groupNamesOfSelect.push(g.name);
     else if (g.type === 'url-test') autoTestProxies.push(g.name);
@@ -643,7 +654,8 @@ function processProxies(rawProxies, enabledDefinitions) {
         newName = `${flag} ${matchedNormalRegionName} ${serial}`;
 
         if (isLow) {
-          newName += ` ${extractMultiplier(originalName, false)}`;
+          var multLow = extractMultiplier(originalName, false);
+          if (multLow) newName += ' ' + multLow;
         } else if (isHigh) {
           const mult = extractMultiplier(originalName, true);
           if (mult) {
@@ -742,18 +754,20 @@ function main(config) {
     );
 
     const proxyServerPolicy = {};
-    for (const policy of [
-      originalDnsConfig['nameserver-policy'] || {},
-      originalDnsConfig['proxy-server-nameserver-policy'] || {},
+    for (const rawPolicy of [
+      originalDnsConfig['nameserver-policy'],
+      originalDnsConfig['proxy-server-nameserver-policy'],
     ]) {
-      for (const [domain, dns] of Object.entries(policy)) {
+      if (!rawPolicy || typeof rawPolicy !== 'object' || Array.isArray(rawPolicy)) continue;
+      for (const [domain, dns] of Object.entries(rawPolicy)) {
         if (matchDomainPattern(domain, proxyDomains)) {
           proxyServerPolicy[domain] = dns;
         }
       }
     }
 
-    const originalHosts = config.hosts || {};
+    const originalHosts = (config.hosts && typeof config.hosts === 'object' && !Array.isArray(config.hosts))
+      ? config.hosts : {};
     const proxyServerHosts = {};
     for (const [domain, value] of Object.entries(originalHosts)) {
       if (matchDomainPattern(domain, proxyDomains)) {
@@ -890,7 +904,7 @@ function main(config) {
       icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Global.png',
     };
 
-    const networkConfig = buildNetworkConfig(finalRuleProviders, tunEnable, privateDNS, proxyServerPolicy, proxyServerHosts);
+    const networkConfig = buildNetworkConfig(tunEnable, privateDNS, proxyServerPolicy, proxyServerHosts);
 
     newConfig['mode'] = 'rule';
     newConfig['mixed-port'] = 7890;
