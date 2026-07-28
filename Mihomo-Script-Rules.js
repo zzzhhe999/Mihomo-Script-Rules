@@ -53,6 +53,14 @@ const quicRules = [
   'AND,((NETWORK,udp),(DST-PORT,443)),QUIC',
 ];
 
+const directProxies = [
+  { name: 'Dual Stack', type: 'direct' },
+  { name: 'IPv4 Only', type: 'direct', 'ip-version': 'ipv4' },
+  { name: 'IPv6 Only', type: 'direct', 'ip-version': 'ipv6' },
+  { name: 'IPv4 Preferred', type: 'direct', 'ip-version': 'ipv4-prefer' },
+  { name: 'IPv6 Preferred', type: 'direct', 'ip-version': 'ipv6-prefer' },
+];
+
 const rules = [
   'DOMAIN-KEYWORD,mcdn.bili,REJECT',
   'GEOSITE,private,Direct',
@@ -229,6 +237,7 @@ const groupBaseOption = {
   url: 'https://cp.cloudflare.com/generate_204',
   lazy: true,
   'max-failed-times': 3,
+  'empty-fallback': 'REJECT',
 };
 
 const selectBaseOption = {
@@ -240,6 +249,7 @@ const urlTestBaseOption = {
   ...groupBaseOption,
   type: 'url-test',
   tolerance: 50,
+  'exclude-type': 'DIRECT',
   icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png',
   hidden: true,
 };
@@ -249,6 +259,7 @@ const loadBalanceBaseOption = {
   type: 'load-balance',
   strategy: 'sticky-sessions',
   'max-failed-times': 1,
+  'exclude-type': 'DIRECT',
   icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Round_Robin_1.png',
   hidden: true,
 };
@@ -824,7 +835,7 @@ function main(config) {
     functionalGroups.push({
       ...selectBaseOption,
       name: 'Direct',
-      proxies: ['Dual Stack', 'IPv4 Only', 'IPv6 Only', 'IPv4 Preferred', 'IPv6 Preferred'],
+      proxies: directProxies.map(function(p) { return p.name; }),
       url: 'https://connectivitycheck.platform.hicloud.com/generate_204',
       icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/China_Map.png',
     });
@@ -912,13 +923,7 @@ function main(config) {
       delete newConfig['tun'];
     }
 
-    newConfig.proxies.push(
-      { name: 'Dual Stack', type: 'direct' },
-      { name: 'IPv4 Only', type: 'direct', 'ip-version': 'ipv4' },
-      { name: 'IPv6 Only', type: 'direct', 'ip-version': 'ipv6' },
-      { name: 'IPv4 Preferred', type: 'direct', 'ip-version': 'ipv4-prefer' },
-      { name: 'IPv6 Preferred', type: 'direct', 'ip-version': 'ipv6-prefer' },
-    );
+    newConfig.proxies.push(...directProxies);
 
     newConfig['rules'] = [
       ...finalRules,
@@ -933,4 +938,3 @@ function main(config) {
     print('[Mihomo-Script-Rules] Error in main():', error.message || String(error));
     return { proxies: [], 'proxy-groups': [], rules: [] };
   }
-}
