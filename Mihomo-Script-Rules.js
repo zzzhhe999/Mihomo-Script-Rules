@@ -938,3 +938,4 @@ function main(config) {
     print('[Mihomo-Script-Rules] Error in main():', error.message || String(error));
     return { proxies: [], 'proxy-groups': [], rules: [] };
   }
+}
