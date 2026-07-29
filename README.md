@@ -197,6 +197,8 @@
 
 ### 5.7 QUIC 管控
 
+> **前提**：QUIC 走 UDP 443，**Windows**必须开启客户端 **TUN 模式**才能劫持（系统代理只处理 TCP）。详见 [5.8](#58-双栈--客户端-tun-模式)。
+
 ```js
 'AND,((NETWORK,udp),(DST-PORT,443),(OR,((GEOSITE,geolocation-cn),(GEOIP,cn,no-resolve)))),Direct',
 'AND,((NETWORK,udp),(DST-PORT,443)),QUIC'
@@ -211,7 +213,7 @@
     - `Default`（默认代理）：允许 QUIC 流量正常通过代理服务器。
     - `REJECT`：强制阻断 QUIC。如果你在观看 YouTube 或使用 Google 搜索时遇到无限转圈、加载卡顿，建议选此项，迫使应用回退到更稳定的 TCP 连接。
 
-### 5.8 双栈 & TUN 模式
+### 5.8 双栈 & Windows 客户端 TUN 模式
 
 - 注入五个直连节点：
   - `Dual Stack` → IPv4/IPv6 自动选择
@@ -220,7 +222,7 @@
   - `IPv4 Preferred` → 优先使用 IPv4
   - `IPv6 Preferred` → 优先使用 IPv6
 
-- TUN 模式一键开关（`tunEnable` 常量），电脑端推荐开启
+- **TUN 模式由客户端管理**：Bettbox Windows 客户端内置 TUN 开关（系统代理 / TUN 模式）。电脑端推荐开启 TUN 模式以全量劫持 UDP 流量（使 QUIC 规则生效）。系统代理仅覆盖 TCP，不适用于游戏、UWP 应用和 QUIC 流量
   
 
 ### 5.9 规则自动更新
@@ -420,7 +422,6 @@ const regionDefinitionsEnable = {
 | --- | --- | --- | --- |
 | `excludeFilterEnable` | 是否开启杂质节点过滤 | `true` | 始终开启 |
 | `quicEnable` | QUIC 管控开关 | `true` | 建议保持开启 |
-| `tunEnable` | TUN 模式开关 | `false` | 电脑端建议 `true`，手机端保持 `false` |
 
 ### 8.4 杂质过滤正则 (`excludeFilter`)
 
@@ -470,4 +471,3 @@ const excludeFilter = /群|返利|循环|官[网址]|客服|网站|网址|获取
 <p align="center">
   <sub>Made with ❤️ by <a href="https://github.com/zzzhhe999">zzzhhe999</a> | 如果觉得好用，给个 ⭐ Star 吧！</sub>
 </p>
-
