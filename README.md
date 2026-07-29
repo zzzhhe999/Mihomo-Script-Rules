@@ -5,7 +5,6 @@
   <img src="https://img.shields.io/github/license/zzzhhe999/Mihomo-Script-Rules?style=flat-square&color=blue" alt="License">
   <img src="https://img.shields.io/github/languages/top/zzzhhe999/Mihomo-Script-Rules?style=flat-square" alt="Language">
   <img src="https://img.shields.io/badge/Bettbox-QuickJS%20%7C%20ES2020-brightgreen?style=flat-square" alt="Bettbox">
-  <img src="https://img.shields.io/badge/PRs-welcome-brightgreen?style=flat-square" alt="PRs Welcome">
 </p>
 
 <p align="center">
@@ -231,7 +230,6 @@
 - [MetaCubeX/meta-rules-dat](https://github.com/MetaCubeX/meta-rules-dat)（geosite/geoip 核心规则）
 - [wwqgtxx/clash-rules](https://github.com/wwqgtxx/clash-rules)（直连/GFW 规则）
 - [217heidai/adblockfilters](https://github.com/217heidai/adblockfilters)（广告拦截规则）
-- [AIsouler/MyClash](https://github.com/AIsouler/MyClash)（下载类应用规则）
 
 ### 5.10 极致的防御性架构与无损接管
 
@@ -251,7 +249,7 @@
   
 - **Hosts 硬编码**：防止 DNS 污染导致 DNS 服务器本身解析失败
   
-- **节点图标**：每个策略组配有 Qure 精美图标
+- **节点图标**：每个策略组和地区组配有 Qure 精美图标
   
 - **测速 URL 国内外分流**：国外节点用 Cloudflare，国内节点用华为
   
@@ -306,7 +304,7 @@ https://fastly.jsdelivr.net/gh/zzzhhe999/Mihomo-Script-Rules@main/Mihomo-Script-
 
 Ⅲ 保存并更新订阅
 
-> ⚠️ Clash Verge Rev 使用 **boa_engine** 而非 QuickJS，脚本中的 `print()` 调用在该引擎下可能不被支持。如果你在 CVR 上遇到日志缺失，不影响核心功能但建议优先使用 Bettbox。
+> ⚠️ Clash Verge Rev 使用 **boa_engine** 而非 QuickJS，脚本中的 `print()` 调用在该引擎下可能不被支持。如果你在 CVR 上遇到日志缺失，不影响核心功能但建议优先使用 **Bettbox**。
 
 ### 6.2 纯配置文件
 
@@ -343,13 +341,13 @@ https://fastly.jsdelivr.net/gh/zzzhhe999/Mihomo-Script-Rules@main/Config/mihomoC
 
 | 客户端 | 兼容性 | 备注  |
 | --- | --- | --- |
-| [Bettbox](https://github.com/appshubcc/Bettbox) | ⭐ 完美 | **强烈推荐**。QuickJS 引擎，与本脚本的 ES2020 防御性架构完全匹配 |
-| [FlClash](https://github.com/chen08209/FlClash) | ⭐ 完美 | 推荐，原生支持 JS 脚本预处理，执行效率极高 |
-| [Clash Verge Rev](https://github.com/clash-verge-rev/clash-verge-rev) | ⚠️ 可用 | 使用 **boa_engine**（非 QuickJS），`print()` 可能不兼容，核心功能正常但日志输出可能缺失 |
-| [Clash Nyanpasu](https://github.com/libnyanpasu/clash-nyanpasu) | ⚠️ 可用 | 同上，需自行验证 |
-| [Clash Verge](https://github.com/clash-verge-rev/clash-verge-rev) | ❌ 旧版 | 旧版可能不支持，建议升级到 Verge Rev |
-| Stash / Shadowrocket | ❌ 不兼容 | JS 预处理语法不同，建议用 sub-store 中转或使用纯配置 |
-| Surge / Quantumult X | ❌ 不兼容 | 同上  |
+| [Bettbox](https://github.com/appshubcc/Bettbox) | 完美 | **强烈推荐**。QuickJS 引擎，与本脚本完全匹配 |
+| [FlClash](https://github.com/chen08209/FlClash) | 较好 | 原生支持 JS 脚本预处理，执行效率极高 |
+| [Clash Verge Rev](https://github.com/clash-verge-rev/clash-verge-rev) | 可用 | 使用 **boa_engine**，可能不兼容，核心功能正常 |
+| [Clash Nyanpasu](https://github.com/libnyanpasu/clash-nyanpasu) | 可用 | 同上，需自行验证 |
+| [Clash Verge](https://github.com/clash-verge-rev/clash-verge-rev) | 旧版 | 旧版可能不支持，建议升级到 Verge Rev |
+| Stash / Shadowrocket | 不兼容 | JS 预处理语法不同，建议用 sub-store 中转或使用纯配置 |
+| Surge / Quantumult X | 不兼容 | 同上  |
 
 ### 7.1 Stash / Shadowrocket / Surge 等其他客户端
 
@@ -367,13 +365,13 @@ https://fastly.jsdelivr.net/gh/zzzhhe999/Mihomo-Script-Rules@main/Config/mihomoC
 
 ```javascript
 const ruleOptionsEnable = {
-  AI: true,           // AI 服务 (ChatGPT, Claude, Gemini…)
+  AI: true,           // AI 服务 (ChatGPT, Claude)
   YouTube: true,      // YouTube
-  FCM: true,          // FCM 推送 (Android 必备)
-  Google: true,       // Google 搜索
+  FCM: true,          // FCM 推送
+  Google: true,       // Google
   GitHub: true,       // GitHub
-  Microsoft: true,    // Microsoft 服务
-  Apple: true,        // Apple 服务
+  Microsoft: true,    // Microsoft
+  Apple: true,        // Apple
   Telegram: true,     // Telegram
   X: true,            // X (Twitter)
   Instagram: true,    // Instagram
@@ -383,8 +381,8 @@ const ruleOptionsEnable = {
   TikTok: true,       // TikTok
   Netflix: true,      // Netflix
   AdBlock: true,      // 广告拦截
-  Emby: true,         // Emby 媒体服务器
-  PikPak: true,       // PikPak 网盘
+  Emby: true,         // Emby
+  PikPak: true,       // PikPak
   EHentai: true,      // E-Hentai
 };
 ```
@@ -411,7 +409,7 @@ const regionDefinitionsEnable = {
   BR: true,           // 巴西
   AR: true,           // 阿根廷
   RU: true,           // 俄罗斯
-  'Low-Rate': true,   // 自动识别 0.1x ~ 0.5x 的低倍率节点
+  'Low-Rate': true,   // 自动识别 0.0x ~ 0.5x 的低倍率节点
   'High-Rate': true,  // 自动识别 2x+ 的高倍率节点
 };
 ```
