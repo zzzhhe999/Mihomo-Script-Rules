@@ -47,7 +47,6 @@ const excludeFilterEnable = true;
 const excludeFilter =
   /群|返利|循环|官[网址]|客服|网站|网址|获取|订阅|流量|到期|机场|下次|备用|过期|已用|联系|邮箱|工单|通知|防止|国内|地址|频道|无法|说明|使用|提示|特别|访问|教程|关注|更新|作者|加入|超时|收藏|福利|邀请|好友|选择|剩余|公益|发布|通路|登录|禁止|定时|渠道|牢记|永久|余额|阁下|本站|刷新|导航|⚠️|@|Expire|https?:\/\/|www\.|\.com(?:$|[^a-zA-Z0-9])/u;
 
-const tunEnable = false;
 const quicEnable = true;
 
 const quicRules = [
@@ -481,7 +480,7 @@ const createRegionGroup = (name, icon, proxies) => {
 
 const FINGERPRINT_SUPPORTED = new Set(['vmess', 'vless', 'trojan', 'anytls']);
 
-function buildNetworkConfig(tunEnable, privateDNS, proxyServerPolicy, proxyServerHosts) {
+function buildNetworkConfig(privateDNS, proxyServerPolicy, proxyServerHosts) {
   const chinaDNS = ['https://dns.alidns.com/dns-query#Direct', 'https://doh.pub/dns-query#Direct'];
   const foreignDNS = ['https://dns.google/dns-query#Default', 'https://dns.cloudflare.com/dns-query#Default'];
 
@@ -552,19 +551,6 @@ function buildNetworkConfig(tunEnable, privateDNS, proxyServerPolicy, proxyServe
         'proxy-server-nameserver-policy': proxyServerPolicy,
       }),
     },
-    tun: tunEnable
-      ? {
-          enable: true,
-          stack: 'mixed',
-          'auto-route': true,
-          'strict-route': true,
-          'auto-redirect': false,
-          'auto-detect-interface': true,
-          'endpoint-independent-nat': true,
-          'dns-hijack': ['any:53', 'tcp://any:53'],
-          'udp-timeout': 300,
-        }
-      : undefined,
   };
 }
 
@@ -575,11 +561,8 @@ function collectTopLevelGroups(generatedRegionGroups, rateGroupNames) {
 
   for (const g of generatedRegionGroups) {
     // 同时跳过倍率地区的 select / Auto / Balance 子组，防止泄露到顶层
-    var isRateGroup = false;
-    var _rateNames = rateGroupNames.values();
-    var _entry;
-    while ((_entry = _rateNames.next()) && !_entry.done) {
-      var rn = _entry.value;
+    let isRateGroup = false;
+    for (const rn of rateGroupNames) {
       if (g.name === rn || g.name.indexOf(rn + '-') === 0) {
         isRateGroup = true;
         break;
@@ -904,7 +887,7 @@ function main(config) {
       icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Global.png',
     };
 
-    const networkConfig = buildNetworkConfig(tunEnable, privateDNS, proxyServerPolicy, proxyServerHosts);
+    const networkConfig = buildNetworkConfig(privateDNS, proxyServerPolicy, proxyServerHosts);
 
     newConfig['mode'] = 'rule';
     newConfig['mixed-port'] = 7890;
@@ -932,12 +915,6 @@ function main(config) {
     newConfig['ntp'] = networkConfig.ntp;
     newConfig['sniffer'] = networkConfig.sniffer;
     newConfig['dns'] = networkConfig.dns;
-
-    if (networkConfig.tun) {
-      newConfig['tun'] = networkConfig.tun;
-    } else if ('tun' in newConfig) {
-      delete newConfig['tun'];
-    }
 
     newConfig.proxies.push(...directProxies);
 
