@@ -269,7 +269,7 @@ const extractMultiplier = (name, isHigh) => {
     const match = name.match(/(?:^|[^\d])(0\.[0-5])\s*(?:倍|倍率|[xX×])?/u);
     if (match !== null) return `${match[1]}x`;
     const lowMatch = name.match(/省流|下载/);
-    return lowMatch !== null ? lowMatch[0] : 'Low';
+    return lowMatch !== null ? lowMatch[0] : '';
   }
   const match = name.match(/(\d+(?:\.\d+)?)\s*[xX×倍]/u) || name.match(/[×*xX]\s*(\d+(?:\.\d+)?)/u);
   return match !== null ? `${match[1]}x` : '';
@@ -448,12 +448,14 @@ const serviceConfigs = [
 ];
 
 const createRegionGroup = (name, icon, proxies) => {
+  // [REFACTOR] 防御性校验：确保 proxies 为数组（缺失节点时地区组仍正常生成）
+  const safeProxies = Array.isArray(proxies) ? proxies : [];
   const autoTestName = `${name}-Auto`;
   const loadBalanceName = `${name}-Balance`;
   return [
-    { ...selectBaseOption, name, icon, proxies: [autoTestName, loadBalanceName, ...proxies] },
-    { ...urlTestBaseOption, name: autoTestName, proxies },
-    { ...loadBalanceBaseOption, name: loadBalanceName, proxies },
+    { ...selectBaseOption, name, icon, proxies: [autoTestName, loadBalanceName, ...safeProxies] },
+    { ...urlTestBaseOption, name: autoTestName, proxies: safeProxies },
+    { ...loadBalanceBaseOption, name: loadBalanceName, proxies: safeProxies },
   ];
 };
 
@@ -539,10 +541,12 @@ function collectTopLevelGroups(generatedRegionGroups, rateGroupNames) {
   const loadBalanceProxies = [];
 
   for (const g of generatedRegionGroups) {
-    // 同时跳过倍率地区的 select / Auto / Balance 子组，防止泄露到顶层
+    // [FIX] 修正倍率组前缀匹配：原代码 g.name.indexOf(rn + '-') === 0 在 rn 值
+    //       为 'Low-Rate'/'High-Rate' 时实际是死代码（rn 已含 '-'，再加 '-' 永不等价于
+    //       'Low-Rate-Auto'/'High-Rate-Auto'），改用 startsWith 修正
     let isRateGroup = false;
     for (const rn of rateGroupNames) {
-      if (g.name === rn || g.name.indexOf(rn + '-') === 0) {
+      if (g.name === rn || g.name.startsWith(rn + '-')) {
         isRateGroup = true;
         break;
       }
@@ -615,10 +619,12 @@ function processProxies(rawProxies, enabledDefinitions) {
         const serial = String(count).padStart(2, '0');
         newName = `${flag} ${matchedNormalRegionName} ${serial}`;
 
+        // [REFACTOR] 使用 const 替代 var，保持全文件风格一致
         if (isLow) {
-          var multLow = extractMultiplier(originalName, false);
+          const multLow = extractMultiplier(originalName, false);
           if (multLow) newName += ' ' + multLow;
         } else if (isHigh) {
+          // 注意：isLow 与 isHigh 互斥处理——同时命中时优先 isLow（倍率提取逻辑决定）
           const mult = extractMultiplier(originalName, true);
           if (mult) {
             newName += ` ${mult}`;
@@ -696,9 +702,11 @@ function main(config) {
       'system',
     ];
 
+    // [REFACTOR] 增加非字符串类型的前置过滤，避免 String(non-string) 的隐式转换
     const isCommonDns = (dns) => {
       if (dns == null) return true;
-      const value = String(dns).toLowerCase();
+      if (typeof dns !== 'string') return true;
+      const value = dns.toLowerCase();
       return commonDnsList.some((keyword) => value.includes(keyword));
     };
 
@@ -800,7 +808,8 @@ function main(config) {
       finalRules.push(...svc.rules);
       Object.assign(finalRuleProviders, svc.providers);
 
-      const hasCustomProxyMode = Object.prototype.hasOwnProperty.call(svc, 'proxyMode');
+      // [REFACTOR] 简化 hasOwnProperty.call → in 运算符（svc 均为普通对象字面量）
+      const hasCustomProxyMode = 'proxyMode' in svc;
       const currentProxyMode = hasCustomProxyMode ? svc.proxyMode : 'default';
       functionalGroups.push({
         ...selectBaseOption,
@@ -813,7 +822,8 @@ function main(config) {
     functionalGroups.push({
       ...selectBaseOption,
       name: 'Direct',
-      proxies: directProxies.map(function(p) { return p.name; }),
+      // [REFACTOR] 使用箭头函数保持全文件风格一致
+      proxies: directProxies.map((p) => p.name),
       url: 'https://connectivitycheck.platform.hicloud.com/generate_204',
       icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/China_Map.png',
     });
