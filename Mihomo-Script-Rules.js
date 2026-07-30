@@ -448,7 +448,6 @@ const serviceConfigs = [
 ];
 
 const createRegionGroup = (name, icon, proxies) => {
-  // [REFACTOR] 防御性校验：确保 proxies 为数组（缺失节点时地区组仍正常生成）
   const safeProxies = Array.isArray(proxies) ? proxies : [];
   const autoTestName = `${name}-Auto`;
   const loadBalanceName = `${name}-Balance`;
@@ -541,9 +540,6 @@ function collectTopLevelGroups(generatedRegionGroups, rateGroupNames) {
   const loadBalanceProxies = [];
 
   for (const g of generatedRegionGroups) {
-    // [FIX] 修正倍率组前缀匹配：原代码 g.name.indexOf(rn + '-') === 0 在 rn 值
-    //       为 'Low-Rate'/'High-Rate' 时实际是死代码（rn 已含 '-'，再加 '-' 永不等价于
-    //       'Low-Rate-Auto'/'High-Rate-Auto'），改用 startsWith 修正
     let isRateGroup = false;
     for (const rn of rateGroupNames) {
       if (g.name === rn || g.name.startsWith(rn + '-')) {
@@ -619,12 +615,10 @@ function processProxies(rawProxies, enabledDefinitions) {
         const serial = String(count).padStart(2, '0');
         newName = `${flag} ${matchedNormalRegionName} ${serial}`;
 
-        // [REFACTOR] 使用 const 替代 var，保持全文件风格一致
         if (isLow) {
           const multLow = extractMultiplier(originalName, false);
           if (multLow) newName += ' ' + multLow;
         } else if (isHigh) {
-          // 注意：isLow 与 isHigh 互斥处理——同时命中时优先 isLow（倍率提取逻辑决定）
           const mult = extractMultiplier(originalName, true);
           if (mult) {
             newName += ` ${mult}`;
@@ -702,7 +696,6 @@ function main(config) {
       'system',
     ];
 
-    // [REFACTOR] 增加非字符串类型的前置过滤，避免 String(non-string) 的隐式转换
     const isCommonDns = (dns) => {
       if (dns == null) return true;
       if (typeof dns !== 'string') return true;
@@ -808,7 +801,6 @@ function main(config) {
       finalRules.push(...svc.rules);
       Object.assign(finalRuleProviders, svc.providers);
 
-      // [REFACTOR] 简化 hasOwnProperty.call → in 运算符（svc 均为普通对象字面量）
       const hasCustomProxyMode = 'proxyMode' in svc;
       const currentProxyMode = hasCustomProxyMode ? svc.proxyMode : 'default';
       functionalGroups.push({
@@ -822,7 +814,6 @@ function main(config) {
     functionalGroups.push({
       ...selectBaseOption,
       name: 'Direct',
-      // [REFACTOR] 使用箭头函数保持全文件风格一致
       proxies: directProxies.map((p) => p.name),
       url: 'https://connectivitycheck.platform.hicloud.com/generate_204',
       icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/China_Map.png',
