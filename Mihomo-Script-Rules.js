@@ -78,8 +78,6 @@ const rules = [
   'GEOSITE,microsoft@cn,Direct',
   'GEOSITE,cloudflare@cn,Direct',
   'GEOSITE,apple@cn,Direct',
-  'DOMAIN,fsend.cn,Direct',
-  'DOMAIN-SUFFIX,jlc-jdgf.com,Direct',
 ];
 
 const NODE_RATE_LOW = 'Low-Rate';
