@@ -116,12 +116,12 @@ proxies:
     server: 4.4.4.2
     port: 443
     client-fingerprint: chrome
-  - name: Random Node 01
+  - name: "Random Node 01 #01"
     type: vmess
     server: 20.20.20.1
     port: 443
     client-fingerprint: chrome
-  - name: 某地节点
+  - name: "某地节点 #02"
     type: vless
     server: 20.20.20.2
     port: 443
@@ -1563,8 +1563,8 @@ proxy-groups:
     proxies:
       - "Others-Auto"
       - "Others-Balance"
-      - Random Node 01
-      - 某地节点
+      - "Random Node 01 #01"
+      - "某地节点 #02"
   - interval: 180
     timeout: 3000
     url: "https://cp.cloudflare.com/generate_204"
@@ -1578,8 +1578,8 @@ proxy-groups:
     hidden: true
     name: "Others-Auto"
     proxies:
-      - Random Node 01
-      - 某地节点
+      - "Random Node 01 #01"
+      - "某地节点 #02"
   - interval: 180
     timeout: 3000
     url: "https://cp.cloudflare.com/generate_204"
@@ -1593,8 +1593,8 @@ proxy-groups:
     hidden: true
     name: "Others-Balance"
     proxies:
-      - Random Node 01
-      - 某地节点
+      - "Random Node 01 #01"
+      - "某地节点 #02"
 rule-providers:
   DownloadApps:
     type: http
