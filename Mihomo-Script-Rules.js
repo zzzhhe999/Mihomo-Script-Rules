@@ -581,11 +581,13 @@ function processProxies(rawProxies, enabledDefinitions) {
 
       if (excludeFilterEnable && excludeFilter.test(originalName)) continue;
 
-      const proxyType = typeof proxy.type === 'string' ? proxy.type.toLowerCase() : 'unknown';
+      // [FIX] 浅拷贝避免污染原始 config 输入对象（shallow copy 防止入参副作用）
+      const p = { ...proxy };
+      const proxyType = typeof p.type === 'string' ? p.type.toLowerCase() : 'unknown';
 
       if (FINGERPRINT_SUPPORTED.has(proxyType)) {
-        if (proxy['client-fingerprint'] == null) {
-          proxy['client-fingerprint'] = 'chrome';
+        if (p['client-fingerprint'] == null) {
+          p['client-fingerprint'] = 'chrome';
         }
       }
 
@@ -625,10 +627,15 @@ function processProxies(rawProxies, enabledDefinitions) {
             newName += ` ${mult}`;
           }
         }
+      } else {
+        // [FIX] 未匹配地区的节点追加唯一序号防重名（mihomo 要求 proxy name 全局唯一）
+        const otherCount = (regionCounters.get('__other__') ?? 0) + 1;
+        regionCounters.set('__other__', otherCount);
+        newName = originalName + ' #' + String(otherCount).padStart(2, '0');
       }
 
-      proxy.name = newName;
-      processedProxies.push(proxy);
+      p.name = newName;
+      processedProxies.push(p);
 
       const skipNormalGroup = isLow || isHigh;
       for (const groupName of matchedGroups) {
@@ -694,12 +701,13 @@ function main(config) {
       '127.0.0.1',
       'alidns', 'doh.pub', 'dot.pub', 'dnspod', 'dns.baidu',
       'dns.google', 'cloudflare', 'quad9', 'opendns', 'nextdns', 'adguard',
-      'system',
     ];
 
     const isCommonDns = (dns) => {
       if (dns == null) return true;
       if (typeof dns !== 'string') return true;
+      // [FIX] mihomo 内置 'system' DNS 引用做精确匹配，防止子串误伤（如 dns-system.example.com）
+      if (dns === 'system') return true;
       const value = dns.toLowerCase();
       return commonDnsList.some((keyword) => value.includes(keyword));
     };
