@@ -73,11 +73,9 @@ const rules = [
   'DOMAIN-SUFFIX,pstatp.com,Direct',
   'DOMAIN-KEYWORD,douyin,Direct',
   'RULE-SET,DownloadApps,Direct',
-  'GEOSITE,category-games@cn,Direct',
-  'GEOSITE,nvidia@cn,Direct',
-  'GEOSITE,microsoft@cn,Direct',
-  'GEOSITE,cloudflare@cn,Direct',
-  'GEOSITE,apple@cn,Direct',
+  'GEOSITE,category-games-cn,Direct',
+  'GEOSITE,cloudflare-cn,Direct',
+  'GEOSITE,apple-cn,Direct',
 ];
 
 const NODE_RATE_LOW = 'Low-Rate';
@@ -521,11 +519,9 @@ function buildNetworkConfig(privateDNS, proxyServerPolicy, proxyServerHosts) {
         'geosite:private': chinaDNS,
         'rule-set:cn': chinaDNS,
         'geosite:geolocation-cn': chinaDNS,
-        'geosite:apple@cn': chinaDNS,
-        'geosite:cloudflare@cn': chinaDNS,
-        'geosite:microsoft@cn': chinaDNS,
-        'geosite:category-games@cn': chinaDNS,
-        'geosite:nvidia@cn': chinaDNS,
+        'geosite:apple-cn': chinaDNS,
+        'geosite:cloudflare-cn': chinaDNS,
+        'geosite:category-games-cn': chinaDNS,
         'geosite:gfw': foreignDNS,
       },
       ...(Object.keys(proxyServerPolicy).length > 0 && {
@@ -656,9 +652,7 @@ function main(config) {
   if (!config || typeof config !== 'object' || Array.isArray(config)) {
     return { proxies: [], 'proxy-groups': [], rules: [] };
   }
-  if (!Array.isArray(config.proxies)) {
-    config.proxies = [];
-  }
+  const rawProxies = Array.isArray(config.proxies) ? config.proxies : [];
 
   try {
     const newConfig = { ...config };
@@ -667,7 +661,6 @@ function main(config) {
     delete newConfig['sub-rules'];
     delete newConfig['experimental'];
 
-    const rawProxies = newConfig.proxies;
     const hasValidProxy = rawProxies.some((p) => {
       if (p && typeof p === 'object' && typeof p.type === 'string') {
         const pType = p.type.toLowerCase();
@@ -788,11 +781,13 @@ function main(config) {
         ...urlTestBaseOption,
         name: 'Auto',
         proxies: autoTestProxies.length > 0 ? autoTestProxies : ['Direct'],
+        ...(autoTestProxies.length === 0 ? { 'exclude-type': undefined } : {}),
       },
       {
         ...loadBalanceBaseOption,
         name: 'Balance',
         proxies: loadBalanceProxies.length > 0 ? loadBalanceProxies : ['Direct'],
+        ...(loadBalanceProxies.length === 0 ? { 'exclude-type': undefined } : {}),
       },
       {
         ...selectBaseOption,
@@ -880,7 +875,7 @@ function main(config) {
     const networkConfig = buildNetworkConfig(privateDNS, proxyServerPolicy, proxyServerHosts);
 
     newConfig['mode'] = 'rule';
-    newConfig['mixed-port'] = 7890;
+    newConfig['mixed-port'] = config['mixed-port'] ?? 7890;
     newConfig['allow-lan'] = true;
     newConfig['ipv6'] = true;
     newConfig['bind-address'] = '*';
@@ -892,7 +887,7 @@ function main(config) {
       geosite: 'https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/geosite.dat',
       geoip: 'https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/geoip.dat',
     };
-    newConfig['external-controller'] = '127.0.0.1:9090';
+    newConfig['external-controller'] = config['external-controller'] ?? '127.0.0.1:9090';
     newConfig['external-ui'] = 'ui';
     newConfig['external-ui-url'] = 'https://github.com/Zephyruso/zashboard/releases/latest/download/dist.zip';
     newConfig['profile'] = {
@@ -919,6 +914,6 @@ function main(config) {
     return newConfig;
   } catch (error) {
     print('[Mihomo-Script-Rules] Error in main():', error.message || String(error));
-    return { proxies: [], 'proxy-groups': [], rules: [] };
+    return { ...config, proxies: Array.isArray(config.proxies) ? config.proxies : [] };
   }
 }
