@@ -581,7 +581,6 @@ function processProxies(rawProxies, enabledDefinitions) {
 
       if (excludeFilterEnable && excludeFilter.test(originalName)) continue;
 
-      // [FIX] 浅拷贝避免污染原始 config 输入对象（shallow copy 防止入参副作用）
       const p = { ...proxy };
       const proxyType = typeof p.type === 'string' ? p.type.toLowerCase() : 'unknown';
 
@@ -628,7 +627,6 @@ function processProxies(rawProxies, enabledDefinitions) {
           }
         }
       } else {
-        // [FIX] 未匹配地区的节点追加唯一序号防重名（mihomo 要求 proxy name 全局唯一）
         const otherCount = (regionCounters.get('__other__') ?? 0) + 1;
         regionCounters.set('__other__', otherCount);
         newName = originalName + ' #' + String(otherCount).padStart(2, '0');
@@ -686,6 +684,10 @@ function main(config) {
 
     const { processedProxies, otherProxies, regionGroups } = processProxies(rawProxies, enabledDefinitions);
 
+    if (processedProxies.length === 0) {
+      print('[Mihomo-Script-Rules] 警告：所有代理节点已被过滤器排除，最终配置将仅包含 DIRECT 出口。请检查 excludeFilter 正则是否过于宽泛。');
+    }
+
     newConfig.proxies = processedProxies;
 
     const originalDnsConfig = config.dns || {};
@@ -706,8 +708,7 @@ function main(config) {
     const isCommonDns = (dns) => {
       if (dns == null) return true;
       if (typeof dns !== 'string') return true;
-      // [FIX] mihomo 内置 'system' DNS 引用做精确匹配，防止子串误伤（如 dns-system.example.com）
-      if (dns === 'system') return true;
+      if (dns.toLowerCase() === 'system') return true;
       const value = dns.toLowerCase();
       return commonDnsList.some((keyword) => value.includes(keyword));
     };
