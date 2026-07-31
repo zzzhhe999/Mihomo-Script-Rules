@@ -184,19 +184,13 @@ dns:
     "geosite:geolocation-cn":
       - "https://dns.alidns.com/dns-query#Direct"
       - "https://doh.pub/dns-query#Direct"
-    "geosite:apple@cn":
+    "geosite:apple-cn":
       - "https://dns.alidns.com/dns-query#Direct"
       - "https://doh.pub/dns-query#Direct"
-    "geosite:cloudflare@cn":
+    "geosite:cloudflare-cn":
       - "https://dns.alidns.com/dns-query#Direct"
       - "https://doh.pub/dns-query#Direct"
-    "geosite:microsoft@cn":
-      - "https://dns.alidns.com/dns-query#Direct"
-      - "https://doh.pub/dns-query#Direct"
-    "geosite:category-games@cn":
-      - "https://dns.alidns.com/dns-query#Direct"
-      - "https://doh.pub/dns-query#Direct"
-    "geosite:nvidia@cn":
+    "geosite:category-games-cn":
       - "https://dns.alidns.com/dns-query#Direct"
       - "https://doh.pub/dns-query#Direct"
     "geosite:gfw":
@@ -1697,11 +1691,9 @@ rules:
   - "DOMAIN-SUFFIX,pstatp.com,Direct"
   - "DOMAIN-KEYWORD,douyin,Direct"
   - "RULE-SET,DownloadApps,Direct"
-  - "GEOSITE,category-games@cn,Direct"
-  - "GEOSITE,nvidia@cn,Direct"
-  - "GEOSITE,microsoft@cn,Direct"
-  - "GEOSITE,cloudflare@cn,Direct"
-  - "GEOSITE,apple@cn,Direct"
+  - "GEOSITE,category-games-cn,Direct"
+  - "GEOSITE,cloudflare-cn,Direct"
+  - "GEOSITE,apple-cn,Direct"
   - "RULE-SET,adblockmihomolite,AdBlock"
   - "GEOSITE,openai,AI"
   - "GEOSITE,anthropic,AI"
