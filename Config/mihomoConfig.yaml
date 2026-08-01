@@ -226,7 +226,6 @@ proxy-groups:
       - Auto
       - Balance
       - QUIC
-      - Reject
       - AdBlock
       - Cloudflare
       - FCM
@@ -405,21 +404,15 @@ proxy-groups:
     name: QUIC
     proxies:
       - Default
-      - Reject
-    icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Round_Robin_1.png"
-  - type: select
-    hidden: true
-    name: Reject
-    proxies:
       - REJECT
-    icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Reject.png"
+    icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Round_Robin_1.png"
   - type: select
     hidden: false
     name: AdBlock
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/AdBlack.png"
     proxies:
-      - Reject
-      - Direct
+      - REJECT
+      - DIRECT
   - type: select
     hidden: false
     name: Cloudflare
@@ -1482,7 +1475,7 @@ proxy-groups:
   - type: select
     hidden: false
     name: "Low-Rate"
-    icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Filter.png"
+    icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Cellular.png"
     proxies:
       - "Low-Rate-Auto"
       - "Low-Rate-Balance"
@@ -1521,7 +1514,7 @@ proxy-groups:
   - type: select
     hidden: false
     name: "High-Rate"
-    icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Cellular.png"
+    icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Filter.png"
     proxies:
       - "High-Rate-Auto"
       - "High-Rate-Balance"
