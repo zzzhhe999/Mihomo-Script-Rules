@@ -182,13 +182,13 @@ const regionDefinitions = [
     name: NODE_RATE_LOW,
     regex:
       /^(?!.*(?:剩|期|客户端|软件|官网|流量|订阅|v\d(?!ray|less))).*(?:低倍|低倍率|省流|下载|(?:^|[^\d])0\.[0-5])/u,
-    icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Filter.png',
+    icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Cellular.png',
   },
   {
     name: NODE_RATE_HIGH,
     regex:
       /^(?!.*(?:剩|期|客户端|软件|官网|流量|订阅|v\d(?!ray|less))).*(?:[*×xX✕✖⨉]\s*(?:[2-9]\d*|[1-9]\d+)(?:\.\d+)?|(?:^|[^\d.])(?:[2-9]\d*|[1-9]\d+)(?:\.\d+)?\s*(?:倍|倍率|[*×xX✕✖⨉]))/u,
-    icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Cellular.png',
+    icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Filter.png',
   },
 ];
 
@@ -767,7 +767,7 @@ function main(config) {
 
     const proxyModes = {
       default: ['Default', 'Direct', 'Auto', 'Balance', ...groupNamesOfSelect],
-      reject: ['Reject', 'Direct'],
+      reject: ['REJECT', 'DIRECT'],
     };
 
     const functionalGroups = [
@@ -792,15 +792,8 @@ function main(config) {
       {
         ...selectBaseOption,
         name: 'QUIC',
-        proxies: ['Default', 'Reject'],
+        proxies: ['Default', 'REJECT'],
         icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Round_Robin_1.png',
-      },
-      {
-        ...selectBaseOption,
-        name: 'Reject',
-        hidden: true,
-        proxies: ['REJECT'],
-        icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Reject.png',
       },
     ];
 
@@ -837,7 +830,6 @@ function main(config) {
       'Auto',
       'Balance',
       'QUIC',
-      'Reject',
       'AdBlock',
       'Cloudflare',
       'FCM',
