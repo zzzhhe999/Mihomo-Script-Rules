@@ -226,6 +226,7 @@ proxy-groups:
       - Auto
       - Balance
       - QUIC
+      - Reject
       - AdBlock
       - Cloudflare
       - FCM
@@ -327,7 +328,7 @@ proxy-groups:
       - AR
       - RU
       - Others
-    icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Proxy.png"
+    icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Direct.png"
   - type: select
     hidden: false
     name: Direct
@@ -378,7 +379,7 @@ proxy-groups:
     type: "load-balance"
     strategy: "sticky-sessions"
     exclude-type: DIRECT
-    icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Round_Robin_1.png"
+    icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Bypass.png"
     hidden: true
     name: Balance
     proxies:
@@ -404,15 +405,21 @@ proxy-groups:
     name: QUIC
     proxies:
       - Default
+      - Reject
+    icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Round_Robin_1.png"
+  - type: select
+    hidden: true
+    name: Reject
+    proxies:
       - REJECT
-    icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Lock.png"
+    icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Reject.png"
   - type: select
     hidden: false
     name: AdBlock
-    icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Advertising.png"
+    icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/AdBlack.png"
     proxies:
-      - REJECT
-      - DIRECT
+      - Reject
+      - Direct
   - type: select
     hidden: false
     name: Cloudflare
@@ -916,7 +923,7 @@ proxy-groups:
     type: "load-balance"
     strategy: "sticky-sessions"
     exclude-type: DIRECT
-    icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Round_Robin_1.png"
+    icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Bypass.png"
     hidden: true
     name: "HK-Balance"
     proxies:
@@ -958,7 +965,7 @@ proxy-groups:
     type: "load-balance"
     strategy: "sticky-sessions"
     exclude-type: DIRECT
-    icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Round_Robin_1.png"
+    icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Bypass.png"
     hidden: true
     name: "JP-Balance"
     proxies:
@@ -998,7 +1005,7 @@ proxy-groups:
     type: "load-balance"
     strategy: "sticky-sessions"
     exclude-type: DIRECT
-    icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Round_Robin_1.png"
+    icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Bypass.png"
     hidden: true
     name: "US-Balance"
     proxies:
@@ -1035,7 +1042,7 @@ proxy-groups:
     type: "load-balance"
     strategy: "sticky-sessions"
     exclude-type: DIRECT
-    icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Round_Robin_1.png"
+    icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Bypass.png"
     hidden: true
     name: "SG-Balance"
     proxies:
@@ -1071,7 +1078,7 @@ proxy-groups:
     type: "load-balance"
     strategy: "sticky-sessions"
     exclude-type: DIRECT
-    icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Round_Robin_1.png"
+    icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Bypass.png"
     hidden: true
     name: "TW-Balance"
     proxies:
@@ -1107,7 +1114,7 @@ proxy-groups:
     type: "load-balance"
     strategy: "sticky-sessions"
     exclude-type: DIRECT
-    icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Round_Robin_1.png"
+    icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Bypass.png"
     hidden: true
     name: "KR-Balance"
     proxies:
@@ -1143,7 +1150,7 @@ proxy-groups:
     type: "load-balance"
     strategy: "sticky-sessions"
     exclude-type: DIRECT
-    icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Round_Robin_1.png"
+    icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Bypass.png"
     hidden: true
     name: "UK-Balance"
     proxies:
@@ -1179,7 +1186,7 @@ proxy-groups:
     type: "load-balance"
     strategy: "sticky-sessions"
     exclude-type: DIRECT
-    icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Round_Robin_1.png"
+    icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Bypass.png"
     hidden: true
     name: "DE-Balance"
     proxies:
@@ -1215,7 +1222,7 @@ proxy-groups:
     type: "load-balance"
     strategy: "sticky-sessions"
     exclude-type: DIRECT
-    icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Round_Robin_1.png"
+    icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Bypass.png"
     hidden: true
     name: "FR-Balance"
     proxies:
@@ -1251,7 +1258,7 @@ proxy-groups:
     type: "load-balance"
     strategy: "sticky-sessions"
     exclude-type: DIRECT
-    icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Round_Robin_1.png"
+    icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Bypass.png"
     hidden: true
     name: "CA-Balance"
     proxies:
@@ -1287,7 +1294,7 @@ proxy-groups:
     type: "load-balance"
     strategy: "sticky-sessions"
     exclude-type: DIRECT
-    icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Round_Robin_1.png"
+    icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Bypass.png"
     hidden: true
     name: "AU-Balance"
     proxies:
@@ -1323,7 +1330,7 @@ proxy-groups:
     type: "load-balance"
     strategy: "sticky-sessions"
     exclude-type: DIRECT
-    icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Round_Robin_1.png"
+    icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Bypass.png"
     hidden: true
     name: "IN-Balance"
     proxies:
@@ -1359,7 +1366,7 @@ proxy-groups:
     type: "load-balance"
     strategy: "sticky-sessions"
     exclude-type: DIRECT
-    icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Round_Robin_1.png"
+    icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Bypass.png"
     hidden: true
     name: "TR-Balance"
     proxies:
@@ -1395,7 +1402,7 @@ proxy-groups:
     type: "load-balance"
     strategy: "sticky-sessions"
     exclude-type: DIRECT
-    icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Round_Robin_1.png"
+    icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Bypass.png"
     hidden: true
     name: "BR-Balance"
     proxies:
@@ -1431,7 +1438,7 @@ proxy-groups:
     type: "load-balance"
     strategy: "sticky-sessions"
     exclude-type: DIRECT
-    icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Round_Robin_1.png"
+    icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Bypass.png"
     hidden: true
     name: "AR-Balance"
     proxies:
@@ -1467,7 +1474,7 @@ proxy-groups:
     type: "load-balance"
     strategy: "sticky-sessions"
     exclude-type: DIRECT
-    icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Round_Robin_1.png"
+    icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Bypass.png"
     hidden: true
     name: "RU-Balance"
     proxies:
@@ -1475,7 +1482,7 @@ proxy-groups:
   - type: select
     hidden: false
     name: "Low-Rate"
-    icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Available_1.png"
+    icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Filter.png"
     proxies:
       - "Low-Rate-Auto"
       - "Low-Rate-Balance"
@@ -1505,7 +1512,7 @@ proxy-groups:
     type: "load-balance"
     strategy: "sticky-sessions"
     exclude-type: DIRECT
-    icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Round_Robin_1.png"
+    icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Bypass.png"
     hidden: true
     name: "Low-Rate-Balance"
     proxies:
@@ -1514,7 +1521,7 @@ proxy-groups:
   - type: select
     hidden: false
     name: "High-Rate"
-    icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Airport.png"
+    icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Cellular.png"
     proxies:
       - "High-Rate-Auto"
       - "High-Rate-Balance"
@@ -1544,7 +1551,7 @@ proxy-groups:
     type: "load-balance"
     strategy: "sticky-sessions"
     exclude-type: DIRECT
-    icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Round_Robin_1.png"
+    icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Bypass.png"
     hidden: true
     name: "High-Rate-Balance"
     proxies:
@@ -1583,7 +1590,7 @@ proxy-groups:
     type: "load-balance"
     strategy: "sticky-sessions"
     exclude-type: DIRECT
-    icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Round_Robin_1.png"
+    icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Bypass.png"
     hidden: true
     name: "Others-Balance"
     proxies:
