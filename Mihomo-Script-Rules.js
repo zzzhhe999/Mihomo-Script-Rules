@@ -447,13 +447,12 @@ const serviceConfigs = [
 ];
 
 const createRegionGroup = (name, icon, proxies) => {
-  const safeProxies = Array.isArray(proxies) ? proxies : [];
   const autoTestName = `${name}-Auto`;
   const loadBalanceName = `${name}-Balance`;
   return [
-    { ...selectBaseOption, name, icon, proxies: [autoTestName, loadBalanceName, ...safeProxies] },
-    { ...urlTestBaseOption, name: autoTestName, proxies: safeProxies },
-    { ...loadBalanceBaseOption, name: loadBalanceName, proxies: safeProxies },
+    { ...selectBaseOption, name, icon, proxies: [autoTestName, loadBalanceName, ...proxies] },
+    { ...urlTestBaseOption, name: autoTestName, proxies },
+    { ...loadBalanceBaseOption, name: loadBalanceName, proxies },
   ];
 };
 
@@ -535,16 +534,10 @@ function collectTopLevelGroups(generatedRegionGroups, rateGroupNames) {
   const groupNamesOfSelect = [];
   const autoTestProxies = [];
   const loadBalanceProxies = [];
+  const rateList = [...rateGroupNames];
 
   for (const g of generatedRegionGroups) {
-    let isRateGroup = false;
-    for (const rn of rateGroupNames) {
-      if (g.name === rn || g.name.startsWith(rn + '-')) {
-        isRateGroup = true;
-        break;
-      }
-    }
-    if (isRateGroup) continue;
+    if (rateList.some((rn) => g.name === rn || g.name.startsWith(rn + '-'))) continue;
 
     if (g.type === 'select') groupNamesOfSelect.push(g.name);
     else if (g.type === 'url-test') autoTestProxies.push(g.name);
@@ -629,9 +622,8 @@ function processProxies(rawProxies, enabledDefinitions) {
       p.name = newName;
       processedProxies.push(p);
 
-      const skipNormalGroup = isLow || isHigh;
       for (const groupName of matchedGroups) {
-        if (skipNormalGroup && groupName !== NODE_RATE_LOW && groupName !== NODE_RATE_HIGH) continue;
+        if ((isLow || isHigh) && groupName !== NODE_RATE_LOW && groupName !== NODE_RATE_HIGH) continue;
         if (groupName in regionGroups) {
           regionGroups[groupName].proxies.push(newName);
         }
@@ -655,9 +647,7 @@ function main(config) {
   try {
     const newConfig = { ...config };
 
-    delete newConfig['global-client-fingerprint'];
-    delete newConfig['sub-rules'];
-    delete newConfig['experimental'];
+    for (const key of ['global-client-fingerprint', 'sub-rules', 'experimental']) delete newConfig[key];
 
     const hasValidProxy = rawProxies.some((p) => {
       if (p && typeof p === 'object' && typeof p.type === 'string') {
@@ -804,22 +794,15 @@ function main(config) {
       },
     ];
 
-    const rejectServiceRules = [];
-    for (const svc of serviceConfigs) {
-      if (ruleOptionsEnable[svc.name] && svc.proxyMode === 'reject') {
-        rejectServiceRules.push(...svc.rules);
-      }
-    }
-
-    const finalRules = [...(quicEnable ? quicRules : []), ...rejectServiceRules, ...rules];
     const finalRuleProviders = { ...baseRuleProviders };
+    const rejectServiceRules = [];
+    const serviceRules = [];
 
     for (const svc of serviceConfigs) {
       if (!ruleOptionsEnable[svc.name]) continue;
 
-      if (svc.proxyMode !== 'reject') {
-        finalRules.push(...svc.rules);
-      }
+      if (svc.proxyMode === 'reject') rejectServiceRules.push(...svc.rules);
+      else serviceRules.push(...svc.rules);
       Object.assign(finalRuleProviders, svc.providers);
 
       const hasCustomProxyMode = 'proxyMode' in svc;
@@ -871,8 +854,8 @@ function main(config) {
     functionalGroupDisplayOrder.forEach((name, index) => orderMap.set(name, index));
 
     const functionalGroupsSorted = functionalGroups.slice().sort((a, b) => {
-      const orderA = orderMap.has(a.name) ? orderMap.get(a.name) : Infinity;
-      const orderB = orderMap.has(b.name) ? orderMap.get(b.name) : Infinity;
+      const orderA = orderMap.get(a.name) ?? Infinity;
+      const orderB = orderMap.get(b.name) ?? Infinity;
       return orderA - orderB;
     });
 
@@ -912,15 +895,15 @@ function main(config) {
     };
     newConfig['proxy-groups'] = [globalGroup, ...functionalGroupsSorted, ...generatedRegionGroups];
     newConfig['rule-providers'] = finalRuleProviders;
-    newConfig['hosts'] = networkConfig.hosts;
-    newConfig['ntp'] = networkConfig.ntp;
-    newConfig['sniffer'] = networkConfig.sniffer;
-    newConfig['dns'] = networkConfig.dns;
+    Object.assign(newConfig, networkConfig);
 
     newConfig.proxies.push(...directProxies);
 
     newConfig['rules'] = [
-      ...finalRules,
+      ...(quicEnable ? quicRules : []),
+      ...rejectServiceRules,
+      ...rules,
+      ...serviceRules,
       'GEOSITE,geolocation-cn,Direct',
       'GEOSITE,gfw,Default',
       'GEOIP,cn,Direct',
