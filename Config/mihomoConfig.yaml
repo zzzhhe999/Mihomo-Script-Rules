@@ -1681,6 +1681,7 @@ sniffer:
 rules:
   - "AND,((NETWORK,udp),(DST-PORT,443),(OR,((GEOSITE,geolocation-cn),(GEOIP,cn,no-resolve)))),Direct"
   - "AND,((NETWORK,udp),(DST-PORT,443)),QUIC"
+  - "RULE-SET,adblockmihomolite,AdBlock"
   - "DOMAIN-KEYWORD,mcdn.bili,REJECT"
   - "GEOSITE,private,Direct"
   - "GEOIP,private,Direct,no-resolve"
@@ -1694,7 +1695,6 @@ rules:
   - "GEOSITE,category-games-cn,Direct"
   - "GEOSITE,cloudflare-cn,Direct"
   - "GEOSITE,apple-cn,Direct"
-  - "RULE-SET,adblockmihomolite,AdBlock"
   - "GEOSITE,openai,AI"
   - "GEOSITE,anthropic,AI"
   - "GEOSITE,youtube,YouTube"
