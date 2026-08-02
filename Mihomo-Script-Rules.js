@@ -615,12 +615,10 @@ function processProxies(rawProxies, enabledDefinitions) {
 
         if (isLow) {
           const multLow = extractMultiplier(originalName, false);
-          if (multLow) newName += ' ' + multLow;
+          newName += ' ' + (multLow || '低倍');
         } else if (isHigh) {
           const mult = extractMultiplier(originalName, true);
-          if (mult) {
-            newName += ` ${mult}`;
-          }
+          newName += ' ' + (mult || '高倍');
         }
       } else {
         const otherCount = (regionCounters.get('__other__') ?? 0) + 1;
@@ -639,7 +637,7 @@ function processProxies(rawProxies, enabledDefinitions) {
         }
       }
 
-      if (matchedNormalRegionName === null) otherProxies.push(newName);
+      if (matchedNormalRegionName === null && !isLow && !isHigh) otherProxies.push(newName);
     } catch (e) {
       print('[Mihomo-Script-Rules] processProxies: skip invalid proxy:', e.message || String(e));
     }
@@ -703,7 +701,16 @@ function main(config) {
       if (typeof dns !== 'string') return true;
       if (dns.toLowerCase() === 'system') return true;
       const value = dns.toLowerCase();
-      return commonDnsList.some((keyword) => value.includes(keyword));
+      return commonDnsList.some((keyword) => {
+        if (/^\d+(?:\.\d+){3}$/.test(keyword)) {
+          const idx = value.indexOf(keyword);
+          if (idx === -1) return false;
+          const before = idx === 0 ? '' : value[idx - 1];
+          const after = idx + keyword.length >= value.length ? '' : value[idx + keyword.length];
+          return !/[0-9.]/.test(before) && !/[0-9.]/.test(after);
+        }
+        return value.includes(keyword);
+      });
     };
 
     const privateDNS = [
@@ -797,13 +804,22 @@ function main(config) {
       },
     ];
 
-    const finalRules = quicEnable ? [...quicRules, ...rules] : [...rules];
+    const rejectServiceRules = [];
+    for (const svc of serviceConfigs) {
+      if (ruleOptionsEnable[svc.name] && svc.proxyMode === 'reject') {
+        rejectServiceRules.push(...svc.rules);
+      }
+    }
+
+    const finalRules = [...(quicEnable ? quicRules : []), ...rejectServiceRules, ...rules];
     const finalRuleProviders = { ...baseRuleProviders };
 
     for (const svc of serviceConfigs) {
       if (!ruleOptionsEnable[svc.name]) continue;
 
-      finalRules.push(...svc.rules);
+      if (svc.proxyMode !== 'reject') {
+        finalRules.push(...svc.rules);
+      }
       Object.assign(finalRuleProviders, svc.providers);
 
       const hasCustomProxyMode = 'proxyMode' in svc;
