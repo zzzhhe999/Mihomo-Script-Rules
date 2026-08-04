@@ -1,5 +1,12 @@
 const Compatible_With_Bettbox = { ruleOptionsEnable : true }; 
 
+const log =
+  typeof print === 'function'
+    ? print
+    : typeof console !== 'undefined' && typeof console.log === 'function'
+      ? (...args) => console.log(...args)
+      : () => {};
+
 const ruleOptionsEnable = {
   AI: true,
   YouTube: true,
@@ -265,7 +272,7 @@ const loadBalanceBaseOption = {
 const extractMultiplier = (name, isHigh) => {
   if (typeof name !== 'string') return '';
   if (!isHigh) {
-    const match = name.match(/(?:^|[^\d])(0\.[0-5])\s*(?:倍|倍率|[xX×])?/u);
+    const match = name.match(/(?:^|[^\d])(0\.[0-5]\d*)\s*(?:倍|倍率|[xX×])?/u);
     if (match !== null) return `${match[1]}x`;
     const lowMatch = name.match(/省流|下载/);
     return lowMatch !== null ? lowMatch[0] : '';
@@ -534,17 +541,21 @@ function collectTopLevelGroups(generatedRegionGroups, rateGroupNames) {
   const groupNamesOfSelect = [];
   const autoTestProxies = [];
   const loadBalanceProxies = [];
+  const rateSelectNames = [];
   const rateList = [...rateGroupNames];
 
   for (const g of generatedRegionGroups) {
-    if (rateList.some((rn) => g.name === rn || g.name.startsWith(rn + '-'))) continue;
+    if (rateList.some((rn) => g.name === rn || g.name.startsWith(rn + '-'))) {
+      if (g.type === 'select') rateSelectNames.push(g.name);
+      continue;
+    }
 
     if (g.type === 'select') groupNamesOfSelect.push(g.name);
     else if (g.type === 'url-test') autoTestProxies.push(g.name);
     else if (g.type === 'load-balance') loadBalanceProxies.push(g.name);
   }
 
-  return { groupNamesOfSelect, autoTestProxies, loadBalanceProxies };
+  return { groupNamesOfSelect, autoTestProxies, loadBalanceProxies, rateSelectNames };
 }
 
 function processProxies(rawProxies, enabledDefinitions) {
@@ -631,7 +642,7 @@ function processProxies(rawProxies, enabledDefinitions) {
 
       if (matchedNormalRegionName === null && !isLow && !isHigh) otherProxies.push(newName);
     } catch (e) {
-      print('[Mihomo-Script-Rules] processProxies: skip invalid proxy:', e.message || String(e));
+      log('[Mihomo-Script-Rules] processProxies: skip invalid proxy:', e.message || String(e));
     }
   }
 
@@ -666,7 +677,7 @@ function main(config) {
     const { processedProxies, otherProxies, regionGroups } = processProxies(rawProxies, enabledDefinitions);
 
     if (processedProxies.length === 0) {
-      print('[Mihomo-Script-Rules] 警告：所有代理节点已被过滤器排除，最终配置将仅包含 DIRECT 出口。请检查 excludeFilter 正则是否过于宽泛。');
+      log('[Mihomo-Script-Rules] 警告：所有代理节点已被过滤器排除，最终配置将仅包含 DIRECT 出口。请检查 excludeFilter 正则是否过于宽泛。');
     }
 
     newConfig.proxies = processedProxies;
@@ -757,13 +768,21 @@ function main(config) {
     }
 
     const rateGroupNames = new Set([NODE_RATE_LOW, NODE_RATE_HIGH]);
-    const { groupNamesOfSelect, autoTestProxies, loadBalanceProxies } = collectTopLevelGroups(
+    const { groupNamesOfSelect, autoTestProxies, loadBalanceProxies, rateSelectNames } = collectTopLevelGroups(
       generatedRegionGroups,
       rateGroupNames,
     );
 
+    if (
+      rateSelectNames.length === 0 &&
+      (regionDefinitionsEnable[NODE_RATE_LOW] || regionDefinitionsEnable[NODE_RATE_HIGH])
+    ) {
+      log('[Mihomo-Script-Rules] 提示：未匹配到任何高低倍率节点，Low-Rate/High-Rate 分组未生成。');
+      log('[Mihomo-Script-Rules] 节点名需含 "低倍/低倍率/省流/下载/0.x" 或 "2倍/3倍率/2x/×2" 等倍率标记，否则倍率组不会出现。');
+    }
+
     const proxyModes = {
-      default: ['Default', 'Direct', 'Auto', 'Balance', ...groupNamesOfSelect],
+      default: ['Default', 'Direct', 'Auto', 'Balance', ...groupNamesOfSelect, ...rateSelectNames],
       reject: ['REJECT', 'DIRECT'],
     };
 
@@ -771,7 +790,7 @@ function main(config) {
       {
         ...selectBaseOption,
         name: 'Default',
-        proxies: ['Auto', 'Direct', 'Balance', ...groupNamesOfSelect],
+        proxies: ['Auto', 'Direct', 'Balance', ...groupNamesOfSelect, ...rateSelectNames],
         icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Direct.png',
       },
       {
@@ -912,7 +931,7 @@ function main(config) {
 
     return newConfig;
   } catch (error) {
-    print('[Mihomo-Script-Rules] Error in main():', error.message || String(error));
+    log('[Mihomo-Script-Rules] Error in main():', error.message || String(error));
     return { ...config, proxies: Array.isArray(config.proxies) ? config.proxies : [] };
   }
 }
