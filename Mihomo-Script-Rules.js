@@ -649,6 +649,32 @@ function processProxies(rawProxies, enabledDefinitions) {
   return { processedProxies, otherProxies, regionGroups };
 }
 
+function migrateFallbackFilter(cfg) {
+  if (!cfg || typeof cfg !== 'object' || Array.isArray(cfg)) return;
+  const rawDns = cfg.dns;
+  if (!rawDns || typeof rawDns !== 'object' || Array.isArray(rawDns)) return;
+  const ff = rawDns['fallback-filter'];
+  if (!ff || typeof ff !== 'object' || Array.isArray(ff)) return;
+
+  const dns = { ...rawDns };
+  const nameserver = Array.isArray(dns.nameserver) ? dns.nameserver : null;
+  const rawPolicy = dns['nameserver-policy'];
+  const policy =
+    rawPolicy && typeof rawPolicy === 'object' && !Array.isArray(rawPolicy) ? { ...rawPolicy } : {};
+
+  if (nameserver && Array.isArray(ff.geosite)) {
+    for (const gs of ff.geosite) {
+      if (typeof gs !== 'string' || gs.length === 0) continue;
+      const key = gs.startsWith('geosite:') ? gs : 'geosite:' + gs;
+      if (!(key in policy)) policy[key] = nameserver.slice();
+    }
+  }
+
+  if (Object.keys(policy).length > 0) dns['nameserver-policy'] = policy;
+  delete dns['fallback-filter'];
+  cfg.dns = dns;
+}
+
 function main(config) {
   if (!config || typeof config !== 'object' || Array.isArray(config)) {
     return { proxies: [], 'proxy-groups': [], rules: [] };
@@ -932,6 +958,8 @@ function main(config) {
     return newConfig;
   } catch (error) {
     log('[Mihomo-Script-Rules] Error in main():', error.message || String(error));
-    return { ...config, proxies: Array.isArray(config.proxies) ? config.proxies : [] };
+    const fallbackConfig = { ...config, proxies: Array.isArray(config.proxies) ? config.proxies : [] };
+    migrateFallbackFilter(fallbackConfig);
+    return fallbackConfig;
   }
 }
