@@ -327,6 +327,8 @@ proxy-groups:
       - AR
       - RU
       - Others
+      - "Low-Rate"
+      - "High-Rate"
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Direct.png"
   - type: select
     hidden: false
@@ -439,6 +441,8 @@ proxy-groups:
       - AR
       - RU
       - Others
+      - "Low-Rate"
+      - "High-Rate"
   - type: select
     hidden: false
     name: FCM
@@ -465,6 +469,8 @@ proxy-groups:
       - AR
       - RU
       - Others
+      - "Low-Rate"
+      - "High-Rate"
   - type: select
     hidden: false
     name: AI
@@ -491,6 +497,8 @@ proxy-groups:
       - AR
       - RU
       - Others
+      - "Low-Rate"
+      - "High-Rate"
   - type: select
     hidden: false
     name: Google
@@ -517,6 +525,8 @@ proxy-groups:
       - AR
       - RU
       - Others
+      - "Low-Rate"
+      - "High-Rate"
   - type: select
     hidden: false
     name: GitHub
@@ -543,6 +553,8 @@ proxy-groups:
       - AR
       - RU
       - Others
+      - "Low-Rate"
+      - "High-Rate"
   - type: select
     hidden: false
     name: Steam
@@ -569,6 +581,8 @@ proxy-groups:
       - AR
       - RU
       - Others
+      - "Low-Rate"
+      - "High-Rate"
   - type: select
     hidden: false
     name: Telegram
@@ -595,6 +609,8 @@ proxy-groups:
       - AR
       - RU
       - Others
+      - "Low-Rate"
+      - "High-Rate"
   - type: select
     hidden: false
     name: X
@@ -621,6 +637,8 @@ proxy-groups:
       - AR
       - RU
       - Others
+      - "Low-Rate"
+      - "High-Rate"
   - type: select
     hidden: false
     name: TikTok
@@ -647,6 +665,8 @@ proxy-groups:
       - AR
       - RU
       - Others
+      - "Low-Rate"
+      - "High-Rate"
   - type: select
     hidden: false
     name: Microsoft
@@ -673,6 +693,8 @@ proxy-groups:
       - AR
       - RU
       - Others
+      - "Low-Rate"
+      - "High-Rate"
   - type: select
     hidden: false
     name: Apple
@@ -699,6 +721,8 @@ proxy-groups:
       - AR
       - RU
       - Others
+      - "Low-Rate"
+      - "High-Rate"
   - type: select
     hidden: false
     name: YouTube
@@ -725,6 +749,8 @@ proxy-groups:
       - AR
       - RU
       - Others
+      - "Low-Rate"
+      - "High-Rate"
   - type: select
     hidden: false
     name: Instagram
@@ -751,6 +777,8 @@ proxy-groups:
       - AR
       - RU
       - Others
+      - "Low-Rate"
+      - "High-Rate"
   - type: select
     hidden: false
     name: Netflix
@@ -777,6 +805,8 @@ proxy-groups:
       - AR
       - RU
       - Others
+      - "Low-Rate"
+      - "High-Rate"
   - type: select
     hidden: false
     name: Spotify
@@ -803,6 +833,8 @@ proxy-groups:
       - AR
       - RU
       - Others
+      - "Low-Rate"
+      - "High-Rate"
   - type: select
     hidden: false
     name: Emby
@@ -829,6 +861,8 @@ proxy-groups:
       - AR
       - RU
       - Others
+      - "Low-Rate"
+      - "High-Rate"
   - type: select
     hidden: false
     name: PikPak
@@ -855,6 +889,8 @@ proxy-groups:
       - AR
       - RU
       - Others
+      - "Low-Rate"
+      - "High-Rate"
   - type: select
     hidden: false
     name: EHentai
@@ -881,6 +917,8 @@ proxy-groups:
       - AR
       - RU
       - Others
+      - "Low-Rate"
+      - "High-Rate"
   - type: select
     hidden: false
     name: HK
