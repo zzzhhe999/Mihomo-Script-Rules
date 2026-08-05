@@ -225,14 +225,12 @@ const baseRuleProviders = {
     ...ruleProviderFormatMrs,
     url: 'https://fastly.jsdelivr.net/gh/wwqgtxx/clash-rules@release/fakeip-filter.mrs',
     path: './ruleset/fakeip-filter.mrs',
-    'path-in-bundle': 'geo/geosite/private.mrs',
   },
   cn: {
     ...ruleProviderCommonDomain,
     ...ruleProviderFormatMrs,
     url: 'https://fastly.jsdelivr.net/gh/wwqgtxx/clash-rules@release/direct.mrs',
     path: './ruleset/cn.mrs',
-    'path-in-bundle': 'geo/geosite/cn.mrs',
   },
 };
 
@@ -786,6 +784,20 @@ function main(config) {
       reject: ['REJECT', 'DIRECT'],
     };
 
+    const autoGroup = {
+      ...urlTestBaseOption,
+      name: 'Auto',
+      proxies: autoTestProxies.length > 0 ? autoTestProxies : ['Direct'],
+    };
+    if (autoTestProxies.length === 0) delete autoGroup['exclude-type'];
+
+    const balanceGroup = {
+      ...loadBalanceBaseOption,
+      name: 'Balance',
+      proxies: loadBalanceProxies.length > 0 ? loadBalanceProxies : ['Direct'],
+    };
+    if (loadBalanceProxies.length === 0) delete balanceGroup['exclude-type'];
+
     const functionalGroups = [
       {
         ...selectBaseOption,
@@ -793,18 +805,8 @@ function main(config) {
         proxies: ['Auto', 'Direct', 'Balance', ...groupNamesOfSelect, ...rateSelectNames],
         icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Direct.png',
       },
-      {
-        ...urlTestBaseOption,
-        name: 'Auto',
-        proxies: autoTestProxies.length > 0 ? autoTestProxies : ['Direct'],
-        ...(autoTestProxies.length === 0 ? { 'exclude-type': undefined } : {}),
-      },
-      {
-        ...loadBalanceBaseOption,
-        name: 'Balance',
-        proxies: loadBalanceProxies.length > 0 ? loadBalanceProxies : ['Direct'],
-        ...(loadBalanceProxies.length === 0 ? { 'exclude-type': undefined } : {}),
-      },
+      autoGroup,
+      balanceGroup,
       {
         ...selectBaseOption,
         name: 'QUIC',
