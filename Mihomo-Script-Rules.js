@@ -925,8 +925,18 @@ function main(config) {
           const idx = value.indexOf(keyword);
           if (idx === -1) return false;
           const before = idx === 0 ? '' : value[idx - 1];
-          const after = idx + keyword.length >= value.length ? '' : value[idx + keyword.length];
-          return !DIGIT_DOT_RE.test(before) && !DIGIT_DOT_RE.test(after);
+          if (DIGIT_DOT_RE.test(before)) return false;
+          const after = value[idx + keyword.length];
+
+
+
+          if (after === undefined || after === '') {
+            return true;
+          }
+          if (after === ':') {
+            return value.slice(idx + keyword.length) === ':53';
+          }
+          return !DIGIT_DOT_RE.test(after);
         }
         return value.includes(keyword);
       });
@@ -1114,7 +1124,8 @@ function main(config) {
 
     newConfig['mode'] = 'rule';
     newConfig['mixed-port'] = config['mixed-port'] ?? 7890;
-    newConfig['allow-lan'] = config['allow-lan'] ?? true;
+
+    newConfig['allow-lan'] = config['allow-lan'] ?? false;
     newConfig['ipv6'] = true;
     newConfig['bind-address'] = config['bind-address'] ?? '*';
     newConfig['unified-delay'] = true;
@@ -1148,6 +1159,14 @@ function main(config) {
     return newConfig;
   } catch (error) {
     log('[Mihomo-Script-Rules] Error in main():', error.message || String(error));
-    return { ...config, proxies: Array.isArray(config.proxies) ? config.proxies : [] };
+
+
+
+    return {
+      ...config,
+      proxies: Array.isArray(config.proxies) ? config.proxies : [],
+      'proxy-groups': Array.isArray(config['proxy-groups']) ? config['proxy-groups'] : [],
+      rules: Array.isArray(config.rules) ? config.rules : [],
+    };
   }
 }
