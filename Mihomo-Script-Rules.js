@@ -88,114 +88,117 @@ const bytedanceCdnRules = [
 const NODE_RATE_LOW = 'Low-Rate';
 const NODE_RATE_HIGH = 'High-Rate';
 
+const ICON = (n) => `https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/${n}.png`;
+const META = 'https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta';
+
 const regionDefinitions = [
   {
     name: 'HK',
     regex: /🇭🇰|香港|港(?!口)|\bHK\b|hong\s*kong/i,
-    icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/HK.png',
+    icon: ICON('HK'),
     flag: '🇭🇰',
   },
   {
     name: 'JP',
     regex: /🇯🇵|日本|东京|大阪|埼玉|\bJP\b|japan/i,
-    icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/JP.png',
+    icon: ICON('JP'),
     flag: '🇯🇵',
   },
   {
     name: 'US',
     regex: /🇺🇸|美国|美区|洛杉矶|圣何塞|西雅图|纽约|芝加哥|达拉斯|\bUS\b|america|united\s*states/i,
-    icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/US.png',
+    icon: ICON('US'),
     flag: '🇺🇸',
   },
   {
     name: 'SG',
     regex: /🇸🇬|新加坡|狮城|\bSG\b|singapore/i,
-    icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/SG.png',
+    icon: ICON('SG'),
     flag: '🇸🇬',
   },
   {
     name: 'TW',
     regex: /🇹🇼|台湾|台北|高雄|\bTW\b|taiwan/i,
-    icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/TW.png',
+    icon: ICON('TW'),
     flag: '🇹🇼',
   },
   {
     name: 'KR',
     regex: /🇰🇷|韩国|首尔|春川|\bKR\b|korea/i,
-    icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/KR.png',
+    icon: ICON('KR'),
     flag: '🇰🇷',
   },
   {
     name: 'UK',
     regex: /🇬🇧|英国|伦敦|\bUK\b|\bGB\b|britain|united\s*kingdom/i,
-    icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/UK.png',
+    icon: ICON('UK'),
     flag: '🇬🇧',
   },
   {
     name: 'DE',
     regex: /🇩🇪|德国|法兰克福|柏林|\bDE\b|germany/i,
-    icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/DE.png',
+    icon: ICON('DE'),
     flag: '🇩🇪',
   },
   {
     name: 'FR',
     regex: /🇫🇷|法国|巴黎|\bFR\b|france/i,
-    icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/FR.png',
+    icon: ICON('FR'),
     flag: '🇫🇷',
   },
   {
     name: 'CA',
     regex: /🇨🇦|加拿大|多伦多|温哥华|蒙特利尔|\bCA\b|canada/i,
-    icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/CA.png',
+    icon: ICON('CA'),
     flag: '🇨🇦',
   },
   {
     name: 'AU',
     regex: /🇦🇺|澳大利亚|澳洲|悉尼|墨尔本|\bAU\b|australia/i,
-    icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/AU.png',
+    icon: ICON('AU'),
     flag: '🇦🇺',
   },
   {
     name: 'IN',
     regex: /🇮🇳|印度|孟买|金奈|\bIN\b|india/i,
-    icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/IN.png',
+    icon: ICON('IN'),
     flag: '🇮🇳',
   },
   {
     name: 'TR',
     regex: /🇹🇷|土耳其|伊斯坦布尔|\bTR\b|turkey/i,
-    icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/TR.png',
+    icon: ICON('TR'),
     flag: '🇹🇷',
   },
   {
     name: 'BR',
     regex: /🇧🇷|巴西|圣保罗|\bBR\b|brazil/i,
-    icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/BR.png',
+    icon: ICON('BR'),
     flag: '🇧🇷',
   },
   {
     name: 'AR',
     regex: /🇦🇷|阿根廷|布宜诺斯艾利斯|\bAR\b|argentina/i,
-    icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/AR.png',
+    icon: ICON('AR'),
     flag: '🇦🇷',
   },
   {
     name: 'RU',
     regex: /🇷🇺|俄罗斯|莫斯科|圣彼得堡|\bRU\b|russia/i,
-    icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/RU.png',
+    icon: ICON('RU'),
     flag: '🇷🇺',
   },
   {
     name: NODE_RATE_LOW,
     regex:
       /^(?!.*(?:剩|期|客户端|软件|官网|流量|订阅|v\d(?!ray|less))).*(?:低倍|低倍率|省流|下载|(?:^|[^\d])0\.[0-5])/u,
-    icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Cellular.png',
+    icon: ICON('Cellular'),
   },
   {
     name: NODE_RATE_HIGH,
     regex:
       /^(?!.*(?:剩|期|客户端|软件|官网|流量|订阅|v\d(?!ray|less))).*(?:[*×xX✕✖⨉]\s*(?:[2-9]\d*|[1-9]\d+)(?:\.\d+)?|(?:^|[^\d.])(?:[2-9]\d*|[1-9]\d+)(?:\.\d+)?\s*(?:倍|倍率|[*×xX✕✖⨉]))/u,
-    icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Filter.png',
+    icon: ICON('Filter'),
   },
 ];
 
@@ -213,68 +216,23 @@ const ruleProviderCommonIpcidr = {
   behavior: 'ipcidr',
 };
 
+const RP = ({ name, ip, pathName = name, pib = `geo/${ip ? 'geoip' : 'geosite'}/${name}.mrs`, url = `${META}/geo/${ip ? 'geoip' : 'geosite'}/${name}.mrs` }) => {
+  const p = { ...(ip ? ruleProviderCommonIpcidr : ruleProviderCommonDomain), url, path: `./ruleset/${pathName}.mrs` };
+  if (pib) p['path-in-bundle'] = pib;
+  return p;
+};
+
 const baseRuleProviders = {
-  private: {
-    ...ruleProviderCommonDomain,
-    url: 'https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/private.mrs',
-    path: './ruleset/private.mrs',
-    'path-in-bundle': 'geo/geosite/private.mrs',
-  },
-  private_ip: {
-    ...ruleProviderCommonIpcidr,
-    url: 'https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geoip/private.mrs',
-    path: './ruleset/private_ip.mrs',
-    'path-in-bundle': 'geo/geoip/private.mrs',
-  },
-  games_cn: {
-    ...ruleProviderCommonDomain,
-    url: 'https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/category-games@cn.mrs',
-    path: './ruleset/category-games@cn.mrs',
-    'path-in-bundle': 'geo/geosite/category-games@cn.mrs',
-  },
-  apple_cn: {
-    ...ruleProviderCommonDomain,
-    url: 'https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/apple@cn.mrs',
-    path: './ruleset/apple@cn.mrs',
-    'path-in-bundle': 'geo/geosite/apple@cn.mrs',
-  },
-  'geolocation-cn': {
-    ...ruleProviderCommonDomain,
-    url: 'https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/geolocation-cn.mrs',
-    path: './ruleset/geolocation-cn.mrs',
-    'path-in-bundle': 'geo/geosite/geolocation-cn.mrs',
-  },
-  cn_ip: {
-    ...ruleProviderCommonIpcidr,
-    url: 'https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geoip/cn.mrs',
-    path: './ruleset/cn_ip.mrs',
-    'path-in-bundle': 'geo/geoip/cn.mrs',
-  },
-  gfw: {
-    ...ruleProviderCommonDomain,
-    url: 'https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/gfw.mrs',
-    path: './ruleset/gfw.mrs',
-    'path-in-bundle': 'geo/geosite/gfw.mrs',
-  },
-  fakeip_filter: {
-    ...ruleProviderCommonDomain,
-    url: 'https://fastly.jsdelivr.net/gh/wwqgtxx/clash-rules@release/fakeip-filter.mrs',
-    path: './ruleset/fakeip-filter.mrs',
-  },
-
-  cn: {
-    ...ruleProviderCommonDomain,
-    url: 'https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/cn.mrs',
-    path: './ruleset/cn.mrs',
-    'path-in-bundle': 'geo/geosite/cn.mrs',
-  },
-
-  cloudflare_cn: {
-    ...ruleProviderCommonDomain,
-    url: 'https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/cloudflare@cn.mrs',
-    path: './ruleset/cloudflare@cn.mrs',
-    'path-in-bundle': 'geo/geosite/cloudflare@cn.mrs',
-  },
+  private: RP({ name: 'private' }),
+  private_ip: RP({ name: 'private', ip: true, pathName: 'private_ip' }),
+  games_cn: RP({ name: 'category-games@cn' }),
+  apple_cn: RP({ name: 'apple@cn' }),
+  'geolocation-cn': RP({ name: 'geolocation-cn' }),
+  cn_ip: RP({ name: 'cn', ip: true, pathName: 'cn_ip' }),
+  gfw: RP({ name: 'gfw' }),
+  fakeip_filter: RP({ name: 'fakeip-filter', url: 'https://fastly.jsdelivr.net/gh/wwqgtxx/clash-rules@release/fakeip-filter.mrs', pib: '' }),
+  cn: RP({ name: 'cn' }),
+  cloudflare_cn: RP({ name: 'cloudflare@cn' }),
 };
 
 const groupBaseOption = {
@@ -297,7 +255,7 @@ const urlTestBaseOption = {
   type: 'url-test',
   tolerance: 50,
   'exclude-type': 'DIRECT',
-  icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png',
+  icon: ICON('Auto'),
   hidden: true,
 };
 
@@ -307,7 +265,7 @@ const loadBalanceBaseOption = {
   strategy: 'sticky-sessions',
   'max-failed-times': 1,
   'exclude-type': 'DIRECT',
-  icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Bypass.png',
+  icon: ICON('Bypass'),
   hidden: true,
 };
 
@@ -328,6 +286,13 @@ const extractMultiplier = (name, isHigh) => {
   return match !== null ? `${match[1]}x` : '';
 };
 
+function suffixMatch(suffix, domains, includeExact) {
+  for (const domain of domains) {
+    if (domain.endsWith('.' + suffix) || (includeExact && domain === suffix)) return true;
+  }
+  return false;
+}
+
 function matchDomainPattern(pattern, domains) {
   if (typeof pattern !== 'string') return false;
   pattern = pattern.toLowerCase();
@@ -337,23 +302,11 @@ function matchDomainPattern(pattern, domains) {
   }
 
   if (pattern.startsWith('+.') || pattern.startsWith('*.')) {
-    const suffix = pattern.slice(2);
-    for (const domain of domains) {
-      if (domain === suffix || domain.endsWith('.' + suffix)) {
-        return true;
-      }
-    }
-    return false;
+    return suffixMatch(pattern.slice(2), domains, true);
   }
 
   if (pattern.startsWith('.')) {
-    const suffix = pattern.slice(1);
-    for (const domain of domains) {
-      if (domain !== suffix && domain.endsWith('.' + suffix)) {
-        return true;
-      }
-    }
-    return false;
+    return suffixMatch(pattern.slice(1), domains, false);
   }
 
   const patternParts = pattern.split('.');
@@ -373,6 +326,33 @@ function matchDomainPattern(pattern, domains) {
   return false;
 }
 
+const mkSvc = ({ name, geo, icon, hasIp, key = geo, extra = {} }) => ({
+  name,
+  baseOption: selectBaseOption,
+  providers: {
+    [key]: {
+      ...ruleProviderCommonDomain,
+      url: `${META}/geo/geosite/${geo}.mrs`,
+      path: `./ruleset/${key}.mrs`,
+      'path-in-bundle': `geo/geosite/${geo}.mrs`,
+    },
+    ...(hasIp && {
+      [`${key}_ip`]: {
+        ...ruleProviderCommonIpcidr,
+        url: `${META}/geo/geoip/${key}.mrs`,
+        path: `./ruleset/${key}_ip.mrs`,
+        'path-in-bundle': `geo/geoip/${key}.mrs`,
+      },
+    }),
+  },
+  icon,
+  rules: [
+    `RULE-SET,${key},${name}`,
+    ...(hasIp ? [`RULE-SET,${key}_ip,${name},no-resolve`] : []),
+  ],
+  ...extra,
+});
+
 const serviceConfigs = [
   {
     name: 'AdBlock',
@@ -385,274 +365,32 @@ const serviceConfigs = [
         path: './ruleset/adblockmihomolite.mrs',
       },
     },
-    icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/AdBlack.png',
+    icon: ICON('AdBlack'),
     rules: ['RULE-SET,adblockmihomolite,AdBlock'],
   },
-  {
-    name: 'AI',
-    baseOption: selectBaseOption,
-    providers: {
-      ai: {
-        ...ruleProviderCommonDomain,
-        url: 'https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/category-ai-!cn.mrs',
-        path: './ruleset/ai.mrs',
-        'path-in-bundle': 'geo/geosite/category-ai-!cn.mrs',
-      },
-    },
-    icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/ChatGPT.png',
-    rules: ['RULE-SET,ai,AI'],
-  },
-  {
-    name: 'YouTube',
-    baseOption: selectBaseOption,
-    providers: {
-      youtube: {
-        ...ruleProviderCommonDomain,
-        url: 'https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/youtube.mrs',
-        path: './ruleset/youtube.mrs',
-        'path-in-bundle': 'geo/geosite/youtube.mrs',
-      },
-    },
-    icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/YouTube.png',
-    rules: ['RULE-SET,youtube,YouTube'],
-  },
-  {
-    name: 'FCM',
-    baseOption: selectBaseOption,
-    providers: {
-      googlefcm: {
-        ...ruleProviderCommonDomain,
-        url: 'https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/googlefcm.mrs',
-        path: './ruleset/googlefcm.mrs',
-        'path-in-bundle': 'geo/geosite/googlefcm.mrs',
-      },
-    },
-    icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Google.png',
-    rules: ['RULE-SET,googlefcm,FCM'],
-  },
-  {
-    name: 'Google',
-    baseOption: selectBaseOption,
-    providers: {
-      google: {
-        ...ruleProviderCommonDomain,
-        url: 'https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/google.mrs',
-        path: './ruleset/google.mrs',
-        'path-in-bundle': 'geo/geosite/google.mrs',
-      },
-      google_ip: {
-        ...ruleProviderCommonIpcidr,
-        url: 'https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geoip/google.mrs',
-        path: './ruleset/google_ip.mrs',
-        'path-in-bundle': 'geo/geoip/google.mrs',
-      },
-    },
-    icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Google_Search.png',
-    rules: ['RULE-SET,google,Google', 'RULE-SET,google_ip,Google,no-resolve'],
-  },
-  {
-    name: 'GitHub',
-    baseOption: selectBaseOption,
-    providers: {
-      github: {
-        ...ruleProviderCommonDomain,
-        url: 'https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/github.mrs',
-        path: './ruleset/github.mrs',
-        'path-in-bundle': 'geo/geosite/github.mrs',
-      },
-    },
-    icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/GitHub.png',
-    rules: ['RULE-SET,github,GitHub'],
-  },
-  {
-    name: 'Microsoft',
-    baseOption: selectBaseOption,
-    providers: {
-      microsoft: {
-        ...ruleProviderCommonDomain,
-        url: 'https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/microsoft.mrs',
-        path: './ruleset/microsoft.mrs',
-        'path-in-bundle': 'geo/geosite/microsoft.mrs',
-      },
-    },
-    icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Microsoft.png',
-    rules: ['RULE-SET,microsoft,Microsoft'],
-  },
-  {
-    name: 'Apple',
-    baseOption: selectBaseOption,
-    providers: {
-      apple: {
-        ...ruleProviderCommonDomain,
-        url: 'https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/apple.mrs',
-        path: './ruleset/apple.mrs',
-        'path-in-bundle': 'geo/geosite/apple.mrs',
-      },
-    },
-    icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Apple.png',
-    rules: ['RULE-SET,apple,Apple'],
-  },
-  {
-    name: 'Telegram',
-    baseOption: selectBaseOption,
-    providers: {
-      telegram: {
-        ...ruleProviderCommonDomain,
-        url: 'https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/telegram.mrs',
-        path: './ruleset/telegram.mrs',
-        'path-in-bundle': 'geo/geosite/telegram.mrs',
-      },
-      telegram_ip: {
-        ...ruleProviderCommonIpcidr,
-        url: 'https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geoip/telegram.mrs',
-        path: './ruleset/telegram_ip.mrs',
-        'path-in-bundle': 'geo/geoip/telegram.mrs',
-      },
-    },
-    icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Telegram.png',
-    rules: ['RULE-SET,telegram,Telegram', 'RULE-SET,telegram_ip,Telegram,no-resolve'],
-  },
-  {
-    name: 'Cloudflare',
-    baseOption: selectBaseOption,
-    providers: {
-      cloudflare: {
-        ...ruleProviderCommonDomain,
-        url: 'https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/cloudflare.mrs',
-        path: './ruleset/cloudflare.mrs',
-        'path-in-bundle': 'geo/geosite/cloudflare.mrs',
-      },
-      cloudflare_ip: {
-        ...ruleProviderCommonIpcidr,
-        url: 'https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geoip/cloudflare.mrs',
-        path: './ruleset/cloudflare_ip.mrs',
-        'path-in-bundle': 'geo/geoip/cloudflare.mrs',
-      },
-    },
-    icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Cloudflare.png',
-    rules: ['RULE-SET,cloudflare,Cloudflare', 'RULE-SET,cloudflare_ip,Cloudflare,no-resolve'],
-  },
-  {
-    name: 'Steam',
-    baseOption: selectBaseOption,
-    providers: {
-      steam: {
-        ...ruleProviderCommonDomain,
-        url: 'https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/steam.mrs',
-        path: './ruleset/steam.mrs',
-        'path-in-bundle': 'geo/geosite/steam.mrs',
-      },
-    },
-    icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Steam.png',
-    rules: ['RULE-SET,steam,Steam'],
-  },
-  {
-    name: 'X',
-    baseOption: selectBaseOption,
-    providers: {
-      twitter: {
-        ...ruleProviderCommonDomain,
-        url: 'https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/twitter.mrs',
-        path: './ruleset/twitter.mrs',
-        'path-in-bundle': 'geo/geosite/twitter.mrs',
-      },
-      twitter_ip: {
-        ...ruleProviderCommonIpcidr,
-        url: 'https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geoip/twitter.mrs',
-        path: './ruleset/twitter_ip.mrs',
-        'path-in-bundle': 'geo/geoip/twitter.mrs',
-      },
-    },
-    icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/X.png',
-    rules: ['RULE-SET,twitter,X', 'RULE-SET,twitter_ip,X,no-resolve'],
-  },
-  {
-    name: 'Instagram',
-    baseOption: selectBaseOption,
-    providers: {
-      instagram: {
-        ...ruleProviderCommonDomain,
-        url: 'https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/instagram.mrs',
-        path: './ruleset/instagram.mrs',
-        'path-in-bundle': 'geo/geosite/instagram.mrs',
-      },
-    },
-    icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Instagram.png',
-    rules: ['RULE-SET,instagram,Instagram'],
-  },
-  {
-    name: 'Spotify',
-    baseOption: selectBaseOption,
-    providers: {
-      spotify: {
-        ...ruleProviderCommonDomain,
-        url: 'https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/spotify.mrs',
-        path: './ruleset/spotify.mrs',
-        'path-in-bundle': 'geo/geosite/spotify.mrs',
-      },
-    },
-    icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Spotify.png',
-    rules: ['RULE-SET,spotify,Spotify'],
-  },
-  {
-    name: 'TikTok',
-    baseOption: selectBaseOption,
-    providers: {
-      tiktok: {
-        ...ruleProviderCommonDomain,
-        url: 'https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/tiktok.mrs',
-        path: './ruleset/tiktok.mrs',
-        'path-in-bundle': 'geo/geosite/tiktok.mrs',
-      },
-    },
-    icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/TikTok.png',
-    rules: ['RULE-SET,tiktok,TikTok'],
-  },
-  {
-    name: 'Netflix',
-    baseOption: selectBaseOption,
-    providers: {
-      netflix: {
-        ...ruleProviderCommonDomain,
-        url: 'https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/netflix.mrs',
-        path: './ruleset/netflix.mrs',
-        'path-in-bundle': 'geo/geosite/netflix.mrs',
-      },
-      netflix_ip: {
-        ...ruleProviderCommonIpcidr,
-        url: 'https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geoip/netflix.mrs',
-        path: './ruleset/netflix_ip.mrs',
-        'path-in-bundle': 'geo/geoip/netflix.mrs',
-      },
-    },
-    icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Netflix.png',
-    rules: ['RULE-SET,netflix,Netflix', 'RULE-SET,netflix_ip,Netflix,no-resolve'],
-  },
-  {
-    name: 'Emby',
-    baseOption: selectBaseOption,
-    providers: {
-      emby: {
-        ...ruleProviderCommonDomain,
-        url: 'https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/category-emby.mrs',
-        path: './ruleset/emby.mrs',
-        'path-in-bundle': 'geo/geosite/category-emby.mrs',
-      },
-    },
-    icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Emby.png',
-    rules: ['RULE-SET,emby,Emby', 'DOMAIN-SUFFIX,mb3admin.com,Emby', 'DOMAIN-KEYWORD,emby,Emby'],
-  },
+  mkSvc({ name: 'AI', key: 'ai', geo: 'category-ai-!cn', icon: ICON('ChatGPT') }),
+  mkSvc({ name: 'YouTube', geo: 'youtube', icon: ICON('YouTube') }),
+  mkSvc({ name: 'FCM', geo: 'googlefcm', icon: ICON('Google') }),
+  mkSvc({ name: 'Google', geo: 'google', hasIp: true, icon: ICON('Google_Search') }),
+  mkSvc({ name: 'GitHub', geo: 'github', icon: ICON('GitHub') }),
+  mkSvc({ name: 'Microsoft', geo: 'microsoft', icon: ICON('Microsoft') }),
+  mkSvc({ name: 'Apple', geo: 'apple', icon: ICON('Apple') }),
+  mkSvc({ name: 'Telegram', geo: 'telegram', hasIp: true, icon: ICON('Telegram') }),
+  mkSvc({ name: 'Cloudflare', geo: 'cloudflare', hasIp: true, icon: ICON('Cloudflare') }),
+  mkSvc({ name: 'Steam', geo: 'steam', icon: ICON('Steam') }),
+  mkSvc({ name: 'X', geo: 'twitter', hasIp: true, icon: ICON('X') }),
+  mkSvc({ name: 'Instagram', geo: 'instagram', icon: ICON('Instagram') }),
+  mkSvc({ name: 'Spotify', geo: 'spotify', icon: ICON('Spotify') }),
+  mkSvc({ name: 'TikTok', geo: 'tiktok', icon: ICON('TikTok') }),
+  mkSvc({ name: 'Netflix', geo: 'netflix', hasIp: true, icon: ICON('Netflix') }),
+  mkSvc({ name: 'Emby', key: 'emby', geo: 'category-emby', icon: ICON('Emby'), extra: { rules: ['RULE-SET,emby,Emby', 'DOMAIN-SUFFIX,mb3admin.com,Emby', 'DOMAIN-KEYWORD,emby,Emby'] } }),
 ];
 
-const createRegionGroup = (name, icon, proxies) => {
-  const autoTestName = `${name}-Auto`;
-  const loadBalanceName = `${name}-Balance`;
-  return [
-    { ...selectBaseOption, name, icon, proxies: [autoTestName, loadBalanceName, ...proxies] },
-    { ...urlTestBaseOption, name: autoTestName, proxies },
-    { ...loadBalanceBaseOption, name: loadBalanceName, proxies },
-  ];
-};
+const createRegionGroup = (name, icon, proxies) => [
+  { ...selectBaseOption, name, icon, proxies: [`${name}-Auto`, `${name}-Balance`, ...proxies] },
+  { ...urlTestBaseOption, name: `${name}-Auto`, proxies },
+  { ...loadBalanceBaseOption, name: `${name}-Balance`, proxies },
+];
 
 const FINGERPRINT_SUPPORTED = new Set(['vmess', 'vless', 'trojan', 'anytls']);
 
@@ -749,12 +487,8 @@ function collectTopLevelGroups(generatedRegionGroups, rateGroupNames) {
 
 function processProxies(rawProxies, enabledDefinitions) {
   const regionGroups = {};
-  const regionFlags = {};
   for (const r of enabledDefinitions) {
     regionGroups[r.name] = { name: r.name, icon: r.icon, proxies: [] };
-    if ('flag' in r) {
-      regionFlags[r.name] = r.flag;
-    }
   }
 
   const processedProxies = [];
@@ -762,7 +496,12 @@ function processProxies(rawProxies, enabledDefinitions) {
   const regionCounters = new Map();
 
   const renameMap = new Map();
-  const survivingOriginalNames = new Set();
+
+  const bump = (key) => {
+    const n = (regionCounters.get(key) ?? 0) + 1;
+    regionCounters.set(key, n);
+    return String(n).padStart(2, '0');
+  };
 
   for (const proxy of rawProxies) {
     try {
@@ -776,22 +515,18 @@ function processProxies(rawProxies, enabledDefinitions) {
       const p = { ...proxy };
       const proxyType = typeof p.type === 'string' ? p.type.toLowerCase() : 'unknown';
 
-      if (FINGERPRINT_SUPPORTED.has(proxyType)) {
-        if (p['client-fingerprint'] == null) {
-          p['client-fingerprint'] = 'chrome';
-        }
+      if (FINGERPRINT_SUPPORTED.has(proxyType) && p['client-fingerprint'] == null) {
+        p['client-fingerprint'] = 'chrome';
       }
 
-      let matchedNormalRegionName = null;
       const matchedGroups = [];
+      let regionDef = null;
 
       for (const region of enabledDefinitions) {
         if (region.regex.test(originalName)) {
           matchedGroups.push(region.name);
-          if (region.name !== NODE_RATE_LOW && region.name !== NODE_RATE_HIGH) {
-            if (matchedNormalRegionName === null) {
-              matchedNormalRegionName = region.name;
-            }
+          if (region.name !== NODE_RATE_LOW && region.name !== NODE_RATE_HIGH && regionDef === null) {
+            regionDef = region;
           }
         }
       }
@@ -800,43 +535,29 @@ function processProxies(rawProxies, enabledDefinitions) {
       const isHigh = matchedGroups.includes(NODE_RATE_HIGH);
       let newName = originalName;
 
-      if (matchedNormalRegionName !== null) {
-        const flag = regionFlags[matchedNormalRegionName] || '🏳️';
-        const counterKey = (isLow || isHigh) ? `${matchedNormalRegionName}_multi` : matchedNormalRegionName;
-        const count = (regionCounters.get(counterKey) ?? 0) + 1;
-
-        regionCounters.set(counterKey, count);
-        const serial = String(count).padStart(2, '0');
-        newName = `${flag} ${matchedNormalRegionName} ${serial}`;
+      if (regionDef !== null) {
+        const counterKey = (isLow || isHigh) ? `${regionDef.name}_multi` : regionDef.name;
+        newName = `${regionDef.flag || '🏳️'} ${regionDef.name} ${bump(counterKey)}`;
 
         if (isLow) {
-          const multLow = extractMultiplier(originalName, false);
-          newName += ' ' + (multLow || '低倍');
+          newName += ' ' + (extractMultiplier(originalName, false) || '低倍');
         } else if (isHigh) {
-          const mult = extractMultiplier(originalName, true);
-          newName += ' ' + (mult || '高倍');
+          newName += ' ' + (extractMultiplier(originalName, true) || '高倍');
         }
       } else {
-        const otherCount = (regionCounters.get('__other__') ?? 0) + 1;
-        regionCounters.set('__other__', otherCount);
-        newName = originalName + ' #' + String(otherCount).padStart(2, '0');
+        newName = `${originalName} #${bump('__other__')}`;
       }
 
       p.name = newName;
-      survivingOriginalNames.add(originalName);
-      if (newName !== originalName) {
-        renameMap.set(originalName, newName);
-      }
+      renameMap.set(originalName, newName);
       processedProxies.push(p);
 
       for (const groupName of matchedGroups) {
         if ((isLow || isHigh) && groupName !== NODE_RATE_LOW && groupName !== NODE_RATE_HIGH) continue;
-        if (groupName in regionGroups) {
-          regionGroups[groupName].proxies.push(newName);
-        }
+        regionGroups[groupName].proxies.push(newName);
       }
 
-      if (matchedNormalRegionName === null && !isLow && !isHigh) otherProxies.push(newName);
+      if (matchedGroups.length === 0) otherProxies.push(newName);
     } catch (e) {
       log('[Mihomo-Script-Rules] processProxies: skip invalid proxy:', e.message || String(e));
     }
@@ -845,15 +566,22 @@ function processProxies(rawProxies, enabledDefinitions) {
   for (const p of processedProxies) {
     const target = p['dialer-proxy'];
     if (!target || typeof target !== 'string') continue;
-    if (renameMap.has(target)) {
-      p['dialer-proxy'] = renameMap.get(target);
-    } else if (!survivingOriginalNames.has(target)) {
+    const mapped = renameMap.get(target);
+    if (mapped !== undefined) {
+      p['dialer-proxy'] = mapped;
+    } else {
       delete p['dialer-proxy'];
     }
   }
 
   return { processedProxies, otherProxies, regionGroups };
 }
+
+const groupFrom = (name, base, proxies) => {
+  const g = { ...base, name, proxies: proxies.length > 0 ? proxies : ['Direct'] };
+  if (proxies.length === 0) delete g['exclude-type'];
+  return g;
+};
 
 function main(config) {
   if (!config || typeof config !== 'object' || Array.isArray(config)) {
@@ -867,11 +595,9 @@ function main(config) {
     for (const key of ['global-client-fingerprint', 'sub-rules', 'experimental']) delete newConfig[key];
 
     const hasValidProxy = rawProxies.some((p) => {
-      if (p && typeof p === 'object' && typeof p.type === 'string') {
-        const pType = p.type.toLowerCase();
-        return pType !== 'direct' && pType !== 'reject';
-      }
-      return false;
+      if (!p || typeof p.type !== 'string') return false;
+      const pType = p.type.toLowerCase();
+      return pType !== 'direct' && pType !== 'reject';
     });
 
     if (!hasValidProxy) {
@@ -906,7 +632,6 @@ function main(config) {
     const IPV4_RE = /^\d+(?:\.\d+){3}$/;
     const DIGIT_DOT_RE = /[0-9.]/;
     const isCommonDns = (dns) => {
-      if (dns == null) return true;
       if (typeof dns !== 'string') return true;
       if (dns.toLowerCase() === 'system') return true;
       const value = dns.toLowerCase();
@@ -917,9 +642,6 @@ function main(config) {
           const before = idx === 0 ? '' : value[idx - 1];
           if (DIGIT_DOT_RE.test(before)) return false;
           const after = value[idx + keyword.length];
-
-
-
           if (after === undefined || after === '') {
             return true;
           }
@@ -970,7 +692,7 @@ function main(config) {
     const generatedRegionGroups = [];
     for (const def of enabledDefinitions) {
       const group = regionGroups[def.name];
-      if (group && Array.isArray(group.proxies) && group.proxies.length > 0) {
+      if (group.proxies.length > 0) {
         generatedRegionGroups.push(...createRegionGroup(group.name, group.icon, group.proxies));
       }
     }
@@ -979,16 +701,15 @@ function main(config) {
       generatedRegionGroups.push(
         ...createRegionGroup(
           'Others',
-          'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/World_Map.png',
+          ICON('World_Map'),
           otherProxies,
         ),
       );
     }
 
-    const rateGroupNames = new Set([NODE_RATE_LOW, NODE_RATE_HIGH]);
     const { groupNamesOfSelect, autoTestProxies, loadBalanceProxies, rateSelectNames } = collectTopLevelGroups(
       generatedRegionGroups,
-      rateGroupNames,
+      [NODE_RATE_LOW, NODE_RATE_HIGH],
     );
 
     if (
@@ -1004,26 +725,15 @@ function main(config) {
       reject: ['REJECT', 'DIRECT'],
     };
 
-    const autoGroup = {
-      ...urlTestBaseOption,
-      name: 'Auto',
-      proxies: autoTestProxies.length > 0 ? autoTestProxies : ['Direct'],
-    };
-    if (autoTestProxies.length === 0) delete autoGroup['exclude-type'];
-
-    const balanceGroup = {
-      ...loadBalanceBaseOption,
-      name: 'Balance',
-      proxies: loadBalanceProxies.length > 0 ? loadBalanceProxies : ['Direct'],
-    };
-    if (loadBalanceProxies.length === 0) delete balanceGroup['exclude-type'];
+    const autoGroup = groupFrom('Auto', urlTestBaseOption, autoTestProxies);
+    const balanceGroup = groupFrom('Balance', loadBalanceBaseOption, loadBalanceProxies);
 
     const functionalGroups = [
       {
         ...selectBaseOption,
         name: 'Default',
         proxies: ['Auto', 'Direct', 'Balance', ...groupNamesOfSelect, ...rateSelectNames],
-        icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Direct.png',
+        icon: ICON('Direct'),
       },
       autoGroup,
       balanceGroup,
@@ -1031,7 +741,7 @@ function main(config) {
         ...selectBaseOption,
         name: 'QUIC',
         proxies: ['Default', 'REJECT'],
-        icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Round_Robin_1.png',
+        icon: ICON('Round_Robin_1'),
       },
     ];
 
@@ -1046,8 +756,7 @@ function main(config) {
       else serviceRules.push(...svc.rules);
       Object.assign(finalRuleProviders, svc.providers);
 
-      const hasCustomProxyMode = 'proxyMode' in svc;
-      const currentProxyMode = hasCustomProxyMode ? svc.proxyMode : 'default';
+      const currentProxyMode = svc.proxyMode ?? 'default';
       functionalGroups.push({
         ...(svc.baseOption || selectBaseOption),
         name: svc.name,
@@ -1061,7 +770,7 @@ function main(config) {
       name: 'Direct',
       proxies: directProxies.map((p) => p.name),
       url: 'https://connectivitycheck.platform.hicloud.com/generate_204',
-      icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/China_Map.png',
+      icon: ICON('China_Map'),
     });
 
     const functionalGroupDisplayOrder = [
@@ -1092,7 +801,7 @@ function main(config) {
     const orderMap = new Map();
     functionalGroupDisplayOrder.forEach((name, index) => orderMap.set(name, index));
 
-    const functionalGroupsSorted = functionalGroups.slice().sort((a, b) => {
+    const functionalGroupsSorted = functionalGroups.sort((a, b) => {
       const orderA = orderMap.get(a.name) ?? Infinity;
       const orderB = orderMap.get(b.name) ?? Infinity;
       return orderA - orderB;
@@ -1107,16 +816,15 @@ function main(config) {
       ...selectBaseOption,
       name: 'GLOBAL',
       proxies: globalGroupProxies,
-      icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Global.png',
+      icon: ICON('Global'),
     };
 
     const networkConfig = buildNetworkConfig(privateDNS, proxyServerPolicy, proxyServerHosts);
 
     newConfig['mode'] = 'rule';
-    const rawMixedPort = config['mixed-port'];
     let mixedPort = 7890;
-    if (rawMixedPort != null) {
-      const mixedPortNum = Number(rawMixedPort);
+    if (config['mixed-port'] != null) {
+      const mixedPortNum = Number(config['mixed-port']);
       if (Number.isFinite(mixedPortNum) && mixedPortNum >= 0) mixedPort = mixedPortNum;
     }
     newConfig['mixed-port'] = mixedPort;
@@ -1152,8 +860,6 @@ function main(config) {
     return newConfig;
   } catch (error) {
     log('[Mihomo-Script-Rules] Error in main():', error.message || String(error));
-
-
 
     return {
       ...config,
