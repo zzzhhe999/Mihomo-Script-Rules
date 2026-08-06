@@ -200,7 +200,7 @@ dns:
     1.1.1.1:
       - "https://dns.alidns.com/dns-query#Direct"
 mixed-port: 7890
-allow-lan: true
+allow-lan: false
 ipv6: true
 bind-address: "*"
 unified-delay: true
