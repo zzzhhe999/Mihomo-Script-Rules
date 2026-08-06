@@ -200,15 +200,11 @@ dns:
     1.1.1.1:
       - "https://dns.alidns.com/dns-query#Direct"
 mixed-port: 7890
-allow-lan: false
 ipv6: true
 bind-address: "*"
 unified-delay: true
 tcp-concurrent: true
-find-process-mode: strict
 external-controller: "127.0.0.1:9090"
-external-ui: ui
-external-ui-url: "https://github.com/Zephyruso/zashboard/releases/latest/download/dist.zip"
 profile:
   store-selected: true
   store-fake-ip: true
@@ -2079,10 +2075,6 @@ hosts:
   cn.bing.com: global.bing.com
   services.googleapis.cn:
     - services.googleapis.com
-  "+.mcdn.bilivideo.com":
-    - 0.0.0.0
-  "+.mcdn.bilivideo.cn":
-    - 0.0.0.0
   "+.edge.mountaintoys.cn":
     - 0.0.0.0
 ntp:
@@ -2119,9 +2111,10 @@ sniffer:
     - +.local
 rules:
   - "RULE-SET,adblockmihomolite,AdBlock"
+  - "DOMAIN-KEYWORD,mcdn.bili,REJECT"
+  - "AND,((NETWORK,udp),(DST-PORT,443),(RULE-SET,private_ip,no-resolve)),Direct"
   - "AND,((NETWORK,udp),(DST-PORT,443),(OR,((RULE-SET,geolocation-cn),(RULE-SET,cn_ip,no-resolve)))),Direct"
   - "AND,((NETWORK,udp),(DST-PORT,443)),QUIC"
-  - "DOMAIN-KEYWORD,mcdn.bili,REJECT"
   - "RULE-SET,private,Direct"
   - "RULE-SET,private_ip,Direct,no-resolve"
   - "DOMAIN-KEYWORD,douyin,Direct"
