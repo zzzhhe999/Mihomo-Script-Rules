@@ -55,6 +55,7 @@ const excludeFilter =
 const quicEnable = true;
 
 const quicRules = [
+  'AND,((NETWORK,udp),(DST-PORT,443),(RULE-SET,private_ip,no-resolve)),Direct',
   'AND,((NETWORK,udp),(DST-PORT,443),(OR,((RULE-SET,geolocation-cn),(RULE-SET,cn_ip,no-resolve)))),Direct',
   'AND,((NETWORK,udp),(DST-PORT,443)),QUIC',
 ];
@@ -68,7 +69,6 @@ const directProxies = [
 ];
 
 const rules = [
-  'DOMAIN-KEYWORD,mcdn.bili,REJECT',
   'RULE-SET,private,Direct',
   'RULE-SET,private_ip,Direct,no-resolve',
   'DOMAIN-KEYWORD,douyin,Direct',
@@ -668,8 +668,6 @@ function buildNetworkConfig(privateDNS, proxyServerPolicy, proxyServerHosts) {
       'dns.google': ['8.8.8.8', '8.8.4.4', '2001:4860:4860::8888', '2001:4860:4860::8844'],
       'cn.bing.com': 'global.bing.com',
       'services.googleapis.cn': ['services.googleapis.com'],
-      '+.mcdn.bilivideo.com': ['0.0.0.0'],
-      '+.mcdn.bilivideo.cn': ['0.0.0.0'],
       '+.edge.mountaintoys.cn': ['0.0.0.0'],
       ...proxyServerHosts,
     },
@@ -763,12 +761,6 @@ function processProxies(rawProxies, enabledDefinitions) {
   const otherProxies = [];
   const regionCounters = new Map();
 
-  const originalProxyNames = new Set();
-  for (const proxy of rawProxies) {
-    if (proxy && typeof proxy === 'object' && !Array.isArray(proxy) && typeof proxy.name === 'string') {
-      originalProxyNames.add(proxy.name);
-    }
-  }
   const renameMap = new Map();
   const survivingOriginalNames = new Set();
 
@@ -855,9 +847,7 @@ function processProxies(rawProxies, enabledDefinitions) {
     if (!target || typeof target !== 'string') continue;
     if (renameMap.has(target)) {
       p['dialer-proxy'] = renameMap.get(target);
-    } else if (survivingOriginalNames.has(target)) {
-      continue;
-    } else if (originalProxyNames.has(target)) {
+    } else if (!survivingOriginalNames.has(target)) {
       delete p['dialer-proxy'];
     }
   }
@@ -1123,17 +1113,19 @@ function main(config) {
     const networkConfig = buildNetworkConfig(privateDNS, proxyServerPolicy, proxyServerHosts);
 
     newConfig['mode'] = 'rule';
-    newConfig['mixed-port'] = config['mixed-port'] ?? 7890;
+    const rawMixedPort = config['mixed-port'];
+    let mixedPort = 7890;
+    if (rawMixedPort != null) {
+      const mixedPortNum = Number(rawMixedPort);
+      if (Number.isFinite(mixedPortNum) && mixedPortNum >= 0) mixedPort = mixedPortNum;
+    }
+    newConfig['mixed-port'] = mixedPort;
 
-    newConfig['allow-lan'] = config['allow-lan'] ?? false;
     newConfig['ipv6'] = true;
     newConfig['bind-address'] = config['bind-address'] ?? '*';
     newConfig['unified-delay'] = true;
     newConfig['tcp-concurrent'] = true;
-    newConfig['find-process-mode'] = 'strict';
     newConfig['external-controller'] = config['external-controller'] ?? '127.0.0.1:9090';
-    newConfig['external-ui'] = 'ui';
-    newConfig['external-ui-url'] = 'https://github.com/Zephyruso/zashboard/releases/latest/download/dist.zip';
     newConfig['profile'] = {
       'store-selected': true,
       'store-fake-ip': true,
@@ -1146,6 +1138,7 @@ function main(config) {
 
     newConfig['rules'] = [
       ...rejectServiceRules,
+      'DOMAIN-KEYWORD,mcdn.bili,REJECT',
       ...(quicEnable ? quicRules : []),
       ...rules,
       ...serviceRules,
