@@ -62,8 +62,8 @@
 | 维度  | 处理前 | 处理后 |
 | --- | --- | --- |
 | 顶级分组 | 列表杂乱 | 按国家/地区 → 按应用 |
-| 地区分组 | 无   | 共 16 个国家/地区 |
-| 应用分组 | 无   | 19 个独立应用策略组 |
+| 地区分组 | 无   | 共 16 个国家/地区（另有 `Others` 兜底组） |
+| 应用分组 | 无   | 17 个独立应用策略组 |
 | 节点选择 | 手动选择 | 按地区自动测速 → 自动选最快节点 |
 | 节点命名 | 信息杂乱 | `HK 01` `JP 03 0.5x` |
 
@@ -79,36 +79,36 @@
   🇭🇰 HK 01
   🇯🇵 JP 01 0.5x
   🇺🇸 US 01 2.0x
-  无法识别地区的节点 → 保留原名，统一归入 `Others` 策略组
+  无法识别地区的节点 → 保留原名并追加序号（如 `示例节点 #01`），统一归入 `Others` 策略组
 ```
 
 ---
 
 ## 3.支持的服务/应用
 
-脚本为以下 **19 个服务/应用** 自动创建独立策略组，各自使用专属规则集精准分流：
+脚本为以下 **17 个服务/应用** 自动创建独立策略组，各自使用专属规则集精准分流：
 
 | 服务  | 策略组名称 | 规则来源 | 特殊处理 |
 | --- | --- | --- | --- |
-| AI 服务 | `AI` | `geosite:anthropic/openai` | ChatGPT、Claude |
-| YouTube | `YouTube` | `geosite:youtube` | —   |
-| FCM 推送 | `FCM` | `geosite:googlefcm` | 保障 Android 推送 |
-| Google | `Google` | `geosite:google` + `geoip:google` | 域名 + IP 双重匹配 |
-| GitHub | `GitHub` | `geosite:github` | —   |
-| Microsoft | `Microsoft` | `geosite:microsoft` | —   |
-| Apple | `Apple` | `geosite:apple` | —   |
-| Telegram | `Telegram` | `geosite:telegram` + `geoip:telegram` | 域名 + IP 双重匹配 |
-| Cloudflare | `Cloudflare` | `geosite:cloudflare` + `geoip:cloudflare` | 域名 + IP 双重匹配 |
-| Steam | `Steam` | `geosite:steam` | —   |
-| X   | `X` | `geosite:twitter` + `geoip:twitter` | 域名 + IP 双重匹配 |
-| Instagram | `Instagram` | `geosite:instagram` | —   |
-| Spotify | `Spotify` | `geosite:spotify` | —   |
-| TikTok | `TikTok` | `geosite:tiktok` | —   |
-| Netflix | `Netflix` | `geosite:netflix` + `geoip:netflix` | 域名 + IP 双重匹配 |
-| Emby | `Emby` | `geosite:category-emby` + `DOMAIN-SUFFIX,mb3admin.com` + `DOMAIN-KEYWORD,emby` | 域名 + 关键词多重匹配 |
-| PikPak | `PikPak` | `geosite:pikpak` | —   |
-| EHentai | `EHentai` | `geosite:ehentai` | —   |
+| AI 服务 | `AI` | `rule-set:ai`（geosite/category-ai-!cn） | 覆盖全部 AI 站点（ChatGPT、Claude 等） |
+| YouTube | `YouTube` | `rule-set:youtube` | —   |
+| FCM 推送 | `FCM` | `rule-set:googlefcm` | 保障 Android 推送 |
+| Google | `Google` | `rule-set:google` + `rule-set:google_ip` | 域名 + IP 双重匹配 |
+| GitHub | `GitHub` | `rule-set:github` | —   |
+| Microsoft | `Microsoft` | `rule-set:microsoft` | —   |
+| Apple | `Apple` | `rule-set:apple` | —   |
+| Telegram | `Telegram` | `rule-set:telegram` + `rule-set:telegram_ip` | 域名 + IP 双重匹配 |
+| Cloudflare | `Cloudflare` | `rule-set:cloudflare` + `rule-set:cloudflare_ip` | 域名 + IP 双重匹配 |
+| Steam | `Steam` | `rule-set:steam` | —   |
+| X   | `X` | `rule-set:twitter` + `rule-set:twitter_ip` | 域名 + IP 双重匹配 |
+| Instagram | `Instagram` | `rule-set:instagram` | —   |
+| Spotify | `Spotify` | `rule-set:spotify` | —   |
+| TikTok | `TikTok` | `rule-set:tiktok` | —   |
+| Netflix | `Netflix` | `rule-set:netflix` + `rule-set:netflix_ip` | 域名 + IP 双重匹配 |
+| Emby | `Emby` | `rule-set:emby`（geosite/category-emby）+ `DOMAIN-SUFFIX,mb3admin.com` + `DOMAIN-KEYWORD,emby` | 域名 + 关键词多重匹配 |
 | 广告拦截 | `AdBlock` | `adblockmihomolite` | 默认 REJECT，可切换直连 |
+
+> 所有规则集均以 **RULE-SET（.mrs）** 形式随订阅下发（主数据源为 [MetaCubeX/meta-rules-dat](https://github.com/MetaCubeX/meta-rules-dat)）。
 
 > 常规服务策略组提供 `Default`（跟随系统）、`Direct`（直连）、`Auto`（自动测速）、`Balance`（负载均衡）及各地地区组选项；`AdBlock` 提供 `REJECT`（拦截）和 `DIRECT`（放行）。
 
@@ -139,7 +139,7 @@
   - 普通节点：`🇭🇰 HK 01`
   - 低倍率节点：`🇯🇵 JP 02 0.5x`
   - 高倍率节点：`🇺🇸 US 03 3x`
-- 无法识别地区的节点保留原名，统一归入 `Others` 策略组
+- 无法识别地区的节点保留原名并追加序号（如 `示例节点 #01`），统一归入 `Others` 策略组
   
 
 ### 5.2 低质节点过滤
@@ -168,7 +168,7 @@
 
 - **Fake-IP 模式**，缓存算法 ARC
   
-- `nameserver-policy` 精准分流：gfw 列表走国外 DNS，cn/private 列表走国内 DNS
+- `nameserver-policy` 精准分流：`rule-set:gfw` 走国外 DNS；`rule-set:private`、`rule-set:cn`、`rule-set:geolocation-cn`、`rule-set:apple_cn`、`rule-set:cloudflare_cn`、`rule-set:games_cn` 走国内 DNS
   
 - `proxy-server-nameserver` 动态拼接：在默认阿里 + 腾讯 DoH 基础上，自动提取用户私有 DNS 服务器并注入，确保代理节点的域名解析使用正确的 DNS 通道
   
@@ -186,7 +186,7 @@
   
 - 策略组 `AdBlock` 默认 REJECT，可切换到 DIRECT 放行
   
-- **强制远程更新**：不声明 `path-in-bundle`，强制内核无视本地缓存规则，确保每次均从 GitHub 远端精准拉取最新规则。
+- **强制远程更新**：`adblockmihomolite` 与 `fakeip_filter` 不声明 `path-in-bundle`，规则集不打包进内核内置 geo 数据，每次更新均按更新间隔从 GitHub 远端精准拉取最新规则。
   
 
 ### 5.6 自动补全客户端指纹
@@ -200,15 +200,15 @@
 > **前提**：QUIC 走 UDP 443，**Windows**必须开启客户端 **TUN 模式**才能劫持（系统代理只处理 TCP）。详见 [5.8](#58-双栈--客户端-tun-模式)。
 
 ```js
-'AND,((NETWORK,udp),(DST-PORT,443),(OR,((GEOSITE,geolocation-cn),(GEOIP,cn,no-resolve)))),Direct',
+'AND,((NETWORK,udp),(DST-PORT,443),(OR,((RULE-SET,geolocation-cn),(RULE-SET,cn_ip,no-resolve)))),Direct',
 'AND,((NETWORK,udp),(DST-PORT,443)),QUIC'
 ```
 
-> `geosite:geolocation-cn` 和 `geoip:cn` 数据来源于 [MetaCubeX/meta-rules-dat](https://github.com/MetaCubeX/meta-rules-dat)。
+> `rule-set:geolocation-cn` 和 `rule-set:cn_ip` 数据来源于 [MetaCubeX/meta-rules-dat](https://github.com/MetaCubeX/meta-rules-dat)，以 .mrs 规则集形式随订阅下发。
 
 - **流量集中管控：** UDP 443 (QUIC) 流量集中拦截到独立策略组，默认走代理。可手动切换到 REJECT 彻底阻断 QUIC，解决部分环境下 QUIC 导致网页加载卡顿的问题。
 - **国内外差异化处理：**
-  - **国内流量（默认放行）**：匹配到 `geosite:geolocation-cn` 或 `geoip:cn` 的 QUIC 流量直接走 **Direct**，保障国内应用（如淘宝、抖音、微信等）的极致加载速度。
+  - **国内流量（默认放行）**：匹配到 `rule-set:geolocation-cn` 或 `rule-set:cn_ip` 的 QUIC 流量直接走 **Direct**，保障国内应用（如淘宝、抖音、微信等）的极致加载速度。
   - **境外流量（手动管控）**：未匹配到国内规则的 QUIC 流量统一进入 `QUIC` 策略组，提供两种选项：
     - `Default`（默认代理）：允许 QUIC 流量正常通过代理服务器。
     - `REJECT`：强制阻断 QUIC。如果你在观看 YouTube 或使用 Google 搜索时遇到无限转圈、加载卡顿，建议选此项，迫使应用回退到更稳定的 TCP 连接。
@@ -229,8 +229,8 @@
 
 所有分流规则集每 **24 小时**自动更新，来源包括：
 
-- [MetaCubeX/meta-rules-dat](https://github.com/MetaCubeX/meta-rules-dat)（geosite/geoip 核心规则）
-- [wwqgtxx/clash-rules](https://github.com/wwqgtxx/clash-rules)（直连/GFW 规则）
+- [MetaCubeX/meta-rules-dat](https://github.com/MetaCubeX/meta-rules-dat)（geosite/geoip .mrs 规则集，主数据源，含 `path-in-bundle` 打包）
+- [wwqgtxx/clash-rules](https://github.com/wwqgtxx/clash-rules)（fakeip 过滤规则）
 - [217heidai/adblockfilters](https://github.com/217heidai/adblockfilters)（广告拦截规则）
 
 ### 5.10 极致的防御性架构与无损接管
@@ -243,7 +243,16 @@
   
 - **QuickJS / ES2020 兼容**：严格限制在 ES2020 语法子集内，使用 `print()` / `console.log()` 等 QuickJS 内置全局函数输出日志，不使用 `require` / `fetch` / `Buffer` 等 Node.js API，杜绝 `??=` / `String.replaceAll` / `Array.at` 等 ES2021+ 语法，确保在 Bettbox 的 QuickJS 引擎中稳定执行。
 
-### 5.11 其他
+### 5.11 代理重命名追踪与 `dialer-proxy` 修复
+
+- 节点按地区/倍率重命名时，自动记录 **原名称 → 新名称** 的映射关系
+  
+- 主流程结束后统一检查所有代理的 `dialer-proxy` 字段：
+  - 指向**已改名**的代理 → 自动改写为新名称
+  - 指向**存活且未改名**的代理 → 保持不变
+  - 指向**被过滤移除**的代理 → 删除该字段，避免悬挂引用导致内核报错
+
+### 5.12 其他
 
 - **Sniffer 域名嗅探**：HTTP/TLS/QUIC 自动嗅探真实域名
   
@@ -384,8 +393,6 @@ const ruleOptionsEnable = {
   Netflix: true,      // Netflix
   AdBlock: true,      // 广告拦截
   Emby: true,         // Emby
-  PikPak: true,       // PikPak
-  EHentai: true,      // E-Hentai
 };
 ```
 
@@ -437,7 +444,7 @@ const excludeFilter = /群|返利|循环|官[网址]|客服|网站|网址|获取
 
 - 本脚本持续维护
   
-- 规则集（geosite/geoip/广告拦截）由上游项目自动更新，脚本本身无需频繁改动
+- 规则集（geosite/geoip .mrs / 广告拦截）由上游项目自动更新，脚本本身无需频繁改动
   
 - 如果你发现某个服务的分流规则过时或有更好的替代规则集，欢迎提 **Issue**
   
@@ -454,8 +461,8 @@ const excludeFilter = /群|返利|循环|官[网址]|客服|网站|网址|获取
 | [MyClash](https://github.com/AIsouler/MyClash) | 原始代码来源，核心逻辑参考 |
 | [Mihomo](https://github.com/MetaCubeX/mihomo) | 内核支持 |
 | [Qure](https://github.com/Koolson/Qure) | 精美图标库 |
-| [Meta 规则集](https://github.com/MetaCubeX/meta-rules-dat) | geosite / geoip 规则数据 |
-| [Clash 规则集](https://github.com/wwqgtxx/clash-rules) | 直连 / fakeip / GFW 规则 |
+| [Meta 规则集](https://github.com/MetaCubeX/meta-rules-dat) | geosite / geoip .mrs 规则集（主数据源） |
+| [Clash 规则集](https://github.com/wwqgtxx/clash-rules) | fakeip 过滤规则 |
 | [广告过滤规则](https://github.com/217heidai/adblockfilters) | Mihomo 广告拦截规则 |
 
 ---
