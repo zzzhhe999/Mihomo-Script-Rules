@@ -2111,7 +2111,7 @@ sniffer:
     - +.local
 rules:
   - "RULE-SET,adblockmihomolite,AdBlock"
-  - "DOMAIN-KEYWORD,mcdn.bili,REJECT"
+  - "DOMAIN-KEYWORD,mcdn.bili,Direct"
   - "AND,((NETWORK,udp),(DST-PORT,443),(RULE-SET,private_ip,no-resolve)),Direct"
   - "AND,((NETWORK,udp),(DST-PORT,443),(OR,((RULE-SET,geolocation-cn),(RULE-SET,cn_ip,no-resolve)))),Direct"
   - "AND,((NETWORK,udp),(DST-PORT,443)),QUIC"
