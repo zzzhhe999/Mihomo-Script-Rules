@@ -846,7 +846,7 @@ function main(config) {
 
     newConfig['rules'] = [
       ...rejectServiceRules,
-      'DOMAIN-KEYWORD,mcdn.bili,REJECT',
+      'DOMAIN-KEYWORD,mcdn.bili,Direct',
       ...(quicEnable ? quicRules : []),
       ...rules,
       ...serviceRules,
