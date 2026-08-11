@@ -1,11 +1,11 @@
 const Compatible_With_Bettbox = { ruleOptionsEnable: true };
 
-const log =
-  typeof print === 'function'
-    ? print
-    : typeof console !== 'undefined' && typeof console.log === 'function'
-      ? (...args) => console.log(...args)
-      : () => {};
+let log = () => {};
+if (typeof print === 'function') {
+  log = print;
+} else if (typeof console !== 'undefined' && typeof console.log === 'function') {
+  log = (...args) => console.log(...args);
+}
 
 const ruleOptionsEnable = {
   AI: true,
@@ -559,7 +559,7 @@ function processProxies(rawProxies, enabledDefinitions) {
 
       if (matchedGroups.length === 0) otherProxies.push(newName);
     } catch (e) {
-      log('[Mihomo-Script-Rules] processProxies: skip invalid proxy:', e.message || String(e));
+      log('[Mihomo-Script-Rules] processProxies: skip invalid proxy:', (e && e.message) || String(e));
     }
   }
 
@@ -583,283 +583,290 @@ const groupFrom = (name, base, proxies) => {
   return g;
 };
 
+function buildConfig(config) {
+  const rawProxies = Array.isArray(config.proxies) ? config.proxies : [];
+
+  const newConfig = { ...config };
+
+  for (const key of ['global-client-fingerprint', 'sub-rules', 'experimental']) delete newConfig[key];
+
+  const hasValidProxy = rawProxies.some((p) => {
+    if (!p || typeof p.type !== 'string') return false;
+    const pType = p.type.toLowerCase();
+    return pType !== 'direct' && pType !== 'reject';
+  });
+
+  if (!hasValidProxy) {
+    throw new Error('未发现有效代理节点数据');
+  }
+
+  const enabledDefinitions = regionDefinitions.filter((def) => regionDefinitionsEnable[def.name]);
+
+  const { processedProxies, otherProxies, regionGroups } = processProxies(rawProxies, enabledDefinitions);
+
+  if (processedProxies.length === 0) {
+    log('[Mihomo-Script-Rules] 警告：所有代理节点已被过滤器排除，最终配置将仅包含 DIRECT 出口。请检查 excludeFilter 正则是否过于宽泛。');
+  }
+
+  newConfig.proxies = processedProxies;
+
+  const originalDnsConfig = config.dns || {};
+
+  const commonDnsList = [
+    '223.5.5.5', '223.6.6.6', '119.29.29.29', '1.12.12.12', '120.53.53.53',
+    '114.114.114.114', '180.76.76.76', '1.2.4.8', '116.116.116.116',
+    '101.226.4.6', '123.125.81.6', '180.184.1.1', '180.184.2.2',
+    '1.1.1.1', '1.0.0.1', '8.8.8.8', '8.8.4.4', '9.9.9.9', '149.112.112.112',
+    '208.67.222.222', '208.67.220.220', '94.140.14.14', '94.140.15.15',
+    '76.76.2.0', '76.76.10.0', '185.228.168.9', '185.228.169.9',
+    '77.88.8.8', '77.88.8.1', '156.154.70.1', '156.154.71.1',
+    '127.0.0.1',
+    'alidns', 'doh.pub', 'dot.pub', 'dnspod', 'dns.baidu',
+    'dns.google', 'cloudflare', 'quad9', 'opendns', 'nextdns', 'adguard',
+  ];
+
+  const IPV4_RE = /^\d+(?:\.\d+){3}$/;
+  const DIGIT_DOT_RE = /[0-9.]/;
+  const isCommonDns = (dns) => {
+    if (typeof dns !== 'string') return true;
+    const value = dns.toLowerCase();
+    if (value === 'system') return true;
+    return commonDnsList.some((keyword) => {
+      if (IPV4_RE.test(keyword)) {
+        const idx = value.indexOf(keyword);
+        if (idx === -1) return false;
+        const before = idx === 0 ? '' : value[idx - 1];
+        if (DIGIT_DOT_RE.test(before)) return false;
+        const after = value[idx + keyword.length];
+        if (after === undefined || after === '') {
+          return true;
+        }
+        if (after === ':') {
+          return value.slice(idx + keyword.length) === ':53';
+        }
+        return !DIGIT_DOT_RE.test(after);
+      }
+      return value.includes(keyword);
+    });
+  };
+
+  const privateDNS = [
+    ...new Set([
+      ...(Array.isArray(originalDnsConfig['nameserver']) ? originalDnsConfig['nameserver'] : []),
+      ...(Array.isArray(originalDnsConfig['proxy-server-nameserver']) ? originalDnsConfig['proxy-server-nameserver'] : []),
+    ]),
+  ].filter((dns) => !isCommonDns(dns));
+
+  const proxyDomains = new Set(
+    processedProxies
+      .filter((proxy) => typeof proxy.server === 'string')
+      .map((proxy) => proxy.server.toLowerCase()),
+  );
+
+  const proxyServerPolicy = {};
+  for (const rawPolicy of [
+    originalDnsConfig['nameserver-policy'],
+    originalDnsConfig['proxy-server-nameserver-policy'],
+  ]) {
+    if (!rawPolicy || typeof rawPolicy !== 'object' || Array.isArray(rawPolicy)) continue;
+    for (const [domain, dns] of Object.entries(rawPolicy)) {
+      if (matchDomainPattern(domain, proxyDomains)) {
+        proxyServerPolicy[domain] = dns;
+      }
+    }
+  }
+
+  const originalHosts = (config.hosts && typeof config.hosts === 'object' && !Array.isArray(config.hosts))
+    ? config.hosts : {};
+  const proxyServerHosts = {};
+  for (const [domain, value] of Object.entries(originalHosts)) {
+    if (matchDomainPattern(domain, proxyDomains)) {
+      proxyServerHosts[domain] = value;
+    }
+  }
+
+  const generatedRegionGroups = [];
+  for (const def of enabledDefinitions) {
+    const group = regionGroups[def.name];
+    if (group.proxies.length > 0) {
+      generatedRegionGroups.push(...createRegionGroup(group.name, group.icon, group.proxies));
+    }
+  }
+
+  if (otherProxies.length > 0) {
+    generatedRegionGroups.push(
+      ...createRegionGroup(
+        'Others',
+        ICON('World_Map'),
+        otherProxies,
+      ),
+    );
+  }
+
+  const { groupNamesOfSelect, autoTestProxies, loadBalanceProxies, rateSelectNames } = collectTopLevelGroups(
+    generatedRegionGroups,
+    [NODE_RATE_LOW, NODE_RATE_HIGH],
+  );
+
+  if (
+    rateSelectNames.length === 0 &&
+    (regionDefinitionsEnable[NODE_RATE_LOW] || regionDefinitionsEnable[NODE_RATE_HIGH])
+  ) {
+    log('[Mihomo-Script-Rules] 提示：未匹配到任何高低倍率节点，Low-Rate/High-Rate 分组未生成。');
+    log('[Mihomo-Script-Rules] 节点名需含 "低倍/低倍率/省流/下载/0.x" 或 "2倍/3倍率/2x/×2" 等倍率标记，否则倍率组不会出现。');
+  }
+
+  const proxyModes = {
+    default: ['Default', 'Direct', 'Auto', 'Balance', ...groupNamesOfSelect, ...rateSelectNames],
+    reject: ['REJECT', 'DIRECT'],
+  };
+
+  const autoGroup = groupFrom('Auto', urlTestBaseOption, autoTestProxies);
+  const balanceGroup = groupFrom('Balance', loadBalanceBaseOption, loadBalanceProxies);
+
+  const functionalGroups = [
+    {
+      ...selectBaseOption,
+      name: 'Default',
+      proxies: ['Auto', 'Direct', 'Balance', ...groupNamesOfSelect, ...rateSelectNames],
+      icon: ICON('Direct'),
+    },
+    autoGroup,
+    balanceGroup,
+    {
+      ...selectBaseOption,
+      name: 'QUIC',
+      proxies: ['Default', 'REJECT'],
+      icon: ICON('Round_Robin_1'),
+    },
+  ];
+
+  const finalRuleProviders = { ...baseRuleProviders };
+  const rejectServiceRules = [];
+  const serviceRules = [];
+
+  for (const svc of serviceConfigs) {
+    if (!ruleOptionsEnable[svc.name]) continue;
+
+    if (svc.proxyMode === 'reject') rejectServiceRules.push(...svc.rules);
+    else serviceRules.push(...svc.rules);
+    Object.assign(finalRuleProviders, svc.providers);
+
+    const currentProxyMode = svc.proxyMode ?? 'default';
+    functionalGroups.push({
+      ...(svc.baseOption || selectBaseOption),
+      name: svc.name,
+      icon: svc.icon,
+      proxies: proxyModes[currentProxyMode] ?? proxyModes['default'],
+    });
+  }
+
+  functionalGroups.push({
+    ...selectBaseOption,
+    name: 'Direct',
+    proxies: directProxies.map((p) => p.name),
+    url: 'https://connectivitycheck.platform.hicloud.com/generate_204',
+    icon: ICON('China_Map'),
+  });
+
+  const functionalGroupDisplayOrder = [
+    'Default',
+    'Direct',
+    'Auto',
+    'Balance',
+    'AdBlock',
+    'QUIC',
+    'Cloudflare',
+    'FCM',
+    'AI',
+    'Google',
+    'GitHub',
+    'Steam',
+    'Telegram',
+    'X',
+    'TikTok',
+    'Microsoft',
+    'Apple',
+    'YouTube',
+    'Instagram',
+    'Netflix',
+    'Spotify',
+    'Emby',
+  ];
+
+  const orderMap = new Map();
+  functionalGroupDisplayOrder.forEach((name, index) => orderMap.set(name, index));
+
+  const functionalGroupsSorted = functionalGroups.sort((a, b) => {
+    const orderA = orderMap.get(a.name) ?? Infinity;
+    const orderB = orderMap.get(b.name) ?? Infinity;
+    return orderA - orderB;
+  });
+
+  const globalGroupProxies = [
+    ...functionalGroupsSorted.map((g) => g.name),
+    ...generatedRegionGroups.map((g) => g.name),
+  ];
+
+  const globalGroup = {
+    ...selectBaseOption,
+    name: 'GLOBAL',
+    proxies: globalGroupProxies,
+    icon: ICON('Global'),
+  };
+
+  const networkConfig = buildNetworkConfig(privateDNS, proxyServerPolicy, proxyServerHosts);
+
+  newConfig['mode'] = 'rule';
+  let mixedPort = 7890;
+  const rawMixedPort = config['mixed-port'];
+  if (rawMixedPort != null && String(rawMixedPort).trim() !== '') {
+    const mixedPortNum = Number(rawMixedPort);
+    if (Number.isFinite(mixedPortNum) && mixedPortNum >= 0 && mixedPortNum <= 65535) {
+      mixedPort = mixedPortNum;
+    }
+  }
+  newConfig['mixed-port'] = mixedPort;
+
+  newConfig['ipv6'] = true;
+  newConfig['bind-address'] = config['bind-address'] ?? '*';
+  newConfig['unified-delay'] = true;
+  newConfig['tcp-concurrent'] = true;
+  newConfig['external-controller'] = config['external-controller'] ?? '127.0.0.1:9090';
+  newConfig['profile'] = {
+    'store-selected': true,
+    'store-fake-ip': true,
+  };
+  newConfig['proxy-groups'] = [globalGroup, ...functionalGroupsSorted, ...generatedRegionGroups];
+  newConfig['rule-providers'] = finalRuleProviders;
+  Object.assign(newConfig, networkConfig);
+
+  newConfig.proxies.push(...directProxies);
+
+  newConfig['rules'] = [
+    ...rejectServiceRules,
+    'DOMAIN-KEYWORD,mcdn.bili,Direct',
+    ...(quicEnable ? quicRules : []),
+    ...rules,
+    ...serviceRules,
+    ...bytedanceCdnRules,
+    'RULE-SET,geolocation-cn,Direct',
+    'RULE-SET,gfw,Default',
+    'RULE-SET,cn_ip,Direct',
+    'MATCH,Default',
+  ];
+
+  return newConfig;
+}
+
 function main(config) {
   if (!config || typeof config !== 'object' || Array.isArray(config)) {
     return { proxies: [], 'proxy-groups': [], rules: [] };
   }
-  const rawProxies = Array.isArray(config.proxies) ? config.proxies : [];
-
   try {
-    const newConfig = { ...config };
-
-    for (const key of ['global-client-fingerprint', 'sub-rules', 'experimental']) delete newConfig[key];
-
-    const hasValidProxy = rawProxies.some((p) => {
-      if (!p || typeof p.type !== 'string') return false;
-      const pType = p.type.toLowerCase();
-      return pType !== 'direct' && pType !== 'reject';
-    });
-
-    if (!hasValidProxy) {
-      throw new Error('未发现有效代理节点数据');
-    }
-
-    const enabledDefinitions = regionDefinitions.filter((def) => regionDefinitionsEnable[def.name]);
-
-    const { processedProxies, otherProxies, regionGroups } = processProxies(rawProxies, enabledDefinitions);
-
-    if (processedProxies.length === 0) {
-      log('[Mihomo-Script-Rules] 警告：所有代理节点已被过滤器排除，最终配置将仅包含 DIRECT 出口。请检查 excludeFilter 正则是否过于宽泛。');
-    }
-
-    newConfig.proxies = processedProxies;
-
-    const originalDnsConfig = config.dns || {};
-
-    const commonDnsList = [
-      '223.5.5.5', '223.6.6.6', '119.29.29.29', '1.12.12.12', '120.53.53.53',
-      '114.114.114.114', '180.76.76.76', '1.2.4.8', '116.116.116.116',
-      '101.226.4.6', '123.125.81.6', '180.184.1.1', '180.184.2.2',
-      '1.1.1.1', '1.0.0.1', '8.8.8.8', '8.8.4.4', '9.9.9.9', '149.112.112.112',
-      '208.67.222.222', '208.67.220.220', '94.140.14.14', '94.140.15.15',
-      '76.76.2.0', '76.76.10.0', '185.228.168.9', '185.228.169.9',
-      '77.88.8.8', '77.88.8.1', '156.154.70.1', '156.154.71.1',
-      '127.0.0.1',
-      'alidns', 'doh.pub', 'dot.pub', 'dnspod', 'dns.baidu',
-      'dns.google', 'cloudflare', 'quad9', 'opendns', 'nextdns', 'adguard',
-    ];
-
-    const IPV4_RE = /^\d+(?:\.\d+){3}$/;
-    const DIGIT_DOT_RE = /[0-9.]/;
-    const isCommonDns = (dns) => {
-      if (typeof dns !== 'string') return true;
-      if (dns.toLowerCase() === 'system') return true;
-      const value = dns.toLowerCase();
-      return commonDnsList.some((keyword) => {
-        if (IPV4_RE.test(keyword)) {
-          const idx = value.indexOf(keyword);
-          if (idx === -1) return false;
-          const before = idx === 0 ? '' : value[idx - 1];
-          if (DIGIT_DOT_RE.test(before)) return false;
-          const after = value[idx + keyword.length];
-          if (after === undefined || after === '') {
-            return true;
-          }
-          if (after === ':') {
-            return value.slice(idx + keyword.length) === ':53';
-          }
-          return !DIGIT_DOT_RE.test(after);
-        }
-        return value.includes(keyword);
-      });
-    };
-
-    const privateDNS = [
-      ...new Set([
-        ...(Array.isArray(originalDnsConfig['nameserver']) ? originalDnsConfig['nameserver'] : []),
-        ...(Array.isArray(originalDnsConfig['proxy-server-nameserver']) ? originalDnsConfig['proxy-server-nameserver'] : []),
-      ]),
-    ].filter((dns) => !isCommonDns(dns));
-
-    const proxyDomains = new Set(
-      processedProxies
-        .filter((proxy) => typeof proxy.server === 'string')
-        .map((proxy) => proxy.server.toLowerCase()),
-    );
-
-    const proxyServerPolicy = {};
-    for (const rawPolicy of [
-      originalDnsConfig['nameserver-policy'],
-      originalDnsConfig['proxy-server-nameserver-policy'],
-    ]) {
-      if (!rawPolicy || typeof rawPolicy !== 'object' || Array.isArray(rawPolicy)) continue;
-      for (const [domain, dns] of Object.entries(rawPolicy)) {
-        if (matchDomainPattern(domain, proxyDomains)) {
-          proxyServerPolicy[domain] = dns;
-        }
-      }
-    }
-
-    const originalHosts = (config.hosts && typeof config.hosts === 'object' && !Array.isArray(config.hosts))
-      ? config.hosts : {};
-    const proxyServerHosts = {};
-    for (const [domain, value] of Object.entries(originalHosts)) {
-      if (matchDomainPattern(domain, proxyDomains)) {
-        proxyServerHosts[domain] = value;
-      }
-    }
-
-    const generatedRegionGroups = [];
-    for (const def of enabledDefinitions) {
-      const group = regionGroups[def.name];
-      if (group.proxies.length > 0) {
-        generatedRegionGroups.push(...createRegionGroup(group.name, group.icon, group.proxies));
-      }
-    }
-
-    if (otherProxies.length > 0) {
-      generatedRegionGroups.push(
-        ...createRegionGroup(
-          'Others',
-          ICON('World_Map'),
-          otherProxies,
-        ),
-      );
-    }
-
-    const { groupNamesOfSelect, autoTestProxies, loadBalanceProxies, rateSelectNames } = collectTopLevelGroups(
-      generatedRegionGroups,
-      [NODE_RATE_LOW, NODE_RATE_HIGH],
-    );
-
-    if (
-      rateSelectNames.length === 0 &&
-      (regionDefinitionsEnable[NODE_RATE_LOW] || regionDefinitionsEnable[NODE_RATE_HIGH])
-    ) {
-      log('[Mihomo-Script-Rules] 提示：未匹配到任何高低倍率节点，Low-Rate/High-Rate 分组未生成。');
-      log('[Mihomo-Script-Rules] 节点名需含 "低倍/低倍率/省流/下载/0.x" 或 "2倍/3倍率/2x/×2" 等倍率标记，否则倍率组不会出现。');
-    }
-
-    const proxyModes = {
-      default: ['Default', 'Direct', 'Auto', 'Balance', ...groupNamesOfSelect, ...rateSelectNames],
-      reject: ['REJECT', 'DIRECT'],
-    };
-
-    const autoGroup = groupFrom('Auto', urlTestBaseOption, autoTestProxies);
-    const balanceGroup = groupFrom('Balance', loadBalanceBaseOption, loadBalanceProxies);
-
-    const functionalGroups = [
-      {
-        ...selectBaseOption,
-        name: 'Default',
-        proxies: ['Auto', 'Direct', 'Balance', ...groupNamesOfSelect, ...rateSelectNames],
-        icon: ICON('Direct'),
-      },
-      autoGroup,
-      balanceGroup,
-      {
-        ...selectBaseOption,
-        name: 'QUIC',
-        proxies: ['Default', 'REJECT'],
-        icon: ICON('Round_Robin_1'),
-      },
-    ];
-
-    const finalRuleProviders = { ...baseRuleProviders };
-    const rejectServiceRules = [];
-    const serviceRules = [];
-
-    for (const svc of serviceConfigs) {
-      if (!ruleOptionsEnable[svc.name]) continue;
-
-      if (svc.proxyMode === 'reject') rejectServiceRules.push(...svc.rules);
-      else serviceRules.push(...svc.rules);
-      Object.assign(finalRuleProviders, svc.providers);
-
-      const currentProxyMode = svc.proxyMode ?? 'default';
-      functionalGroups.push({
-        ...(svc.baseOption || selectBaseOption),
-        name: svc.name,
-        icon: svc.icon,
-        proxies: proxyModes[currentProxyMode] ?? proxyModes['default'],
-      });
-    }
-
-    functionalGroups.push({
-      ...selectBaseOption,
-      name: 'Direct',
-      proxies: directProxies.map((p) => p.name),
-      url: 'https://connectivitycheck.platform.hicloud.com/generate_204',
-      icon: ICON('China_Map'),
-    });
-
-    const functionalGroupDisplayOrder = [
-      'Default',
-      'Direct',
-      'Auto',
-      'Balance',
-      'AdBlock',
-      'QUIC',
-      'Cloudflare',
-      'FCM',
-      'AI',
-      'Google',
-      'GitHub',
-      'Steam',
-      'Telegram',
-      'X',
-      'TikTok',
-      'Microsoft',
-      'Apple',
-      'YouTube',
-      'Instagram',
-      'Netflix',
-      'Spotify',
-      'Emby',
-    ];
-
-    const orderMap = new Map();
-    functionalGroupDisplayOrder.forEach((name, index) => orderMap.set(name, index));
-
-    const functionalGroupsSorted = functionalGroups.sort((a, b) => {
-      const orderA = orderMap.get(a.name) ?? Infinity;
-      const orderB = orderMap.get(b.name) ?? Infinity;
-      return orderA - orderB;
-    });
-
-    const globalGroupProxies = [
-      ...functionalGroupsSorted.map((g) => g.name),
-      ...generatedRegionGroups.map((g) => g.name),
-    ];
-
-    const globalGroup = {
-      ...selectBaseOption,
-      name: 'GLOBAL',
-      proxies: globalGroupProxies,
-      icon: ICON('Global'),
-    };
-
-    const networkConfig = buildNetworkConfig(privateDNS, proxyServerPolicy, proxyServerHosts);
-
-    newConfig['mode'] = 'rule';
-    let mixedPort = 7890;
-    if (config['mixed-port'] != null) {
-      const mixedPortNum = Number(config['mixed-port']);
-      if (Number.isFinite(mixedPortNum) && mixedPortNum >= 0) mixedPort = mixedPortNum;
-    }
-    newConfig['mixed-port'] = mixedPort;
-
-    newConfig['ipv6'] = true;
-    newConfig['bind-address'] = config['bind-address'] ?? '*';
-    newConfig['unified-delay'] = true;
-    newConfig['tcp-concurrent'] = true;
-    newConfig['external-controller'] = config['external-controller'] ?? '127.0.0.1:9090';
-    newConfig['profile'] = {
-      'store-selected': true,
-      'store-fake-ip': true,
-    };
-    newConfig['proxy-groups'] = [globalGroup, ...functionalGroupsSorted, ...generatedRegionGroups];
-    newConfig['rule-providers'] = finalRuleProviders;
-    Object.assign(newConfig, networkConfig);
-
-    newConfig.proxies.push(...directProxies);
-
-    newConfig['rules'] = [
-      ...rejectServiceRules,
-      'DOMAIN-KEYWORD,mcdn.bili,Direct',
-      ...(quicEnable ? quicRules : []),
-      ...rules,
-      ...serviceRules,
-      ...bytedanceCdnRules,
-      'RULE-SET,geolocation-cn,Direct',
-      'RULE-SET,gfw,Default',
-      'RULE-SET,cn_ip,Direct',
-      'MATCH,Default',
-    ];
-
-    return newConfig;
+    return buildConfig(config);
   } catch (error) {
-    log('[Mihomo-Script-Rules] Error in main():', error.message || String(error));
+    log('[Mihomo-Script-Rules] Error in main():', (error && error.message) || String(error));
 
     return {
       ...config,
