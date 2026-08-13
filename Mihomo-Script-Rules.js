@@ -406,7 +406,10 @@ function buildNetworkConfig(privateDNS, proxyServerPolicy, proxyServerHosts) {
       'dns.google': ['8.8.8.8', '8.8.4.4', '2001:4860:4860::8888', '2001:4860:4860::8844'],
       'cn.bing.com': 'global.bing.com',
       'services.googleapis.cn': ['services.googleapis.com'],
+      '+.mcdn.bilivideo.com': ['0.0.0.0'],
+      '+.mcdn.bilivideo.cn': ['0.0.0.0'],
       '+.edge.mountaintoys.cn': ['0.0.0.0'],
+      '+.h2.smtcdns.net': ['0.0.0.0'],
       ...proxyServerHosts,
     },
     ntp: {
@@ -439,6 +442,7 @@ function buildNetworkConfig(privateDNS, proxyServerPolicy, proxyServerHosts) {
       'prefer-h3': false,
       'enhanced-mode': 'fake-ip',
       'fake-ip-range': '198.18.0.1/16',
+      'fake-ip-range6': 'fdfe:dcba:9876::1/64',
       'fake-ip-filter': ['rule-set:private', 'rule-set:fakeip_filter'],
       'default-nameserver': ['223.5.5.5', '1.12.12.12'],
       'proxy-server-nameserver': [
@@ -857,7 +861,7 @@ function buildConfig(config) {
 
   newConfig['rules'] = [
     ...rejectServiceRules,
-    'DOMAIN-KEYWORD,mcdn.bili,Direct',
+    'DOMAIN-KEYWORD,mcdn.bili,REJECT',
     ...(quicEnable ? quicRules : []),
     ...rules,
     ...serviceRules,
