@@ -155,6 +155,7 @@ dns:
   prefer-h3: false
   enhanced-mode: "fake-ip"
   fake-ip-range: 198.18.0.1/16
+  fake-ip-range6: "fdfe:dcba:9876::1/64"
   fake-ip-filter:
     - "rule-set:private"
     - "rule-set:fakeip_filter"
@@ -2075,7 +2076,13 @@ hosts:
   cn.bing.com: global.bing.com
   services.googleapis.cn:
     - services.googleapis.com
+  "+.mcdn.bilivideo.com":
+    - 0.0.0.0
+  "+.mcdn.bilivideo.cn":
+    - 0.0.0.0
   "+.edge.mountaintoys.cn":
+    - 0.0.0.0
+  "+.h2.smtcdns.net":
     - 0.0.0.0
 ntp:
   enable: true
@@ -2111,7 +2118,7 @@ sniffer:
     - +.local
 rules:
   - "RULE-SET,adblockmihomolite,AdBlock"
-  - "DOMAIN-KEYWORD,mcdn.bili,Direct"
+  - "DOMAIN-KEYWORD,mcdn.bili,REJECT"
   - "AND,((NETWORK,udp),(DST-PORT,443),(RULE-SET,private_ip,no-resolve)),Direct"
   - "AND,((NETWORK,udp),(DST-PORT,443),(OR,((RULE-SET,geolocation-cn),(RULE-SET,cn_ip,no-resolve)))),Direct"
   - "AND,((NETWORK,udp),(DST-PORT,443)),QUIC"
