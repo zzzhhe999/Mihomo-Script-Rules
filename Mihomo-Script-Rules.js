@@ -546,10 +546,21 @@ function processProxies(rawProxies, enabledDefinitions) {
         }
       } else {
         newName = `${originalName} #${bump('__other__')}`;
+        if (isLow) {
+          const tag = extractMultiplier(originalName, false);
+          if (tag && !originalName.includes(tag)) newName += ' ' + tag;
+        } else if (isHigh) {
+          const tag = extractMultiplier(originalName, true);
+          if (tag && !originalName.includes(tag)) newName += ' ' + tag;
+        }
       }
 
       p.name = newName;
-      renameMap.set(originalName, newName);
+      if (renameMap.has(originalName)) {
+        log('[Mihomo-Script-Rules] 警告:检测到重名节点 "' + originalName + '",dialer-proxy 将引用首个匹配节点。');
+      } else {
+        renameMap.set(originalName, newName);
+      }
       processedProxies.push(p);
 
       for (const groupName of matchedGroups) {
@@ -563,13 +574,14 @@ function processProxies(rawProxies, enabledDefinitions) {
     }
   }
 
+  const BUILTIN_DIALERS = new Set(['direct', 'reject', 'pass', 'compatible', 'global']);
   for (const p of processedProxies) {
     const target = p['dialer-proxy'];
     if (!target || typeof target !== 'string') continue;
     const mapped = renameMap.get(target);
     if (mapped !== undefined) {
       p['dialer-proxy'] = mapped;
-    } else {
+    } else if (!BUILTIN_DIALERS.has(target.toLowerCase())) {
       delete p['dialer-proxy'];
     }
   }
