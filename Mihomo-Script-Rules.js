@@ -216,7 +216,13 @@ const ruleProviderCommonIpcidr = {
   behavior: 'ipcidr',
 };
 
-const RP = ({ name, ip, pathName = name, pib = `geo/${ip ? 'geoip' : 'geosite'}/${name}.mrs`, url = `${META}/geo/${ip ? 'geoip' : 'geosite'}/${name}.mrs` }) => {
+const RP = ({
+  name,
+  ip,
+  pathName = name,
+  pib = `geo/${ip ? 'geoip' : 'geosite'}/${name}.mrs`,
+  url = `${META}/geo/${ip ? 'geoip' : 'geosite'}/${name}.mrs`,
+}) => {
   const p = { ...(ip ? ruleProviderCommonIpcidr : ruleProviderCommonDomain), url, path: `./ruleset/${pathName}.mrs` };
   if (pib) p['path-in-bundle'] = pib;
   return p;
@@ -230,7 +236,11 @@ const baseRuleProviders = {
   'geolocation-cn': RP({ name: 'geolocation-cn' }),
   cn_ip: RP({ name: 'cn', ip: true, pathName: 'cn_ip' }),
   gfw: RP({ name: 'gfw' }),
-  fakeip_filter: RP({ name: 'fakeip-filter', url: 'https://fastly.jsdelivr.net/gh/wwqgtxx/clash-rules@release/fakeip-filter.mrs', pib: '' }),
+  fakeip_filter: RP({
+    name: 'fakeip-filter',
+    url: 'https://fastly.jsdelivr.net/gh/wwqgtxx/clash-rules@release/fakeip-filter.mrs',
+    pib: '',
+  }),
   cn: RP({ name: 'cn' }),
   cloudflare_cn: RP({ name: 'cloudflare@cn' }),
 };
@@ -297,7 +307,6 @@ function matchDomainPattern(pattern, domains) {
   if (typeof pattern !== 'string') return false;
   pattern = pattern.toLowerCase();
 
-  
   const list = typeof domains === 'string' ? [domains] : [...domains];
 
   if (!pattern.includes('*') && !pattern.startsWith('+.') && !pattern.startsWith('.')) {
@@ -349,10 +358,7 @@ const mkSvc = ({ name, geo, icon, hasIp, key = geo, extra = {} }) => ({
     }),
   },
   icon,
-  rules: [
-    `RULE-SET,${key},${name}`,
-    ...(hasIp ? [`RULE-SET,${key}_ip,${name},no-resolve`] : []),
-  ],
+  rules: [`RULE-SET,${key},${name}`, ...(hasIp ? [`RULE-SET,${key}_ip,${name},no-resolve`] : [])],
   ...extra,
 });
 
@@ -386,7 +392,13 @@ const serviceConfigs = [
   mkSvc({ name: 'Spotify', geo: 'spotify', icon: ICON('Spotify') }),
   mkSvc({ name: 'TikTok', geo: 'tiktok', icon: ICON('TikTok') }),
   mkSvc({ name: 'Netflix', geo: 'netflix', hasIp: true, icon: ICON('Netflix') }),
-  mkSvc({ name: 'Emby', key: 'emby', geo: 'category-emby', icon: ICON('Emby'), extra: { rules: ['RULE-SET,emby,Emby', 'DOMAIN-SUFFIX,mb3admin.com,Emby', 'DOMAIN-KEYWORD,emby,Emby'] } }),
+  mkSvc({
+    name: 'Emby',
+    key: 'emby',
+    geo: 'category-emby',
+    icon: ICON('Emby'),
+    extra: { rules: ['RULE-SET,emby,Emby', 'DOMAIN-SUFFIX,mb3admin.com,Emby', 'DOMAIN-KEYWORD,emby,Emby'] },
+  }),
 ];
 
 const createRegionGroup = (name, icon, proxies) => [
@@ -397,9 +409,7 @@ const createRegionGroup = (name, icon, proxies) => [
 
 const FINGERPRINT_SUPPORTED = new Set(['vmess', 'vless', 'trojan', 'anytls']);
 
-
 const isIpAddress = (server) => /^\d{1,3}(\.\d{1,3}){3}$/.test(server) || server.includes(':');
-
 
 const hostSpecificity = (pattern) => {
   if (pattern.startsWith('+.')) return 2;
@@ -407,7 +417,6 @@ const hostSpecificity = (pattern) => {
   if (pattern.includes('*')) return 0;
   return 3;
 };
-
 
 function applyHostsToProxies(proxies, hosts) {
   if (!hosts || typeof hosts !== 'object') return proxies;
@@ -497,10 +506,7 @@ function buildNetworkConfig(privateDNS, proxyServerPolicy) {
       'fake-ip-range6': 'fdfe:dcba:9876::1/64',
       'fake-ip-filter': ['rule-set:private', 'rule-set:fakeip_filter'],
       'default-nameserver': ['223.5.5.5', '1.12.12.12'],
-      'proxy-server-nameserver': [
-        ...chinaDNS,
-        ...privateDNS,
-      ],
+      'proxy-server-nameserver': [...chinaDNS, ...privateDNS],
       nameserver: foreignDNS,
       'direct-nameserver': ['system', '223.5.5.5', '119.29.29.29'],
       'direct-nameserver-follow-policy': true,
@@ -540,7 +546,6 @@ function collectTopLevelGroups(generatedRegionGroups, rateGroupNames) {
 
   return { groupNamesOfSelect, autoTestProxies, loadBalanceProxies, rateSelectNames };
 }
-
 
 const regionMatchCache = new Map();
 const getMatchedRegions = (name, defs) => {
@@ -594,7 +599,7 @@ function processProxies(rawProxies, enabledDefinitions) {
       let newName = originalName;
 
       if (regionDef !== null) {
-        const counterKey = (isLow || isHigh) ? `${regionDef.name}_multi` : regionDef.name;
+        const counterKey = isLow || isHigh ? `${regionDef.name}_multi` : regionDef.name;
         newName = `${regionDef.flag || '🏳️'} ${regionDef.name} ${bump(counterKey)}`;
 
         if (isLow) {
@@ -638,9 +643,9 @@ function processProxies(rawProxies, enabledDefinitions) {
     const target = p['dialer-proxy'];
     if (!target || typeof target !== 'string') continue;
     if (renameMap.has(target)) {
-      p['dialer-proxy'] = renameMap.get(target); 
+      p['dialer-proxy'] = renameMap.get(target);
     } else if (!processedNames.has(target) && !BUILTIN_DIALERS.has(target.toLowerCase())) {
-      delete p['dialer-proxy']; 
+      delete p['dialer-proxy'];
     }
   }
 
@@ -675,22 +680,57 @@ function buildConfig(config) {
   const { processedProxies, otherProxies, regionGroups } = processProxies(rawProxies, enabledDefinitions);
 
   if (processedProxies.length === 0) {
-    log('[Mihomo-Script-Rules] 警告：所有代理节点已被过滤器排除，最终配置将仅包含 DIRECT 出口。请检查 excludeFilter 正则是否过于宽泛。');
+    log(
+      '[Mihomo-Script-Rules] 警告：所有代理节点已被过滤器排除，最终配置将仅包含 DIRECT 出口。请检查 excludeFilter 正则是否过于宽泛。',
+    );
   }
 
   const originalDnsConfig = config.dns || {};
 
   const commonDnsList = [
-    '223.5.5.5', '223.6.6.6', '119.29.29.29', '1.12.12.12', '120.53.53.53',
-    '114.114.114.114', '180.76.76.76', '1.2.4.8', '116.116.116.116',
-    '101.226.4.6', '123.125.81.6', '180.184.1.1', '180.184.2.2',
-    '1.1.1.1', '1.0.0.1', '8.8.8.8', '8.8.4.4', '9.9.9.9', '149.112.112.112',
-    '208.67.222.222', '208.67.220.220', '94.140.14.14', '94.140.15.15',
-    '76.76.2.0', '76.76.10.0', '185.228.168.9', '185.228.169.9',
-    '77.88.8.8', '77.88.8.1', '156.154.70.1', '156.154.71.1',
+    '223.5.5.5',
+    '223.6.6.6',
+    '119.29.29.29',
+    '1.12.12.12',
+    '120.53.53.53',
+    '114.114.114.114',
+    '180.76.76.76',
+    '1.2.4.8',
+    '116.116.116.116',
+    '101.226.4.6',
+    '123.125.81.6',
+    '180.184.1.1',
+    '180.184.2.2',
+    '1.1.1.1',
+    '1.0.0.1',
+    '8.8.8.8',
+    '8.8.4.4',
+    '9.9.9.9',
+    '149.112.112.112',
+    '208.67.222.222',
+    '208.67.220.220',
+    '94.140.14.14',
+    '94.140.15.15',
+    '76.76.2.0',
+    '76.76.10.0',
+    '185.228.168.9',
+    '185.228.169.9',
+    '77.88.8.8',
+    '77.88.8.1',
+    '156.154.70.1',
+    '156.154.71.1',
     '127.0.0.1',
-    'alidns', 'doh.pub', 'dot.pub', 'dnspod', 'dns.baidu',
-    'dns.google', 'cloudflare', 'quad9', 'opendns', 'nextdns', 'adguard',
+    'alidns',
+    'doh.pub',
+    'dot.pub',
+    'dnspod',
+    'dns.baidu',
+    'dns.google',
+    'cloudflare',
+    'quad9',
+    'opendns',
+    'nextdns',
+    'adguard',
   ];
 
   const IPV4_RE = /^\d+(?:\.\d+){3}$/;
@@ -721,18 +761,18 @@ function buildConfig(config) {
   const privateDNS = [
     ...new Set([
       ...(Array.isArray(originalDnsConfig['nameserver']) ? originalDnsConfig['nameserver'] : []),
-      ...(Array.isArray(originalDnsConfig['proxy-server-nameserver']) ? originalDnsConfig['proxy-server-nameserver'] : []),
+      ...(Array.isArray(originalDnsConfig['proxy-server-nameserver'])
+        ? originalDnsConfig['proxy-server-nameserver']
+        : []),
     ]),
   ].filter((dns) => !isCommonDns(dns));
 
-  const originalHosts = (config.hosts && typeof config.hosts === 'object' && !Array.isArray(config.hosts))
-    ? config.hosts : {};
+  const originalHosts =
+    config.hosts && typeof config.hosts === 'object' && !Array.isArray(config.hosts) ? config.hosts : {};
 
-  
   const mappedProxies = applyHostsToProxies(processedProxies, originalHosts);
   newConfig.proxies = mappedProxies;
 
-  
   const proxyDomains = new Set(
     mappedProxies
       .filter((proxy) => typeof proxy.server === 'string' && !isIpAddress(proxy.server))
@@ -752,7 +792,6 @@ function buildConfig(config) {
     }
   }
 
-  
   if (privateDNS.length > 0 && Object.keys(proxyServerPolicy).length === 0) {
     for (const domain of proxyDomains) {
       proxyServerPolicy[domain] = privateDNS;
@@ -768,13 +807,7 @@ function buildConfig(config) {
   }
 
   if (otherProxies.length > 0) {
-    generatedRegionGroups.push(
-      ...createRegionGroup(
-        'Others',
-        ICON('World_Map'),
-        otherProxies,
-      ),
-    );
+    generatedRegionGroups.push(...createRegionGroup('Others', ICON('World_Map'), otherProxies));
   }
 
   const { groupNamesOfSelect, autoTestProxies, loadBalanceProxies, rateSelectNames } = collectTopLevelGroups(
@@ -787,7 +820,9 @@ function buildConfig(config) {
     (regionDefinitionsEnable[NODE_RATE_LOW] || regionDefinitionsEnable[NODE_RATE_HIGH])
   ) {
     log('[Mihomo-Script-Rules] 提示：未匹配到任何高低倍率节点，Low-Rate/High-Rate 分组未生成。');
-    log('[Mihomo-Script-Rules] 节点名需含 "低倍/低倍率/省流/下载/0.x" 或 "2倍/3倍率/2x/×2" 等倍率标记，否则倍率组不会出现。');
+    log(
+      '[Mihomo-Script-Rules] 节点名需含 "低倍/低倍率/省流/下载/0.x" 或 "2倍/3倍率/2x/×2" 等倍率标记，否则倍率组不会出现。',
+    );
   }
 
   const proxyModes = {
