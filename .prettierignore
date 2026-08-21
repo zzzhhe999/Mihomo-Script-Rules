@@ -1,0 +1,6 @@
+# 生成物：由 generate-yaml.cjs 全权负责，不参与 prettier 格式化
+# （否则 format job 与 test job 会互相覆盖产生循环提交）
+Config/mihomoConfig.yaml
+# 主覆写脚本：作者手工维护，prettier 不参与（格式由作者掌控）
+Mihomo-Script-Rules.js
+node_modules/

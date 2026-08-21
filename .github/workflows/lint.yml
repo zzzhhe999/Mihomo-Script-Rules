@@ -1,78 +1,90 @@
 # .github/workflows/lint.yml
-# 作用：每次 push 时自动检查脚本语法 + 生成 yaml + 有变化则自动提交回仓库
-# 触发：push 到 main 分支
+# 作用：push 时自动 prettier 格式化 + 运行测试套件（冒烟/YAML/ES2020/QuickJS）+ 有变化自动提交回仓库
+# 触发：push 到 main 分支（脚本/生成器/测试/格式配置改动时），PR，手动触发
 name: 脚本自检与 YAML 自动同步
 
 on:
   push:
     branches: [main]
     paths:
-      - 'Mihomo-Script-Rules.js'  # 只有脚本本身改动才触发完整流程
+      - 'Mihomo-Script-Rules.js' # 覆写脚本本身
+      - 'generate-yaml.cjs' # YAML 生成器
+      - 'Test/**' # 测试套件
+      - '.prettierrc*' # 格式配置
   pull_request:
     branches: [main]
+    paths:
+      - 'Mihomo-Script-Rules.js'
+      - 'generate-yaml.cjs'
+      - 'Test/**'
+      - '.prettierrc*'
+  workflow_dispatch: {} # 手动触发
+
+# 同一分支的并发 run 只保留最新，避免格式化/同步提交互相冲突
+concurrency:
+  group: lint-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  lint:
+  format:
     runs-on: ubuntu-latest
     permissions:
-      contents: write  # 允许 Actions 提交回仓库
+      contents: write # 允许 Actions 提交回仓库
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # 需要完整历史才能正确提交
+          fetch-depth: 0 # 需要完整历史才能正确提交
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
 
-      - name: 语法检查 (node --check)
-        run: node --check Mihomo-Script-Rules.js
+      - name: 安装 prettier
+        run: npm install -g prettier
 
-      - name: 运行时功能验证
+      - name: 格式化 js / yml / yaml
+        run: git ls-files -z '*.js' '*.yml' '*.yaml' | xargs -0 -r prettier --write
+
+      - name: 有变化则自动提交
         run: |
-          node -e "
-            const fs = require('fs');
-            const path = require('path');
-            const src = fs.readFileSync('Mihomo-Script-Rules.js', 'utf8');
-            const tmp = path.join(process.cwd(), '_tmp_verify.cjs');
-            fs.writeFileSync(tmp, src + '\nmodule.exports = { main };\n');
-            globalThis.print = console.log;
-            const { main } = require(tmp);
-            const config = {
-              proxies: [
-                { name: '🇭🇰 香港01', type: 'vmess', server: '1.1.1.1', port: 443 },
-                { name: '🇯🇵 日本01', type: 'vless', server: '2.2.2.1', port: 443 },
-                { name: '官网 www.expire.com', type: 'vmess', server: '0.0.0.1', port: 443 },
-                { name: '香港 0.5倍', type: 'trojan', server: '1.1.1.2', port: 443 },
-              ],
-              mode: 'rule',
-            };
-            const out = main(config);
-            if (!out.proxies || !out['proxy-groups'] || !out.rules) throw new Error('输出缺少必要字段');
-            console.log('✅ 验证通过');
-            console.log('   proxies:', out.proxies.length);
-            console.log('   proxy-groups:', out['proxy-groups'].length);
-            console.log('   rules:', out.rules.length);
-            fs.unlinkSync(tmp);
-          "
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add .
+          if git diff --cached --quiet; then
+            echo "无需格式化，跳过提交"
+          else
+            echo "格式化有变化，自动提交"
+            git commit -m "chore: auto format [skip ci]"
+            git push
+          fi
 
-      - name: 生成 mihomoConfig.yaml
-        run: node generate-yaml.cjs
+  test:
+    needs: format
+    if: always() && (needs.format.result == 'success' || needs.format.result == 'skipped')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      - name: YAML 语法校验
-        run: |
-          node -e "
-            const fs = require('fs');
-            const yaml = fs.readFileSync('Config/mihomoConfig.yaml', 'utf8');
-            if (yaml.length < 100) throw new Error('YAML 文件过短，疑似生成失败');
-            const requiredKeys = ['proxies:', 'proxy-groups:', 'rules:', 'rule-providers:', 'dns:'];
-            for (const k of requiredKeys) {
-              if (!yaml.includes(k)) throw new Error('缺少必要字段: ' + k);
-            }
-            console.log('✅ YAML 完整校验通过 (' + yaml.length + ' 字符)');
-          "
+      - name: 拉取 format job 的提交（若有）
+        run: git pull --ff-only
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: 安装测试依赖（espree / quickjs-emscripten）
+        run: npm --prefix Test install
+
+      - name: 运行测试套件（冒烟 + YAML + ES2020 + QuickJS）
+        run: node Test/run-tests.js
 
       - name: 检查 yaml 是否有变化，有则自动提交
         run: |

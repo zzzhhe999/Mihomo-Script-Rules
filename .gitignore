@@ -1,0 +1,3 @@
+node_modules/
+Test/node_modules/
+_tmp_*.cjs
