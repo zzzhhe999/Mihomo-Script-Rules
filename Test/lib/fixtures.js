@@ -6,7 +6,7 @@
  * - makeSampleConfig：复用 generate-yaml.cjs 的示例配置（含各地区节点+倍率+垃圾节点+DNS），
  *   避免测试数据与 YAML 生成数据两处维护导致不同步。
  */
-const { makeSampleConfig } = require('../../generate-yaml.cjs');
+const { makeSampleConfig } = require('../../scripts/generate-yaml.cjs');
 
 /** 最小冒烟用例：覆盖正常节点、垃圾节点（官网/过期）、低倍率节点 */
 function smokeConfig() {

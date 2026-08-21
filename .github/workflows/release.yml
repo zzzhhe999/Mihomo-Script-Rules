@@ -23,13 +23,13 @@ jobs:
         run: node --check Mihomo-Script-Rules.js
 
       - name: 生成 mihomoConfig.yaml
-        run: node generate-yaml.cjs
+        run: node scripts/generate-yaml.cjs
 
       - name: 打包附件
         run: |
           mkdir -p release
           cp Mihomo-Script-Rules.js release/
-          cp Config/mihomoConfig.yaml release/
+          cp mihomoConfig.yaml release/
           cd release && zip -r Mihomo-Script-Rules-${{ github.ref_name }}.zip . && cd ..
           ls -la release/
 
@@ -48,7 +48,7 @@ jobs:
 
             ## 使用方法
             1. 脚本：复制 [raw 链接](https://raw.githubusercontent.com/${{ github.repository }}/main/Mihomo-Script-Rules.js)，在客户端脚本功能中导入
-            2. 配置：复制 [yaml 链接](https://raw.githubusercontent.com/${{ github.repository }}/main/Config/mihomoConfig.yaml)，在客户端配置中导入
+            2. 配置：复制 [yaml 链接](https://raw.githubusercontent.com/${{ github.repository }}/main/mihomoConfig.yaml)，在客户端配置中导入
 
             > 完整文档见 [README](https://github.com/${{ github.repository }}#readme)
           files: |

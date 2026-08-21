@@ -24,25 +24,35 @@ function toYaml(obj, indent = 0) {
   }
   if (Array.isArray(obj)) {
     if (obj.length === 0) return '[]';
-    return '\n' + obj.map(item => {
-      const val = toYaml(item, indent + 1);
-      if (val.startsWith('\n')) {
-        return `${pad}- ${val.trimStart()}`;
-      }
-      return `${pad}- ${val}`;
-    }).join('\n');
+    return (
+      '\n' +
+      obj
+        .map((item) => {
+          const val = toYaml(item, indent + 1);
+          if (val.startsWith('\n')) {
+            return `${pad}- ${val.trimStart()}`;
+          }
+          return `${pad}- ${val}`;
+        })
+        .join('\n')
+    );
   }
   if (typeof obj === 'object') {
     const keys = Object.keys(obj);
     if (keys.length === 0) return '{}';
-    return '\n' + keys.map(key => {
-      const val = toYaml(obj[key], indent + 1);
-      const safeKey = /^[A-Za-z0-9_\-\.]+$/.test(key) ? key : JSON.stringify(key);
-      if (val.startsWith('\n')) {
-        return `${pad}${safeKey}:${val}`;
-      }
-      return `${pad}${safeKey}: ${val}`;
-    }).join('\n');
+    return (
+      '\n' +
+      keys
+        .map((key) => {
+          const val = toYaml(obj[key], indent + 1);
+          const safeKey = /^[A-Za-z0-9_\-\.]+$/.test(key) ? key : JSON.stringify(key);
+          if (val.startsWith('\n')) {
+            return `${pad}${safeKey}:${val}`;
+          }
+          return `${pad}${safeKey}: ${val}`;
+        })
+        .join('\n')
+    );
   }
   return String(obj);
 }
@@ -98,7 +108,7 @@ function makeSampleConfig() {
 
 // ─── 主流程 ──────────────────────────────────────────────────────────
 function main() {
-  const scriptPath = path.join(__dirname, 'Mihomo-Script-Rules.js');
+  const scriptPath = path.join(__dirname, '..', 'Mihomo-Script-Rules.js');
   const src = fs.readFileSync(scriptPath, 'utf8');
   const exportSrc = src + '\nmodule.exports = { main };\n';
   const tmpPath = path.join(__dirname, `_tmp_script_export_${process.pid}.cjs`);
@@ -114,11 +124,11 @@ function main() {
   const mihomoConfig = scriptMain(config);
   const yaml = toYaml(mihomoConfig);
 
-  const outPath = path.join(__dirname, 'Config', 'mihomoConfig.yaml');
+  const outPath = path.join(__dirname, '..', 'mihomoConfig.yaml');
   fs.mkdirSync(path.dirname(outPath), { recursive: true });
   fs.writeFileSync(outPath, yaml + '\n', 'utf8');
 
-  console.log('✅ YAML 生成完成: Config/mihomoConfig.yaml');
+  console.log('✅ YAML 生成完成: mihomoConfig.yaml');
   console.log('   proxies:', mihomoConfig.proxies.length);
   console.log('   proxy-groups:', mihomoConfig['proxy-groups'].length);
   console.log('   rules:', mihomoConfig.rules.length);

@@ -8,14 +8,14 @@ on:
     branches: [main]
     paths:
       - 'Mihomo-Script-Rules.js' # 覆写脚本本身
-      - 'generate-yaml.cjs' # YAML 生成器
+      - 'scripts/generate-yaml.cjs' # YAML 生成器
       - 'Test/**' # 测试套件
       - '.prettierrc*' # 格式配置
   pull_request:
     branches: [main]
     paths:
       - 'Mihomo-Script-Rules.js'
-      - 'generate-yaml.cjs'
+      - 'scripts/generate-yaml.cjs'
       - 'Test/**'
       - '.prettierrc*'
   workflow_dispatch: {} # 手动触发
@@ -44,8 +44,8 @@ jobs:
       - name: 安装 prettier
         run: npm install -g prettier
 
-      - name: 格式化 js / yml / yaml
-        run: git ls-files -z '*.js' '*.yml' '*.yaml' | xargs -0 -r prettier --write
+      - name: 格式化 js / cjs / yml / yaml
+        run: git ls-files -z '*.js' '*.cjs' '*.yml' '*.yaml' | xargs -0 -r prettier --write
 
       - name: 有变化则自动提交
         run: |
@@ -90,11 +90,11 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          if git diff --quiet Config/mihomoConfig.yaml; then
+          if git diff --quiet mihomoConfig.yaml; then
             echo "yaml 无变化，跳过提交"
           else
             echo "yaml 有变化，自动提交"
-            git add Config/mihomoConfig.yaml
+            git add mihomoConfig.yaml
             git commit -m "chore: 自动同步 mihomoConfig.yaml [skip ci]"
             git push
           fi

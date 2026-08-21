@@ -51,7 +51,7 @@
 > **两种模式：**
 > 
 > - **脚本**（`Mihomo-Script-Rules.js`）：根据节点名动态生成地区策略组，自动化程度最高，推荐 Bettbox 用户使用。
-> - **纯配置**（`Config/mihomoConfig.yaml`）：静态配置，适用于不支持 JS 脚本的客户端，需自行填入节点。
+> - **纯配置**（`mihomoConfig.yaml`）：静态配置，适用于不支持 JS 脚本的客户端，需自行填入节点。
 
 ---
 
@@ -326,13 +326,13 @@ https://fastly.jsdelivr.net/gh/zzzhhe999/Mihomo-Script-Rules@main/Mihomo-Script-
 **主链接：**
 
 ```
-https://raw.githubusercontent.com/zzzhhe999/Mihomo-Script-Rules/refs/heads/main/Config/mihomoConfig.yaml
+https://raw.githubusercontent.com/zzzhhe999/Mihomo-Script-Rules/refs/heads/main/mihomoConfig.yaml
 ```
 
 **CDN 加速镜像：**
 
 ```
-https://fastly.jsdelivr.net/gh/zzzhhe999/Mihomo-Script-Rules@main/Config/mihomoConfig.yaml
+https://fastly.jsdelivr.net/gh/zzzhhe999/Mihomo-Script-Rules@main/mihomoConfig.yaml
 ```
 
 #### 6.2.2 使用方式
