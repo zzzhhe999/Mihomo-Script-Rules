@@ -11,6 +11,7 @@ on:
       - 'scripts/generate-yaml.cjs' # YAML 生成器
       - 'Test/**' # 测试套件
       - '.prettierrc*' # 格式配置
+      - '.github/workflows/**' # workflow 自身（改坏 CI 配置也要能自检）
   pull_request:
     branches: [main]
     paths:
@@ -18,6 +19,7 @@ on:
       - 'scripts/generate-yaml.cjs'
       - 'Test/**'
       - '.prettierrc*'
+      - '.github/workflows/**'
   workflow_dispatch: {} # 手动触发
 
 # 同一分支的并发 run 只保留最新，避免格式化/同步提交互相冲突
