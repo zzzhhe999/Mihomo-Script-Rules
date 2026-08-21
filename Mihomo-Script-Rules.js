@@ -297,20 +297,23 @@ function matchDomainPattern(pattern, domains) {
   if (typeof pattern !== 'string') return false;
   pattern = pattern.toLowerCase();
 
+  
+  const list = typeof domains === 'string' ? [domains] : [...domains];
+
   if (!pattern.includes('*') && !pattern.startsWith('+.') && !pattern.startsWith('.')) {
-    return domains.has(pattern);
+    return list.some((d) => d.toLowerCase() === pattern);
   }
 
   if (pattern.startsWith('+.') || pattern.startsWith('*.')) {
-    return suffixMatch(pattern.slice(2), domains, true);
+    return suffixMatch(pattern.slice(2), list, true);
   }
 
   if (pattern.startsWith('.')) {
-    return suffixMatch(pattern.slice(1), domains, false);
+    return suffixMatch(pattern.slice(1), list, false);
   }
 
   const patternParts = pattern.split('.');
-  for (const domain of domains) {
+  for (const domain of list) {
     const domainParts = domain.split('.');
     if (patternParts.length !== domainParts.length) continue;
     let matched = true;
@@ -394,7 +397,57 @@ const createRegionGroup = (name, icon, proxies) => [
 
 const FINGERPRINT_SUPPORTED = new Set(['vmess', 'vless', 'trojan', 'anytls']);
 
-function buildNetworkConfig(privateDNS, proxyServerPolicy, proxyServerHosts) {
+
+const isIpAddress = (server) => /^\d{1,3}(\.\d{1,3}){3}$/.test(server) || server.includes(':');
+
+
+const hostSpecificity = (pattern) => {
+  if (pattern.startsWith('+.')) return 2;
+  if (pattern.startsWith('.')) return 1;
+  if (pattern.includes('*')) return 0;
+  return 3;
+};
+
+
+function applyHostsToProxies(proxies, hosts) {
+  if (!hosts || typeof hosts !== 'object') return proxies;
+
+  const hostEntries = Object.entries(hosts)
+    .filter(([, v]) => (typeof v === 'string' && v.length > 0) || (Array.isArray(v) && v.length > 0))
+    .sort((a, b) => hostSpecificity(b[0]) - hostSpecificity(a[0]));
+  if (hostEntries.length === 0) return proxies;
+
+  const targetOf = (v) => {
+    if (Array.isArray(v)) v = v.find((x) => typeof x === 'string' && x.length > 0);
+    return typeof v === 'string' && v.length > 0 ? v : null;
+  };
+
+  const resolveCache = new Map();
+  const resolve = (server) => {
+    if (resolveCache.has(server)) return resolveCache.get(server);
+    const seen = new Set();
+    let current = server.toLowerCase();
+    let result = server;
+    while (!seen.has(current)) {
+      seen.add(current);
+      const entry = hostEntries.find(([pattern]) => matchDomainPattern(pattern, current));
+      const target = entry && targetOf(entry[1]);
+      if (!target) break;
+      result = target;
+      current = target.toLowerCase();
+    }
+    resolveCache.set(server, result);
+    return result;
+  };
+
+  return proxies.map((proxy) => {
+    if (typeof proxy.server !== 'string') return proxy;
+    const server = resolve(proxy.server);
+    return server === proxy.server ? proxy : { ...proxy, server };
+  });
+}
+
+function buildNetworkConfig(privateDNS, proxyServerPolicy) {
   const chinaDNS = ['https://dns.alidns.com/dns-query#Direct', 'https://doh.pub/dns-query#Direct'];
   const foreignDNS = ['https://dns.google/dns-query#Default', 'https://dns.cloudflare.com/dns-query#Default'];
 
@@ -410,7 +463,6 @@ function buildNetworkConfig(privateDNS, proxyServerPolicy, proxyServerHosts) {
       '+.mcdn.bilivideo.cn': ['0.0.0.0'],
       '+.edge.mountaintoys.cn': ['0.0.0.0'],
       '+.h2.smtcdns.net': ['0.0.0.0'],
-      ...proxyServerHosts,
     },
     ntp: {
       enable: true,
@@ -489,7 +541,17 @@ function collectTopLevelGroups(generatedRegionGroups, rateGroupNames) {
   return { groupNamesOfSelect, autoTestProxies, loadBalanceProxies, rateSelectNames };
 }
 
+
+const regionMatchCache = new Map();
+const getMatchedRegions = (name, defs) => {
+  if (regionMatchCache.has(name)) return regionMatchCache.get(name);
+  const matched = defs.filter((r) => r.regex.test(name));
+  regionMatchCache.set(name, matched);
+  return matched;
+};
+
 function processProxies(rawProxies, enabledDefinitions) {
+  regionMatchCache.clear();
   const regionGroups = {};
   for (const r of enabledDefinitions) {
     regionGroups[r.name] = { name: r.name, icon: r.icon, proxies: [] };
@@ -523,17 +585,9 @@ function processProxies(rawProxies, enabledDefinitions) {
         p['client-fingerprint'] = 'chrome';
       }
 
-      const matchedGroups = [];
-      let regionDef = null;
-
-      for (const region of enabledDefinitions) {
-        if (region.regex.test(originalName)) {
-          matchedGroups.push(region.name);
-          if (region.name !== NODE_RATE_LOW && region.name !== NODE_RATE_HIGH && regionDef === null) {
-            regionDef = region;
-          }
-        }
-      }
+      const matched = getMatchedRegions(originalName, enabledDefinitions);
+      const matchedGroups = matched.map((r) => r.name);
+      const regionDef = matched.find((r) => r.name !== NODE_RATE_LOW && r.name !== NODE_RATE_HIGH) ?? null;
 
       const isLow = matchedGroups.includes(NODE_RATE_LOW);
       const isHigh = matchedGroups.includes(NODE_RATE_HIGH);
@@ -579,14 +633,14 @@ function processProxies(rawProxies, enabledDefinitions) {
   }
 
   const BUILTIN_DIALERS = new Set(['direct', 'reject', 'pass', 'compatible', 'global']);
+  const processedNames = new Set(processedProxies.map((p) => p.name));
   for (const p of processedProxies) {
     const target = p['dialer-proxy'];
     if (!target || typeof target !== 'string') continue;
-    const mapped = renameMap.get(target);
-    if (mapped !== undefined) {
-      p['dialer-proxy'] = mapped;
-    } else if (!BUILTIN_DIALERS.has(target.toLowerCase())) {
-      delete p['dialer-proxy'];
+    if (renameMap.has(target)) {
+      p['dialer-proxy'] = renameMap.get(target); 
+    } else if (!processedNames.has(target) && !BUILTIN_DIALERS.has(target.toLowerCase())) {
+      delete p['dialer-proxy']; 
     }
   }
 
@@ -623,8 +677,6 @@ function buildConfig(config) {
   if (processedProxies.length === 0) {
     log('[Mihomo-Script-Rules] 警告：所有代理节点已被过滤器排除，最终配置将仅包含 DIRECT 出口。请检查 excludeFilter 正则是否过于宽泛。');
   }
-
-  newConfig.proxies = processedProxies;
 
   const originalDnsConfig = config.dns || {};
 
@@ -673,9 +725,17 @@ function buildConfig(config) {
     ]),
   ].filter((dns) => !isCommonDns(dns));
 
+  const originalHosts = (config.hosts && typeof config.hosts === 'object' && !Array.isArray(config.hosts))
+    ? config.hosts : {};
+
+  
+  const mappedProxies = applyHostsToProxies(processedProxies, originalHosts);
+  newConfig.proxies = mappedProxies;
+
+  
   const proxyDomains = new Set(
-    processedProxies
-      .filter((proxy) => typeof proxy.server === 'string')
+    mappedProxies
+      .filter((proxy) => typeof proxy.server === 'string' && !isIpAddress(proxy.server))
       .map((proxy) => proxy.server.toLowerCase()),
   );
 
@@ -692,12 +752,10 @@ function buildConfig(config) {
     }
   }
 
-  const originalHosts = (config.hosts && typeof config.hosts === 'object' && !Array.isArray(config.hosts))
-    ? config.hosts : {};
-  const proxyServerHosts = {};
-  for (const [domain, value] of Object.entries(originalHosts)) {
-    if (matchDomainPattern(domain, proxyDomains)) {
-      proxyServerHosts[domain] = value;
+  
+  if (privateDNS.length > 0 && Object.keys(proxyServerPolicy).length === 0) {
+    for (const domain of proxyDomains) {
+      proxyServerPolicy[domain] = privateDNS;
     }
   }
 
@@ -831,7 +889,7 @@ function buildConfig(config) {
     icon: ICON('Global'),
   };
 
-  const networkConfig = buildNetworkConfig(privateDNS, proxyServerPolicy, proxyServerHosts);
+  const networkConfig = buildNetworkConfig(privateDNS, proxyServerPolicy);
 
   newConfig['mode'] = 'rule';
   let mixedPort = 7890;
