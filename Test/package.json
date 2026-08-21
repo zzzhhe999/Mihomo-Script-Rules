@@ -1,0 +1,15 @@
+{
+  "name": "mihomo-script-rules-tests",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Mihomo-Script-Rules 覆写脚本的测试套件（本地可跑，CI 可跑）",
+  "scripts": {
+    "test": "node run-tests.js",
+    "test:es2020": "node run-tests.js --es2020",
+    "test:quickjs": "node run-tests.js --quickjs"
+  },
+  "devDependencies": {
+    "espree": "^9.6.1",
+    "quickjs-emscripten": "^0.32.0"
+  }
+}

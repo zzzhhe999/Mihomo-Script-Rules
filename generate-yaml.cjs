@@ -125,4 +125,9 @@ function main() {
   console.log('   rule-providers:', Object.keys(mihomoConfig['rule-providers']).length);
 }
 
-main();
+// 直接执行时生成 YAML；被 require 时导出供 Test 套件复用（单一来源，避免逻辑重复）
+if (require.main === module) {
+  main();
+}
+
+module.exports = { main, makeSampleConfig, toYaml };
