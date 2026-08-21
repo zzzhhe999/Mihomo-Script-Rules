@@ -27,6 +27,8 @@ concurrency:
 
 jobs:
   format:
+    # 仅 push 事件自动格式化并提交回 main；PR 只做检查不写仓库
+    if: github.event_name == 'push'
     runs-on: ubuntu-latest
     permissions:
       contents: write # 允许 Actions 提交回仓库
@@ -57,7 +59,8 @@ jobs:
           else
             echo "格式化有变化，自动提交"
             git commit -m "chore: auto format [skip ci]"
-            git push
+            # Actions 默认 detached HEAD 检出，必须显式指定目标分支
+            git push origin HEAD:main
           fi
 
   test:
@@ -72,8 +75,11 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: 拉取 format job 的提交（若有）
-        run: git pull --ff-only
+      - name: 拉取 format job 的提交（push 事件）
+        if: github.event_name == 'push'
+        run: |
+          git fetch origin main
+          git checkout --detach origin/main
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -86,7 +92,8 @@ jobs:
       - name: 运行测试套件（冒烟 + YAML + ES2020 + QuickJS）
         run: node Test/run-tests.js
 
-      - name: 检查 yaml 是否有变化，有则自动提交
+      - name: 检查 yaml 是否有变化，有则自动提交（push 事件）
+        if: github.event_name == 'push'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
@@ -96,5 +103,5 @@ jobs:
             echo "yaml 有变化，自动提交"
             git add mihomoConfig.yaml
             git commit -m "chore: 自动同步 mihomoConfig.yaml [skip ci]"
-            git push
+            git push origin HEAD:main
           fi
