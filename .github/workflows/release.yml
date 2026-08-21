@@ -47,10 +47,10 @@ jobs:
             - **Mihomo-Script-Rules-${{ github.ref_name }}.zip** — 以上文件打包
 
             ## 使用方法
-            1. 脚本：复制 [raw 链接](https://raw.githubusercontent.com/zzzhhe123/Mihomo-Script-Rules/main/Mihomo-Script-Rules.js)，在客户端脚本功能中导入
-            2. 配置：复制 [yaml 链接](https://raw.githubusercontent.com/zzzhhe123/Mihomo-Script-Rules/main/Config/mihomoConfig.yaml)，在客户端配置中导入
+            1. 脚本：复制 [raw 链接](https://raw.githubusercontent.com/${{ github.repository }}/main/Mihomo-Script-Rules.js)，在客户端脚本功能中导入
+            2. 配置：复制 [yaml 链接](https://raw.githubusercontent.com/${{ github.repository }}/main/Config/mihomoConfig.yaml)，在客户端配置中导入
 
-            > 完整文档见 [README](https://github.com/zzzhhe123/Mihomo-Script-Rules#readme)
+            > 完整文档见 [README](https://github.com/${{ github.repository }}#readme)
           files: |
             release/Mihomo-Script-Rules.js
             release/mihomoConfig.yaml
