@@ -197,9 +197,6 @@ dns:
     "rule-set:gfw":
       - "https://dns.google/dns-query#Default"
       - "https://dns.cloudflare.com/dns-query#Default"
-  proxy-server-nameserver-policy:
-    1.1.1.1:
-      - "https://dns.alidns.com/dns-query#Direct"
 mixed-port: 7890
 ipv6: true
 bind-address: "*"
