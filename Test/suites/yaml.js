@@ -1,12 +1,5 @@
 'use strict';
 
-/**
- * YAML 生成与完整性校验套件：
- * 复用 scripts/generate-yaml.cjs 的生成逻辑（单一来源，避免重复维护），
- * 生成 mihomoConfig.yaml 后校验文件长度与必要字段。
- * 对应原 lint.yml 的"生成 mihomoConfig.yaml"+"YAML 语法校验"两步。
- */
-
 const fs = require('fs');
 const path = require('path');
 const { main: generateYaml } = require('../../scripts/generate-yaml.cjs');
@@ -14,18 +7,13 @@ const { main: generateYaml } = require('../../scripts/generate-yaml.cjs');
 const ROOT = path.resolve(__dirname, '..', '..');
 const YAML_PATH = path.join(ROOT, 'mihomoConfig.yaml');
 
-// 与脚本输出一一对应的必要字段（原 lint.yml 校验清单）
 const REQUIRED_KEYS = ['proxies:', 'proxy-groups:', 'rules:', 'rule-providers:', 'dns:'];
 
-/**
- * YAML 套件入口。
- * @param {object} opts { harness }
- */
 function runYamlTests({ harness }) {
   harness.section('YAML 生成与完整性校验');
 
   harness.test('generate-yaml：成功生成 mihomoConfig.yaml', () => {
-    generateYaml(); // 复用 scripts/generate-yaml.cjs 的 main()，写入根目录 mihomoConfig.yaml
+    generateYaml();
     harness.assert(fs.existsSync(YAML_PATH), `文件不存在: ${YAML_PATH}`);
   });
 

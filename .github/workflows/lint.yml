@@ -1,17 +1,14 @@
-# .github/workflows/lint.yml
-# 作用：push 时自动 prettier 格式化 + 运行测试套件（冒烟/YAML/ES2020/QuickJS）+ 有变化自动提交回仓库
-# 触发：push 到 main 分支（脚本/生成器/测试/格式配置改动时），PR，手动触发
 name: 脚本自检与 YAML 自动同步
 
 on:
   push:
     branches: [main]
     paths:
-      - 'Mihomo-Script-Rules.js' # 覆写脚本本身
-      - 'scripts/generate-yaml.cjs' # YAML 生成器
-      - 'Test/**' # 测试套件
-      - '.prettierrc*' # 格式配置
-      - '.github/workflows/**' # workflow 自身（改坏 CI 配置也要能自检）
+      - 'Mihomo-Script-Rules.js'
+      - 'scripts/generate-yaml.cjs'
+      - 'Test/**'
+      - '.prettierrc*'
+      - '.github/workflows/**'
   pull_request:
     branches: [main]
     paths:
@@ -20,25 +17,23 @@ on:
       - 'Test/**'
       - '.prettierrc*'
       - '.github/workflows/**'
-  workflow_dispatch: {} # 手动触发
+  workflow_dispatch: {}
 
-# 同一分支的并发 run 只保留最新，避免格式化/同步提交互相冲突
 concurrency:
   group: lint-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:
   format:
-    # 仅 push 事件自动格式化并提交回 main；PR 只做检查不写仓库
     if: github.event_name == 'push'
     runs-on: ubuntu-latest
     permissions:
-      contents: write # 允许 Actions 提交回仓库
+      contents: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # 需要完整历史才能正确提交
+          fetch-depth: 0
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -61,7 +56,6 @@ jobs:
           else
             echo "格式化有变化，自动提交"
             git commit -m "chore: auto format [skip ci]"
-            # Actions 默认 detached HEAD 检出，必须显式指定目标分支
             git push origin HEAD:main
           fi
 

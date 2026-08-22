@@ -1,14 +1,5 @@
 'use strict';
 
-/**
- * ES2020 兼容性检查（静态分析）——覆写脚本的"命门"：
- * 1. 用 espree 以 ecmaVersion: 2020 解析脚本 —— 任何 ES2021+ 语法都会抛出解析错误；
- * 2. 遍历 AST 检查是否使用了 ES2021+ 的内置 API（全局构造器 / 成员方法）。
- *
- * 思路借鉴自 MyClash 的 Test/lib/es2020-check.js（MIT 许可），适配单脚本仓库。
- * 未安装 espree 时自动跳过（不记入通过/失败），本地与 CI 均可优雅降级。
- */
-
 'use strict';
 
 const fs = require('fs');
@@ -16,58 +7,51 @@ const path = require('path');
 
 const ROOT = path.resolve(__dirname, '..', '..');
 
-/** 待检查的脚本（与 generate-yaml.cjs 使用的脚本一致） */
 const SCRIPT_FILE = 'Mihomo-Script-Rules.js';
 
-// ES2021+ 全局构造函数 / 顶层函数：作为独立标识符引用（new / 调用）即视为越界
 const GLOBAL_APIS = ['WeakRef', 'FinalizationRegistry', 'AggregateError', 'structuredClone'];
 
-// ES2021+ 成员方法（专有名称，作为属性名出现即视为越界）
 const MEMBER_APIS = [
-  'replaceAll', // ES2021
+  'replaceAll',
   'hasOwn',
-  'supportedValuesOf', // ES2022
+  'supportedValuesOf',
   'findLast',
   'findLastIndex',
   'toReversed',
   'toSorted',
   'toSpliced',
-  'fromAsync', // ES2023
+  'fromAsync',
   'groupBy',
   'withResolvers',
   'waitAsync',
   'transfer',
   'transferToFixedLength',
   'isWellFormed',
-  'toWellFormed', // ES2024
+  'toWellFormed',
   'getOrInsert',
   'getOrInsertComputed',
   'symmetricDifference',
   'isSubsetOf',
   'isSupersetOf',
   'isDisjointFrom',
-  'escape', // ES2025
+  'escape',
 ];
 
-// 通用短名方法：仅在作为方法调用（x.xxx(...)）时才视为越界，降低误报
 const CALL_ONLY_APIS = ['at', 'union', 'intersection', 'difference', 'try'];
 
-/** 尝试加载 espree；仅「未安装」时返回 null（调用方应优雅跳过） */
 function tryLoadEspree() {
   try {
     return require('espree');
   } catch (e) {
-    // 其他错误（包损坏、加载失败等）如实抛出，避免被误判为「未安装」而掩盖真实问题
     if (e && e.code === 'MODULE_NOT_FOUND') return null;
     throw e;
   }
 }
 
-/** 遍历 AST，收集标识符调用与成员访问/调用信息 */
 function collectUsages(ast) {
-  const idUsages = new Set(); // 作为 new / 函数调用的标识符名
-  const memberNames = new Set(); // MemberExpression 属性名
-  const memberCalls = new Set(); // 作为方法调用 x.xxx(...) 的属性名
+  const idUsages = new Set();
+  const memberNames = new Set();
+  const memberCalls = new Set();
 
   (function walk(node) {
     if (!node || typeof node.type !== 'string') return;
@@ -103,7 +87,6 @@ function collectUsages(ast) {
   return { idUsages, memberNames, memberCalls };
 }
 
-/** 检查 AST 中是否使用了 ES2021+ 的内置 API，返回违规描述列表 */
 function findApiViolations(ast) {
   const { idUsages, memberNames, memberCalls } = collectUsages(ast);
   const violations = [];
@@ -119,10 +102,6 @@ function findApiViolations(ast) {
   return violations;
 }
 
-/**
- * ES2020 兼容性检查（同步，静态分析）。
- * @param {object} opts { harness }
- */
 function runES2020Checks({ harness }) {
   const espree = tryLoadEspree();
   if (!espree) {

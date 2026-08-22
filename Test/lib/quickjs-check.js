@@ -1,17 +1,5 @@
 'use strict';
 
-/**
- * 用真实 QuickJS 引擎验证 Mihomo-Script-Rules.js 的兼容性（Bettbox 内嵌引擎）。
- *
- * 覆盖两层验证：
- * 1. 语法解析 + 顶层执行（含所有正则字面量编译）
- * 2. 集成验证：在 QuickJS 上下文实际调用 main() 处理示例订阅配置，
- *    并将输出 JSON 化回传 Node，与 Node(v8) 引擎跑出的结果做结构性对照。
- *
- * 由 Test/run-tests.js 调用。未安装 quickjs-emscripten 时自动跳过（不记入通过/失败）。
- * 思路借鉴自 MyClash 的 Test/lib/quickjs-check.js（MIT 许可），适配单脚本仓库。
- */
-
 const fs = require('fs');
 const path = require('path');
 const { loadScript } = require('./loader');
@@ -19,18 +7,15 @@ const { loadScript } = require('./loader');
 const ROOT = path.resolve(__dirname, '..', '..');
 const SCRIPT_FILE = 'Mihomo-Script-Rules.js';
 
-/** 尝试加载 quickjs-emscripten；仅「未安装」时返回 null（调用方应优雅跳过） */
 function tryLoadQuickJS() {
   try {
     return require('quickjs-emscripten');
   } catch (e) {
-    // 其他错误（包损坏、加载失败等）如实抛出，避免被误判为「未安装」而掩盖真实问题
     if (e && e.code === 'MODULE_NOT_FOUND') return null;
     throw e;
   }
 }
 
-/** 在 QuickJS 上下文执行代码，返回 { ok, value, error } */
 function run(ctx, code, filename) {
   const res = ctx.evalCode(code, filename);
   if (res.error) {
@@ -44,10 +29,6 @@ function run(ctx, code, filename) {
   return { ok: true, value };
 }
 
-/**
- * QuickJS 引擎兼容性验证（异步：需等待 WASM 模块初始化）。
- * @param {object} opts { harness, fixtures }
- */
 async function runQuickJSChecks({ harness, fixtures }) {
   const quickjs = tryLoadQuickJS();
   if (!quickjs) {
@@ -60,7 +41,6 @@ async function runQuickJSChecks({ harness, fixtures }) {
   const QuickJS = await quickjs.getQuickJS();
   const code = fs.readFileSync(path.join(ROOT, SCRIPT_FILE), 'utf8');
 
-  // ---------- 1. 语法解析 + 顶层执行（含所有正则字面量编译） ----------
   harness.section('QuickJS：语法解析 + 顶层执行');
   harness.test(`${SCRIPT_FILE}（${code.split('\n').length} 行）`, () => {
     const ctx = QuickJS.newContext();
@@ -72,8 +52,6 @@ async function runQuickJSChecks({ harness, fixtures }) {
     }
   });
 
-  // ---------- 2. 集成验证：QuickJS 中实际调用 main()，并与 Node 引擎对照 ----------
-  // 注意：脚本源码用两步 evalCode 执行，避免把源码内嵌进模板字符串导致反引号/占位符冲突
   harness.section('QuickJS：实际调用 main()');
   const cfgJson = JSON.stringify(fixtures.makeSampleConfig());
   const ctx = QuickJS.newContext();

@@ -1,17 +1,10 @@
 'use strict';
 
-/**
- * 冒烟测试套件：迁移自原 .github/workflows/lint.yml 的内联验证逻辑
- * （node --check 语法检查 + 运行时 mock 验证），并补充脚本核心行为断言：
- * 节点过滤 / 重命名规范化 / 倍率分组 / 地区组生成 / 防御性兜底。
- */
-
 const { loadScript } = require('../lib/loader');
 const { smokeConfig, makeSampleConfig } = require('../lib/fixtures');
 
 const SCRIPT_FILE = 'Mihomo-Script-Rules.js';
 
-/** 校验输出对象的基础结构完整性（等价于原 lint.yml 的"输出缺少必要字段"检查） */
 function assertOutputStructure(h, out) {
   h.assert(Array.isArray(out.proxies) && out.proxies.length > 0, 'proxies 缺失或为空');
   h.assert(Array.isArray(out['proxy-groups']) && out['proxy-groups'].length > 0, 'proxy-groups 缺失或为空');
@@ -20,19 +13,14 @@ function assertOutputStructure(h, out) {
   h.assert(out.dns && typeof out.dns === 'object', 'dns 缺失');
 }
 
-/**
- * 冒烟测试入口。
- * @param {object} opts { harness }
- */
 function runSmokeTests({ harness }) {
   harness.section('冒烟测试：运行时功能验证');
   const api = loadScript(SCRIPT_FILE);
 
-  // ---------- 最小用例（等价于原 lint.yml 的 4 节点 mock） ----------
   harness.test('main(smokeConfig)：输出结构完整', () => {
     const out = api.main(smokeConfig());
     assertOutputStructure(harness, out);
-    // 与原 lint.yml 一致：验证输出规模
+
     harness.assert(out.proxies.length > 0 && out['proxy-groups'].length > 0 && out.rules.length > 0, '输出为空');
   });
 
@@ -55,7 +43,6 @@ function runSmokeTests({ harness }) {
     harness.assert(!!low, '未识别 0.5倍 低倍率节点');
   });
 
-  // ---------- 全量用例（复用 generate-yaml.cjs 的示例配置） ----------
   harness.test('main(makeSampleConfig)：输出结构完整', () => {
     const out = api.main(makeSampleConfig());
     assertOutputStructure(harness, out);
@@ -88,7 +75,6 @@ function runSmokeTests({ harness }) {
     harness.assert(typeof last === 'string' && last.startsWith('MATCH,'), `规则未以 MATCH 收尾: ${last}`);
   });
 
-  // ---------- 防御性（对应 README 5.10 防崩溃兜底） ----------
   harness.test('防御性：main(null) 不抛异常', () => {
     const out = api.main(null);
     harness.assert(Array.isArray(out.proxies) && out.proxies.length === 0, '应为空配置兜底');

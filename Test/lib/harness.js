@@ -12,10 +12,6 @@ function fmt(value) {
   }
 }
 
-/**
- * 轻量测试执行器：记录通过/失败、输出 ✓/✗，并汇总打印到控制台。
- * （借鉴自 MyClash 的 Test/lib/harness.js，MIT 许可）
- */
 class Harness {
   constructor(label = '测试') {
     this.label = label;
@@ -54,8 +50,6 @@ class Harness {
   }
 
   assertDeep(actual, expected, msg = '深度不相等') {
-    // 脚本在 vm 沙箱中执行，其产出的对象属于不同 V8 realm、原型不同，
-    // isDeepStrictEqual 会误判；先 JSON 归一化再比较即可忽略原型差异。
     let a, e;
     try {
       a = JSON.parse(JSON.stringify(actual));

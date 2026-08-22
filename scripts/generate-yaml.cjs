@@ -1,16 +1,6 @@
-/**
- * generate-yaml.cjs
- * 作用：运行 Mihomo-Script-Rules.js 的 main()，把输出配置转成 mihomoConfig.yaml
- * 用法：node generate-yaml.cjs
- * 原理：脚本 main(config) 接收一个含 proxies 的 config，返回完整 Mihomo 配置对象，
- *       这里喂一个含示例节点的 config，拿到完整输出后序列化为 YAML。
- * 零依赖：内置 YAML 序列化器，不装 js-yaml。
- */
-
 const fs = require('fs');
 const path = require('path');
 
-// ─── YAML 序列化器（零依赖，支持 Mihomo 配置的数据结构）─────────────────
 function toYaml(obj, indent = 0) {
   const pad = '  '.repeat(indent);
   if (obj === null || obj === undefined) return 'null';
@@ -57,7 +47,6 @@ function toYaml(obj, indent = 0) {
   return String(obj);
 }
 
-// ─── 示例节点：覆盖各地区+倍率+垃圾节点，让 main() 生成完整策略组 ──────
 function makeSampleConfig() {
   return {
     proxies: [
@@ -92,7 +81,7 @@ function makeSampleConfig() {
       { name: '🇯🇵 日本 hysteria2', type: 'hysteria2', server: '2.2.2.4', port: 443 },
     ],
     mode: 'rule',
-    // 示例 DNS 配置：演示代理节点 DNS 感知功能
+
     dns: {
       nameserver: ['https://my-private-dns.example.com/dns-query'],
       'proxy-server-nameserver': ['tls://1.2.3.4:853'],
@@ -106,7 +95,6 @@ function makeSampleConfig() {
   };
 }
 
-// ─── 主流程 ──────────────────────────────────────────────────────────
 function main() {
   const scriptPath = path.join(__dirname, '..', 'Mihomo-Script-Rules.js');
   const src = fs.readFileSync(scriptPath, 'utf8');
@@ -115,7 +103,6 @@ function main() {
   fs.writeFileSync(tmpPath, exportSrc);
   delete require.cache[require.resolve(tmpPath)];
 
-  // QuickJS 脚本内部使用 print() 输出日志，Node.js 无此全局函数，需注入 polyfill
   globalThis.print = console.log;
   const { main: scriptMain } = require(tmpPath);
   fs.unlinkSync(tmpPath);
@@ -135,7 +122,6 @@ function main() {
   console.log('   rule-providers:', Object.keys(mihomoConfig['rule-providers']).length);
 }
 
-// 直接执行时生成 YAML；被 require 时导出供 Test 套件复用（单一来源，避免逻辑重复）
 if (require.main === module) {
   main();
 }

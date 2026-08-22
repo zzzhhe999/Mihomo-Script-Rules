@@ -1,6 +1,3 @@
-# .github/workflows/rule-check.yml
-# 作用：每天定时检查所有 rule-provider 的 URL 是否可达，失效则自动开 Issue 告警
-# 触发：每天 UTC 08:00（北京时间 16:00），或手动触发
 name: 规则集可达性检查
 
 on:
@@ -11,10 +8,8 @@ on:
 jobs:
   check:
     runs-on: ubuntu-latest
-    # --- 新增权限声明 ---
     permissions:
       issues: write
-    # ------------------
     steps:
       - name: Checkout
         uses: actions/checkout@v4

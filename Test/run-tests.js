@@ -1,22 +1,11 @@
 'use strict';
 
-/**
- * 测试套件入口（本地可跑，CI 可跑）：
- *   node Test/run-tests.js                 # 全部
- *   node Test/run-tests.js --node          # 仅冒烟测试（零依赖）
- *   node Test/run-tests.js --yaml          # 仅 YAML 生成校验（零依赖）
- *   node Test/run-tests.js --es2020        # 仅 ES2020 兼容性检查（需 espree）
- *   node Test/run-tests.js --quickjs       # 仅 QuickJS 引擎验证（需 quickjs-emscripten）
- * 未安装可选依赖时，对应检查自动跳过（不记入失败），不阻塞 CI。
- */
-
 const { Harness } = require('./lib/harness');
 const { runSmokeTests } = require('./suites/smoke');
 const { runYamlTests } = require('./suites/yaml');
 const { runES2020Checks } = require('./lib/es2020-check');
 const { runQuickJSChecks } = require('./lib/quickjs-check');
 
-// 运行范围筛选；不传参数则全部运行
 const ARGS = new Set(process.argv.slice(2));
 const runAll = !ARGS.has('--node') && !ARGS.has('--yaml') && !ARGS.has('--es2020') && !ARGS.has('--quickjs');
 const shouldRunNode = runAll || ARGS.has('--node');
