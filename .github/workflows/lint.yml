@@ -19,34 +19,32 @@ on:
       - '.github/workflows/**'
   workflow_dispatch: {}
 
+permissions:
+  contents: write
+
 concurrency:
   group: lint-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:
-  format:
-    if: github.event_name == 'push'
+  ci:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
+
+      - name: Setup Node.js 24
+        uses: actions/setup-node@v5
         with:
-          fetch-depth: 0
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: Test/package-lock.json
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
+      - name: 格式化 js / cjs / yml / yaml（版本锁定，覆盖全部子目录）
+        run: git ls-files -z '*.js' '*.cjs' '*.yml' '*.yaml' | xargs -0 -r npx --yes prettier@3.3.3 --write
 
-      - name: 安装 prettier
-        run: npm install -g prettier
-
-      - name: 格式化 js / cjs / yml / yaml
-        run: git ls-files -z '*.js' '*.cjs' '*.yml' '*.yaml' | xargs -0 -r prettier --write
-
-      - name: 有变化则自动提交
+      - name: 格式化有变化则自动提交（push 事件）
+        if: github.event_name == 'push'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
@@ -59,31 +57,8 @@ jobs:
             git push origin HEAD:main
           fi
 
-  test:
-    needs: format
-    if: always() && (needs.format.result == 'success' || needs.format.result == 'skipped')
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: 拉取 format job 的提交（push 事件）
-        if: github.event_name == 'push'
-        run: |
-          git fetch origin main
-          git checkout --detach origin/main
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-      - name: 安装测试依赖（espree / quickjs-emscripten）
-        run: npm --prefix Test install
+      - name: 安装测试依赖（espree / quickjs-emscripten，锁文件确定性安装）
+        run: npm --prefix Test ci
 
       - name: 运行测试套件（冒烟 + YAML + ES2020 + QuickJS）
         run: node Test/run-tests.js

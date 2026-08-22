@@ -2,22 +2,27 @@ name: 规则集可达性检查
 
 on:
   schedule:
-    - cron: '0 8 * * *'
+    - cron: '0 0 * * *'
   workflow_dispatch: {}
+
+concurrency:
+  group: rule-check
+  cancel-in-progress: true
+
+permissions:
+  issues: write
 
 jobs:
   check:
     runs-on: ubuntu-latest
-    permissions:
-      issues: write
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - name: Setup Node.js 24
+        uses: actions/setup-node@v5
         with:
-          node-version: '20'
+          node-version: '24'
 
       - name: 提取所有规则集 URL
         run: |
@@ -39,7 +44,7 @@ jobs:
             fs.writeFileSync('/tmp/providers.json', JSON.stringify(urls, null, 2));
           "
 
-      - name: 逐个检查 HTTP 可达性
+      - name: 并行检查 HTTP 可达性与非空
         run: |
           node -e "
             const https = require('https');
@@ -49,44 +54,105 @@ jobs:
             function check(url) {
               return new Promise((resolve) => {
                 const client = url.startsWith('https') ? https : http;
+                let settled = false;
+                const done = (r) => { if (!settled) { settled = true; resolve(r); } };
                 const req = client.get(url, { timeout: 15000 }, (res) => {
-                  resolve({ status: res.statusCode, ok: res.statusCode === 200 });
+                  let bytes = 0;
+                  res.on('data', (c) => {
+                    bytes += c.length;
+                    if (bytes >= 1024) { done({ status: res.statusCode, ok: true, bytes }); req.destroy(); }
+                  });
+                  res.on('end', () => done({ status: res.statusCode, ok: res.statusCode === 200 && bytes > 0, bytes }));
+                  res.on('error', () => done({ status: res.statusCode, ok: false, bytes }));
+                  res.on('close', () => done({ status: res.statusCode, ok: res.statusCode === 200 && bytes > 0, bytes }));
                 });
-                req.on('timeout', () => { req.destroy(); resolve({ status: 0, ok: false }); });
-                req.on('error', () => resolve({ status: 0, ok: false }));
+                req.on('timeout', () => { req.destroy(); done({ status: 0, ok: false, bytes: 0 }); });
+                req.on('error', () => done({ status: 0, ok: false, bytes: 0 }));
               });
             }
 
             (async () => {
               const results = [];
-              for (const p of providers) {
-                const r = await check(p.url);
-                results.push({ ...p, ...r });
-                console.log((r.ok ? '✅' : '❌') + ' ' + p.name + ' -> ' + p.url + ' [' + (r.status || 'TIMEOUT/ERROR') + ']');
+              let index = 0;
+              const CONCURRENCY = 8;
+              async function worker() {
+                while (index < providers.length) {
+                  const i = index++;
+                  const p = providers[i];
+                  const r = await check(p.url);
+                  results.push({ ...p, ...r });
+                  console.log((r.ok ? '✅' : '❌') + ' ' + p.name + ' -> ' + p.url + ' [' + (r.status || 'TIMEOUT/ERROR') + ' ' + r.bytes + 'B]');
+                }
               }
+              await Promise.all(Array.from({ length: CONCURRENCY }, worker));
               const failed = results.filter(r => !r.ok);
               require('fs').writeFileSync('/tmp/results.json', JSON.stringify({ results, failed }, null, 2));
-              console.log('\\n总计: ' + results.length + ' | 正常: ' + (results.length - failed.length) + ' | 失效: ' + failed.length);
+              console.log('\n总计: ' + results.length + ' | 正常: ' + (results.length - failed.length) + ' | 失效: ' + failed.length);
             })();
           "
 
-      - name: 失效告警（自动开 Issue）
-        uses: actions/github-script@v7
+      - name: 失效告警（去重 + 自愈关闭，自动开/改/关 Issue）
+        uses: actions/github-script@v9
         with:
           script: |
             const fs = require('fs');
             const data = JSON.parse(fs.readFileSync('/tmp/results.json', 'utf8'));
+            const label = 'rule-check';
+            const title = '⚠️ 规则集可达性检查发现 ' + data.failed.length + ' 个失效项';
+
+            async function findOpen() {
+              const { data: list } = await github.rest.issues.listForRepo({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                state: 'open',
+                labels: 'rule-check',
+              });
+              return list.find((i) => i.title.includes('规则集可达性检查发现'));
+            }
+
+            function buildBody(failedList) {
+              if (failedList.length === 0) {
+                return '✅ 所有规则集均正常，无需告警。';
+              }
+              const items = failedList.map((f) =>
+                '- [' + f.name + '](' + f.url + ') — HTTP ' + (f.status || 'TIMEOUT/ERROR')
+              ).join('\n');
+              return '以下规则集在定时检查中不可达，可能需要更换规则源：\n\n' + items + '\n\n> 此 Issue 由 GitHub Actions 自动创建。';
+            }
+
+            const existing = await findOpen();
             if (data.failed.length === 0) {
-              console.log('✅ 所有规则集均正常，无需告警');
+              if (existing) {
+                await github.rest.issues.update({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: existing.number,
+                  state: 'closed',
+                });
+                console.log('✅ 全部恢复，已自动关闭 Issue #' + existing.number);
+              } else {
+                console.log('✅ 所有规则集均正常，无告警。');
+              }
               return;
             }
-            const failedList = data.failed.map(f =>
-              '- [' + f.name + '](' + f.url + ') — HTTP ' + (f.status || 'TIMEOUT/ERROR')
-            ).join('\n');
-            await github.rest.issues.create({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              title: '⚠️ 规则集可达性检查发现 ' + data.failed.length + ' 个失效项',
-              body: '以下规则集在定时检查中不可达，可能需要更换规则源：\n\n' + failedList + '\n\n> 此 Issue 由 GitHub Actions 自动创建。',
-              labels: ['rule-check', 'auto-generated']
-            });
+
+            const body = buildBody(data.failed);
+            if (existing) {
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: existing.number,
+                state: 'open',
+                body,
+              });
+              console.log('⚠️ 更新 Issue #' + existing.number + '（' + data.failed.length + ' 个失效项）');
+            } else {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title,
+                body,
+                labels: [label, 'auto-generated'],
+              });
+              console.log('⚠️ 新建 Issue（' + data.failed.length + ' 个失效项）');
+            }
