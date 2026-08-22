@@ -949,6 +949,13 @@ function buildConfig(config) {
   newConfig['proxy-groups'] = [globalGroup, ...functionalGroupsSorted, ...generatedRegionGroups];
   newConfig['rule-providers'] = finalRuleProviders;
   Object.assign(newConfig, networkConfig);
+  if (newConfig.hosts && typeof newConfig.hosts === 'object' && !Array.isArray(newConfig.hosts)) {
+    const mergedHosts = { ...newConfig.hosts };
+    for (const [hostKey, hostVal] of Object.entries(originalHosts)) {
+      if (!(hostKey in mergedHosts)) mergedHosts[hostKey] = hostVal;
+    }
+    newConfig.hosts = mergedHosts;
+  }
 
   newConfig.proxies.push(...directProxies);
 
