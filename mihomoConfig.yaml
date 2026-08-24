@@ -1885,14 +1885,6 @@ rule-providers:
     behavior: domain
     url: "https://fastly.jsdelivr.net/gh/217heidai/adblockfilters@main/rules/adblockmihomolite.mrs"
     path: ./ruleset/adblockmihomolite.mrs
-  ai:
-    type: http
-    format: mrs
-    interval: 86400
-    behavior: domain
-    url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/category-ai-!cn.mrs"
-    path: ./ruleset/ai.mrs
-    path-in-bundle: "geo/geosite/category-ai-!cn.mrs"
   youtube:
     type: http
     format: mrs
@@ -1925,6 +1917,14 @@ rule-providers:
     url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geoip/google.mrs"
     path: ./ruleset/google_ip.mrs
     path-in-bundle: geo/geoip/google.mrs
+  ai:
+    type: http
+    format: mrs
+    interval: 86400
+    behavior: domain
+    url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/category-ai-!cn.mrs"
+    path: ./ruleset/ai.mrs
+    path-in-bundle: "geo/geosite/category-ai-!cn.mrs"
   github:
     type: http
     format: mrs
@@ -2125,11 +2125,11 @@ rules:
   - "RULE-SET,games_cn,Direct"
   - "RULE-SET,cloudflare_cn,Direct"
   - "RULE-SET,apple_cn,Direct"
-  - "RULE-SET,ai,AI"
   - "RULE-SET,youtube,YouTube"
   - "RULE-SET,googlefcm,FCM"
   - "RULE-SET,google,Google"
   - "RULE-SET,google_ip,Google,no-resolve"
+  - "RULE-SET,ai,AI"
   - "RULE-SET,github,GitHub"
   - "RULE-SET,microsoft,Microsoft"
   - "RULE-SET,apple,Apple"
