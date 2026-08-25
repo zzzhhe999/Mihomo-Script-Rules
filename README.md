@@ -29,11 +29,10 @@
 - [4.支持的国家/地区](#4支持的国家地区)
 - [5.核心特性](#5核心特性)
 - [6.快速上手](#6快速上手)
-- [7.客户端兼容性](#7客户端兼容性)
-- [8.个性化定制](#8个性化定制)
-- [9.脚本维护与更新](#9脚本维护与更新)
-- [10.鸣谢](#10鸣谢)
-- [11.许可证](#11许可证)
+- [7.个性化定制](#7个性化定制)
+- [8.脚本维护与更新](#8脚本维护与更新)
+- [9.鸣谢](#9鸣谢)
+- [10.许可证](#10许可证)
 
 ---
 
@@ -335,29 +334,11 @@ https://fastly.jsdelivr.net/gh/zzzhhe999/Mihomo-Script-Rules@main/mihomoConfig.y
 
 ---
 
-## 7.客户端兼容性
-
-| 客户端 | 兼容性 | 备注  |
-| --- | --- | --- |
-| [Bettbox](https://github.com/appshubcc/Bettbox) | 完美 | **强烈推荐**。QuickJS 引擎，与本脚本完全匹配 |
-| [FlClash](https://github.com/chen08209/FlClash) | 较好 | 原生支持 JS 脚本预处理，执行效率极高 |
-| [Clash Verge Rev](https://github.com/clash-verge-rev/clash-verge-rev) | 可用 | 使用 **boa_engine**，可能不兼容，核心功能正常 |
-| [Clash Nyanpasu](https://github.com/libnyanpasu/clash-nyanpasu) | 可用 | 同上，需自行验证 |
-| [Clash Verge](https://github.com/clash-verge-rev/clash-verge-rev) | 旧版 | 旧版可能不支持，建议升级到 Verge Rev |
-| Stash / Shadowrocket | 不兼容 | JS 预处理语法不同，建议用 sub-store 中转或使用纯配置 |
-| Surge / Quantumult X | 不兼容 | 同上  |
-
-### 7.1 Stash / Shadowrocket / Surge 等其他客户端
-
-> ⚠️ 这些客户端不完全兼容 Mihomo 的 JS 预处理语法。建议改用 **订阅转换工具**（如 sub-store），将脚本挂载在转换流程中，或直接使用上方的纯配置文件。
-
----
-
-## 8.个性化定制
+## 7.个性化定制
 
 脚本开头定义了所有可配置常量，直接编辑即可自定义。
 
-### 8.1 策略组开关 (`ruleOptionsEnable`)
+### 7.1 策略组开关 (`ruleOptionsEnable`)
 
 控制每个应用策略组是否开启。设为 `false` 可禁用不需要的服务，减少策略组数量。
 
@@ -383,7 +364,7 @@ const ruleOptionsEnable = {
 };
 ```
 
-### 8.2 地区策略组开关 (`regionDefinitionsEnable`)
+### 7.2 地区策略组开关 (`regionDefinitionsEnable`)
 
 控制哪些国家/地区生成独立的节点策略组。不需要的地区设为 `false` 即可。
 
@@ -410,14 +391,14 @@ const regionDefinitionsEnable = {
 };
 ```
 
-### 8.3 全局开关
+### 7.3 全局开关
 
 | 常量  | 作用  | 默认值 | 推荐  |
 | --- | --- | --- | --- |
 | `excludeFilterEnable` | 是否开启杂质节点过滤 | `true` | 始终开启 |
 | `quicEnable` | QUIC 管控开关 | `true` | 建议保持开启 |
 
-### 8.4 杂质过滤正则 (`excludeFilter`)
+### 7.4 杂质过滤正则 (`excludeFilter`)
 
 如果你想自定义过滤规则，修改此正则。匹配到以下关键词的节点会被自动移除：
 
@@ -427,7 +408,7 @@ const excludeFilter = /群|返利|循环|官[网址]|客服|网站|网址|获取
 
 ---
 
-## 9.脚本维护与更新
+## 8.脚本维护与更新
 
 - 本脚本持续维护
   
@@ -438,7 +419,7 @@ const excludeFilter = /群|返利|循环|官[网址]|客服|网站|网址|获取
 
 ---
 
-## 10.鸣谢
+## 9.鸣谢
 
 本项目的诞生离不开以下优秀开源项目：
 
@@ -454,7 +435,7 @@ const excludeFilter = /群|返利|循环|官[网址]|客服|网站|网址|获取
 
 ---
 
-## 11.许可证
+## 10.许可证
 
 本项目基于 **MIT License** 开源。详见 [LICENSE](./LICENSE) 文件。
 
