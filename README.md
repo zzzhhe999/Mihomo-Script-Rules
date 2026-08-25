@@ -304,16 +304,6 @@ https://fastly.jsdelivr.net/gh/zzzhhe999/Mihomo-Script-Rules@main/Mihomo-Script-
 
 Ⅴ **代理** 页可选择节点及策略
 
-**Clash Verge Rev：**
-
-Ⅰ 进入 **配置** 页面 → 找到你的订阅配置
-
-Ⅱ 点击编辑 → 在 **预处理脚本** 处填入脚本链接
-
-Ⅲ 保存并更新订阅
-
-> ⚠️ Clash Verge Rev 使用 **boa_engine** 而非 QuickJS，脚本中的 `print()` 调用在该引擎下可能不被支持。如果你在 CVR 上遇到日志缺失，不影响核心功能但建议优先使用 **Bettbox**。
-
 ### 6.2 纯配置文件
 
 适用于不支持 JS 脚本的客户端，或不想用脚本的用户。配置文件由脚本自动生成，但**不含动态地区分组**（需手动填入节点）。
