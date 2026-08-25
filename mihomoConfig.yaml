@@ -159,6 +159,7 @@ dns:
   fake-ip-filter:
     - "rule-set:private"
     - "rule-set:fakeip_filter"
+    - "rule-set:geolocation-cn"
   default-nameserver:
     - 223.5.5.5
     - 1.12.12.12
