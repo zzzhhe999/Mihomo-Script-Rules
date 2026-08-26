@@ -102,9 +102,9 @@
 | TikTok | `TikTok` | `rule-set:tiktok` | —   |
 | Netflix | `Netflix` | `rule-set:netflix` + `rule-set:netflix_ip` | 域名 + IP 双重匹配 |
 | Emby | `Emby` | `rule-set:emby`（geosite/category-emby）+ `DOMAIN-SUFFIX,mb3admin.com` + `DOMAIN-KEYWORD,emby` | 域名 + 关键词多重匹配 |
-| 广告拦截 | `AdBlock` | `adblockmihomolite` | 默认 REJECT，可切换直连 |
+| 广告拦截 | `AdBlock` | `rule-set:antiad`（anti-AD，本仓库自托管 .mrs） | 默认 REJECT，可切换直连 |
 
-> 所有规则集均以 **RULE-SET（.mrs）** 形式随订阅下发（主数据源为 [MetaCubeX/meta-rules-dat](https://github.com/MetaCubeX/meta-rules-dat)）。
+> 所有规则集均以 **RULE-SET（.mrs）** 形式随订阅下发。分流规则主数据源为 [MetaCubeX/meta-rules-dat](https://github.com/MetaCubeX/meta-rules-dat)；广告拦截规则为 [anti-AD](https://github.com/privacy-protection-tools/anti-AD)，经本仓库 GitHub Actions 每日自动同步为 `anti-ad.mrs`。
 
 > 常规服务策略组提供 `Default`（跟随系统）、`Direct`（直连）、`Auto`（自动测速）、`Balance`（负载均衡）及各地地区组选项；`AdBlock` 提供 `REJECT`（拦截）和 `DIRECT`（放行）。
 
@@ -116,7 +116,7 @@
 
 🇭🇰 HK · 🇯🇵 JP · 🇺🇸 US · 🇸🇬 SG · 🇹🇼 TW · 🇰🇷 KR · 🇬🇧 UK · 🇩🇪 DE · 🇫🇷 FR · 🇨🇦 CA · 🇦🇺 AU · 🇮🇳 IN · 🇹🇷 TR · 🇧🇷 BR · 🇦🇷 AR · 🇷🇺 RU
 
-每个地区自动生成三个策略组：**手动选择节点** → **Auto** → **Balance**。
+每个地区自动生成三个策略组：**Auto**、**Balance**、**手动选择节点**。
 
 ---
 
@@ -164,9 +164,11 @@
 
 - **Fake-IP 模式**，缓存算法 ARC
   
+- **Fake-IP 过滤**：`fake-ip-filter` 由 `rule-set:private`、`rule-set:fakeip_filter`、`rule-set:geolocation-cn` 构成。国内域名（geolocation-cn）直接返回真实 IP，跳过 Fake-IP 映射
+  
 - `nameserver-policy` 精准分流：`rule-set:gfw` 走国外 DNS；`rule-set:private`、`rule-set:cn`、`rule-set:geolocation-cn`、`rule-set:apple_cn`、`rule-set:cloudflare_cn`、`rule-set:games_cn` 走国内 DNS
   
-- `proxy-server-nameserver` 动态拼接：在默认阿里 + 腾讯 DoH 基础上，自动提取用户私有 DNS 服务器并注入，确保代理节点的域名解析使用正确的 DNS 通道
+- `proxy-server-nameserver` 动态拼接：在默认阿里 DNS + DNSPod（doh.pub）基础上，自动提取用户私有 DNS 服务器并注入，确保代理节点的域名解析使用正确的 DNS 通道
   
 - `direct-nameserver-follow-policy`：直连请求跟随策略选择 DNS
   
@@ -176,13 +178,13 @@
 
 ### 5.5 AdBlock（广告拦截）
 
-- 深度集成 [adblockmihomolite](https://github.com/217heidai/adblockfilters) 规则集
+- 深度集成 [anti-AD](https://github.com/privacy-protection-tools/anti-AD) 规则集（10 万+ 广告与追踪域名），覆盖国内外主流广告、统计、恶意追踪站点
   
-- 每 24 小时自动更新一次规则
+- **每日自动同步**：本仓库 GitHub Actions（`.github/workflows/sync-antiad.yml`）每天 03:30 UTC 自动拉取 anti-AD 官方最新规则 → 转换为 `.mrs` → 提交至仓库根目录 `anti-ad.mrs`
   
 - 策略组 `AdBlock` 默认 REJECT，可切换到 DIRECT 放行
   
-- **强制远程更新**：`adblockmihomolite` 与 `fakeip_filter` 不声明 `path-in-bundle`，规则集不打包进内核内置 geo 数据，每次更新均按更新间隔从 GitHub 远端精准拉取最新规则。
+- **强制远程更新**：`antiad` 与 `fakeip_filter` 不声明 `path-in-bundle`，规则集不打包进内核内置 geo 数据，每次更新均按更新间隔（24 小时）从远端精准拉取最新规则。
   
 
 ### 5.6 自动补全客户端指纹
@@ -196,6 +198,7 @@
 > **前提**：QUIC 走 UDP 443，**Windows**必须开启客户端 **TUN 模式**才能劫持（系统代理只处理 TCP）。详见 [5.8](#58-双栈--客户端-tun-模式)。
 
 ```js
+'AND,((NETWORK,udp),(DST-PORT,443),(RULE-SET,private_ip,no-resolve)),Direct',
 'AND,((NETWORK,udp),(DST-PORT,443),(OR,((RULE-SET,geolocation-cn),(RULE-SET,cn_ip,no-resolve)))),Direct',
 'AND,((NETWORK,udp),(DST-PORT,443)),QUIC'
 ```
@@ -227,7 +230,7 @@
 
 - [MetaCubeX/meta-rules-dat](https://github.com/MetaCubeX/meta-rules-dat)（geosite/geoip .mrs 规则集，主数据源，含 `path-in-bundle` 打包）
 - [wwqgtxx/clash-rules](https://github.com/wwqgtxx/clash-rules)（fakeip 过滤规则）
-- [217heidai/adblockfilters](https://github.com/217heidai/adblockfilters)（广告拦截规则）
+- [anti-AD](https://github.com/privacy-protection-tools/anti-AD)（广告拦截规则，由本仓库 GitHub Actions 每日自动同步为 `anti-ad.mrs`）
 
 ### 5.10 极致的防御性架构与无损接管
 
@@ -250,17 +253,17 @@
 
 ### 5.12 其他
 
-- **Sniffer 域名嗅探**：HTTP/TLS/QUIC 自动嗅探真实域名
+- **Sniffer 域名嗅探**：HTTP/TLS/QUIC 自动嗅探真实域名，跳过 `+.mijia.com`、`+.push.apple.com`、`+.lan`、`+.local` 等
   
 - **NTP 时间同步**：每 30 分钟通过阿里 NTP 同步，防止系统时间不准导致证书错误
   
-- **Hosts 硬编码**：防止 DNS 污染导致 DNS 服务器本身解析失败
+- **Hosts 硬编码**：DNS 服务器 IP 直写（阿里/DNSPod/Google/Cloudflare），`cn.bing.com` 重定向至 `global.bing.com`，并屏蔽哔哩哔哩 PCDN（`+.mcdn.bilivideo.com` 等 → `0.0.0.0`），防止 DNS 污染导致解析失败
   
 - **节点图标**：每个策略组和地区组配有 Qure 精美图标
   
 - **测速 URL 国内外分流**：国外节点用 Cloudflare，国内节点用华为
   
-- **统一延迟测试**：`unified-delay` 开启，TCP 并发测试
+- **统一延迟测试**：`unified-delay` 开启，TCP 并发测试（`tcp-concurrent`）
   
 
 ---
@@ -412,7 +415,9 @@ const excludeFilter = /群|返利|循环|官[网址]|客服|网站|网址|获取
 
 - 本脚本持续维护
   
-- 规则集（geosite/geoip .mrs / 广告拦截）由上游项目自动更新，脚本本身无需频繁改动
+- 分流规则集（geosite/geoip .mrs）由上游 [MetaCubeX/meta-rules-dat](https://github.com/MetaCubeX/meta-rules-dat) 自动更新，脚本本身无需频繁改动
+  
+- 广告拦截规则（`anti-ad.mrs`）由本仓库 GitHub Actions 每日自动同步（[anti-AD](https://github.com/privacy-protection-tools/anti-AD) → .mrs），无需手动更新
   
 - 如果你发现某个服务的分流规则过时或有更好的替代规则集，欢迎提 **Issue**
   
@@ -431,7 +436,7 @@ const excludeFilter = /群|返利|循环|官[网址]|客服|网站|网址|获取
 | [Qure](https://github.com/Koolson/Qure) | 精美图标库 |
 | [Meta 规则集](https://github.com/MetaCubeX/meta-rules-dat) | geosite / geoip .mrs 规则集（主数据源） |
 | [Clash 规则集](https://github.com/wwqgtxx/clash-rules) | fakeip 过滤规则 |
-| [广告过滤规则](https://github.com/217heidai/adblockfilters) | Mihomo 广告拦截规则 |
+| [anti-AD](https://github.com/privacy-protection-tools/anti-AD) | 广告拦截规则源（每日自动同步） |
 
 ---
 
