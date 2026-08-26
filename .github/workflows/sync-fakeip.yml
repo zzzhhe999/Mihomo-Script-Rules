@@ -2,11 +2,12 @@ name: 同步fakeip-filter为MRS
 
 on:
   schedule:
-    - cron: '0 4 * * *'
+    - cron: '0 21 * * *' # 北京时间每日 05:00 (UTC+8)
   workflow_dispatch: # 支持手动触发
 
 permissions:
   contents: write
+  issues: write
 
 concurrency:
   group: sync-fakeip
@@ -54,3 +55,68 @@ jobs:
           git add fakeip-filter.mrs
           git commit -m "chore: 同步 ShellCrash fakeip-filter ($(date -u '+%Y-%m-%d'), $LINES 条) [skip ci]"
           git push
+
+      - name: 同步失败告警（失败时创建/更新 Issue）
+        if: failure()
+        uses: actions/github-script@v9
+        with:
+          script: |
+            const label = 'sync-fakeip';
+            const title = '⚠️ fakeip-filter 规则同步失败';
+            async function findOpen() {
+              const { data: list } = await github.rest.issues.listForRepo({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                state: 'open',
+                labels: label,
+              });
+              return list.find((i) => i.title.includes('规则同步失败'));
+            }
+            const existing = await findOpen();
+            const body =
+              'fakeip-filter 规则同步 workflow 执行失败，请查看运行日志：\n' +
+              'https://github.com/' + context.repo.owner + '/' + context.repo.repo + '/actions/runs/' + context.runId +
+              '\n\n> 此 Issue 由 GitHub Actions 自动创建，同步恢复后自动关闭。';
+            if (existing) {
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: existing.number,
+                state: 'open',
+                body,
+              });
+              console.log('⚠️ 更新同步失败 Issue #' + existing.number);
+            } else {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title,
+                body,
+                labels: [label, 'auto-generated'],
+              });
+              console.log('⚠️ 新建同步失败 Issue');
+            }
+
+      - name: 同步成功自动关闭告警 Issue
+        if: success()
+        uses: actions/github-script@v9
+        with:
+          script: |
+            const { data: list } = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: 'sync-fakeip',
+            });
+            const existing = list.find((i) => i.title.includes('规则同步失败'));
+            if (existing) {
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: existing.number,
+                state: 'closed',
+              });
+              console.log('✅ 同步恢复，自动关闭 Issue #' + existing.number);
+            } else {
+              console.log('✅ 同步正常，无告警 Issue');
+            }
