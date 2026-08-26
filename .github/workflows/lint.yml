@@ -41,7 +41,7 @@ jobs:
       - name: 格式化 js / cjs / yml（版本锁定，覆盖全部子目录）
         run: git ls-files -z '*.js' '*.cjs' '*.yml' | xargs -0 -r npx --yes prettier@3.3.3 --write
 
-      - name: 格式化有变化则自动提交（push 事件）
+      - name: 格式化有变化则自动提交（push 事件，带冲突重试）
         if: github.event_name == 'push'
         run: |
           git config user.name "github-actions[bot]"
@@ -49,11 +49,20 @@ jobs:
           git add .
           if git diff --cached --quiet; then
             echo "无需格式化，跳过提交"
-          else
-            echo "格式化有变化，自动提交"
-            git commit -m "chore: auto format [skip ci]"
-            git push origin HEAD:main
+            exit 0
           fi
+          echo "格式化有变化，自动提交"
+          git commit -m "chore: auto format [skip ci]"
+          for i in 1 2 3 4 5; do
+            if git push origin HEAD:main; then
+              echo "推送成功"
+              exit 0
+            fi
+            echo "推送失败(第 $i 次)，rebase 后重试..."
+            git pull --rebase --autostash origin main || { echo "rebase 失败，放弃"; exit 1; }
+          done
+          echo "重试 5 次仍失败"
+          exit 1
 
       - name: 安装测试依赖（espree / quickjs-emscripten，锁文件确定性安装）
         run: npm --prefix Test ci
