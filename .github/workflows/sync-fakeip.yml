@@ -2,7 +2,7 @@ name: 同步fakeip-filter为MRS
 
 on:
   schedule:
-    - cron: '0 21 * * *' 
+    - cron: '0 21 * * *'
   workflow_dispatch:
 
 permissions:
