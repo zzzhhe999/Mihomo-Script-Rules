@@ -1990,6 +1990,14 @@ rule-providers:
     url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/steam.mrs"
     path: ./ruleset/steam.mrs
     path-in-bundle: geo/geosite/steam.mrs
+  steam_asn:
+    type: http
+    format: mrs
+    interval: 86400
+    behavior: ipcidr
+    url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/asn/AS32590.mrs"
+    path: ./ruleset/steam_asn.mrs
+    path-in-bundle: asn/AS32590.mrs
   twitter:
     type: http
     format: mrs
@@ -2139,6 +2147,7 @@ rules:
   - "RULE-SET,cloudflare,Cloudflare"
   - "RULE-SET,cloudflare_ip,Cloudflare,no-resolve"
   - "RULE-SET,steam,Steam"
+  - "RULE-SET,steam_asn,Steam,no-resolve"
   - "RULE-SET,twitter,X"
   - "RULE-SET,twitter_ip,X,no-resolve"
   - "RULE-SET,instagram,Instagram"
