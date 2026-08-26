@@ -49,15 +49,9 @@
 
 ## 2.快速上手
 
-提供两种使用方式，根据客户端支持情况选择：
+适用于支持 JS 预处理的客户端（Bettbox / FlClash 等）。脚本会根据节点名动态生成地区策略组，自动化程度最高。本脚本针对 Bettbox 的 QuickJS 引擎做了全面的语法兼容和防御性处理，是推荐的最佳搭配。
 
-### 2.1 脚本（推荐）
-
-适用于支持 JS 预处理的客户端（Bettbox / FlClash 等）。脚本会根据节点名动态生成地区策略组，自动化程度最高。
-
-> **Bettbox 用户优先使用脚本模式**：本脚本针对 Bettbox 的 QuickJS 引擎做了全面的语法兼容和防御性处理，是推荐的最佳搭配。
-
-#### 2.1.1 获取脚本链接
+#### 2.1 获取脚本链接
 
 **主链接（GitHub Raw）：**
 
@@ -71,7 +65,7 @@ https://raw.githubusercontent.com/zzzhhe999/Mihomo-Script-Rules/refs/heads/main/
 https://fastly.jsdelivr.net/gh/zzzhhe999/Mihomo-Script-Rules@main/Mihomo-Script-Rules.js
 ```
 
-#### 2.1.2 在客户端中导入
+#### 2.2 在客户端中导入
 
 **Bettbox**
 
