@@ -205,14 +205,14 @@ const regionDefinitions = [
 const ruleProviderCommonDomain = {
   type: 'http',
   format: 'mrs',
-  interval: 86400,
+  interval: 43200,
   behavior: 'domain',
 };
 
 const ruleProviderCommonIpcidr = {
   type: 'http',
   format: 'mrs',
-  interval: 86400,
+  interval: 43200,
   behavior: 'ipcidr',
 };
 

@@ -239,13 +239,13 @@ https://fastly.jsdelivr.net/gh/zzzhhe999/Mihomo-Script-Rules@main/Mihomo-Script-
 
 ### 6.9 规则自动更新
 
-所有分流规则集每 **24 小时**自动更新，来源包括：
+所有分流规则集每 **12 小时**自动更新，来源包括：
 
 - [MetaCubeX/meta-rules-dat](https://github.com/MetaCubeX/meta-rules-dat)（geosite/geoip .mrs 规则集，含 `path-in-bundle` 打包）
 - [ShellCrash](https://github.com/juewuy/ShellCrash)（fakeip 过滤规则源头）
 - [anti-AD](https://github.com/privacy-protection-tools/anti-AD)（广告拦截规则源头）
 
-> **强制远程更新**：`fakeip_filter` 与 `antiad` 不声明 `path-in-bundle`，不打包进内核内置 geo 数据，由本仓库 GitHub Actions 每日自动同步为自托管。规则集经 jsdelivr CDN 分发（缓存最长约 12 小时生效），客户端按更新间隔（24 小时）定时拉取，实际生效最长约 36 小时。
+> **强制远程更新**：`fakeip_filter` 与 `antiad` 不声明 `path-in-bundle`，不打包进内核内置 geo 数据，由本仓库 GitHub Actions 每日自动同步为自托管。规则集经 jsdelivr CDN 分发（缓存最长约 12 小时生效），客户端按更新间隔（12 小时）定时拉取，实际生效最长约 24 小时。
 
 ### 6.10 防御性架构与无损接管
 
