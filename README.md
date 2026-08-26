@@ -285,10 +285,6 @@ https://fastly.jsdelivr.net/gh/zzzhhe999/Mihomo-Script-Rules@main/Mihomo-Script-
 - **测速 URL 国内外分流**：国外节点用 Cloudflare，国内节点用华为
   
 - **统一延迟测试**：`unified-delay` 开启，TCP 并发测试（`tcp-concurrent`）
-  
-
----
-
 
 ---
 
