@@ -386,10 +386,10 @@ const regionDefinitionsEnable = {
 
 ### 7.3 全局开关
 
-| 常量  | 作用  | 默认值 | 推荐  |
-| --- | --- | --- | --- |
-| `excludeFilterEnable` | 是否开启杂质节点过滤 | `true` | 始终开启 |
-| `quicEnable` | QUIC 管控开关 | `true` | 建议保持开启 |
+| 常量  | 作用  | 默认值 |
+| --- | --- | --- |
+| `excludeFilterEnable` | 是否开启杂质节点过滤 | `true` |
+| `quicEnable` | QUIC 管控开关 | `true` |
 
 ### 7.4 杂质过滤正则 (`excludeFilter`)
 
