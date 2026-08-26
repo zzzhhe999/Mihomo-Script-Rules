@@ -1,11 +1,4 @@
-# ============================================================
-# 每日自动同步 anti-AD → mrs → 提交回本仓库
-# 运行时机: 每天 03:30 UTC (北京 11:30), anti-AD 每天 03:06 UTC 更新
-# 产物:     仓库根目录 anti-ad.mrs (可直接用 jsdelivr 引用)
-# 用法:     仓库 Settings → Actions → General
-#           允许 "Workflow permissions: Read and write"
-# ============================================================
-name: Sync anti-AD to MRS
+name: 同步anti-AD为MRS
 
 on:
   schedule:
