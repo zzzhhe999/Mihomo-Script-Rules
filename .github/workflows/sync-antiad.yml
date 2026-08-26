@@ -2,8 +2,8 @@ name: 同步anti-AD为MRS
 
 on:
   schedule:
-    - cron: '0 20 * * *' # 北京时间每日 04:00 (UTC+8)
-  workflow_dispatch: # 支持手动触发(仓库 Actions 页点 Run workflow)
+    - cron: '0 20 * * *' 
+  workflow_dispatch:
 
 permissions:
   contents: write
