@@ -57,7 +57,7 @@ jobs:
             - **SHA256SUMS** — 全部附件的 SHA-256 校验和
 
             ## 使用方法
-            1. 脚本：复制 [raw 链接](https://raw.githubusercontent.com/${{ github.repository }}/main/Mihomo-Script-Rules.js)，在客户端脚本功能中导入
+            复制 [raw 链接](https://raw.githubusercontent.com/${{ github.repository }}/main/Mihomo-Script-Rules.js)，在客户端脚本功能中导入
 
             > 完整文档见 [README](https://github.com/${{ github.repository }}#readme)
           files: |
