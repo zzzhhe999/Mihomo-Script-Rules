@@ -3,7 +3,7 @@ name: 规则集可达性检查
 on:
   schedule:
     - cron: '0 22 * * *'
-  workflow_dispatch: {}
+  workflow_dispatch:
 
 concurrency:
   group: rule-check
