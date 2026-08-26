@@ -390,8 +390,18 @@ const serviceConfigs = [
     name: 'Steam',
     baseOption: selectBaseOption,
     providers: {
-      steam: { ...ruleProviderCommonDomain, url: `${META}/geo/geosite/steam.mrs`, path: './ruleset/steam.mrs', 'path-in-bundle': 'geo/geosite/steam.mrs' },
-      steam_asn: { ...ruleProviderCommonIpcidr, url: `${META}/asn/AS32590.mrs`, path: './ruleset/steam_asn.mrs', 'path-in-bundle': 'asn/AS32590.mrs' },
+      steam: {
+        ...ruleProviderCommonDomain,
+        url: `${META}/geo/geosite/steam.mrs`,
+        path: './ruleset/steam.mrs',
+        'path-in-bundle': 'geo/geosite/steam.mrs',
+      },
+      steam_asn: {
+        ...ruleProviderCommonIpcidr,
+        url: `${META}/asn/AS32590.mrs`,
+        path: './ruleset/steam_asn.mrs',
+        'path-in-bundle': 'asn/AS32590.mrs',
+      },
     },
     icon: ICON('Steam'),
     rules: ['RULE-SET,steam,Steam', 'RULE-SET,steam_asn,Steam,no-resolve'],
