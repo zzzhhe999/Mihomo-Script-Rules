@@ -368,14 +368,14 @@ const serviceConfigs = [
     baseOption: selectBaseOption,
     proxyMode: 'reject',
     providers: {
-      adblockmihomolite: {
+      antiad: {
         ...ruleProviderCommonDomain,
-        url: 'https://fastly.jsdelivr.net/gh/217heidai/adblockfilters@main/rules/adblockmihomolite.mrs',
-        path: './ruleset/adblockmihomolite.mrs',
+        url: 'https://fastly.jsdelivr.net/gh/zzzhhe999/Mihomo-Script-Rules@main/anti-ad.mrs',
+        path: './ruleset/anti-ad.mrs',
       },
     },
     icon: ICON('AdBlack'),
-    rules: ['RULE-SET,adblockmihomolite,AdBlock'],
+    rules: ['RULE-SET,antiad,AdBlock'],
   },
   mkSvc({ name: 'YouTube', geo: 'youtube', icon: ICON('YouTube') }),
   mkSvc({ name: 'FCM', geo: 'googlefcm', icon: ICON('Google') }),
