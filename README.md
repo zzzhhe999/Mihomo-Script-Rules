@@ -43,15 +43,11 @@
 
 本项目主要用于接管机场的原始订阅配置，通过自动执行**节点重命名、无效节点过滤、精细化策略组分流、智能 DNS 配置**，彻底解决原始订阅杂乱无章的问题，提供开箱即用的网络体验。
 
-> **脚本**（`Mihomo-Script-Rules.js`）：根据节点名动态生成地区策略组，自动化程度最高，推荐 Bettbox 用户使用。
-
 ---
 
 ## 2.快速上手
 
-适用于支持 JS 预处理的客户端（Bettbox / FlClash 等）。脚本会根据节点名动态生成地区策略组，自动化程度最高。本脚本针对 Bettbox 的 QuickJS 引擎做了全面的语法兼容和防御性处理，是推荐的最佳搭配。
-
-#### 2.1 获取脚本链接
+### 2.1 获取脚本链接
 
 **主链接（GitHub Raw）：**
 
@@ -65,9 +61,7 @@ https://raw.githubusercontent.com/zzzhhe999/Mihomo-Script-Rules/refs/heads/main/
 https://fastly.jsdelivr.net/gh/zzzhhe999/Mihomo-Script-Rules@main/Mihomo-Script-Rules.js
 ```
 
-#### 2.2 在客户端中导入
-
-**Bettbox**
+### 2.2 在**Bettbox**客户端中导入
 
 Ⅰ 进入 APP → 点击底部 **更多**
 
@@ -294,7 +288,7 @@ https://fastly.jsdelivr.net/gh/zzzhhe999/Mihomo-Script-Rules@main/Mihomo-Script-
 
 ### 7.1 策略组开关 (`ruleOptionsEnable`)
 
-控制每个应用策略组是否开启。设为 `false` 可禁用不需要的服务，减少策略组数量。
+控制每个应用策略组是否开启。设为 `false` 可禁用不需要的服务，减少策略组数量（亦可在**代理** 页右上角选择关闭）。
 
 ```javascript
 const ruleOptionsEnable = {
