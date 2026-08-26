@@ -1,0 +1,64 @@
+# ============================================================
+# 每日自动同步 anti-AD → mrs → 提交回本仓库
+# 运行时机: 每天 03:30 UTC (北京 11:30), anti-AD 每天 03:06 UTC 更新
+# 产物:     仓库根目录 anti-ad.mrs (可直接用 jsdelivr 引用)
+# 用法:     仓库 Settings → Actions → General
+#           允许 "Workflow permissions: Read and write"
+# ============================================================
+name: Sync anti-AD to MRS
+
+on:
+  schedule:
+    - cron: '30 3 * * *'
+  workflow_dispatch: # 支持手动触发(仓库 Actions 页点 Run workflow)
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sync-antiad
+  cancel-in-progress: true
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: 下载 mihomo 预编译二进制 (linux amd64)
+        run: |
+          curl -fsSL -o /tmp/mihomo.gz \
+            "https://github.com/MetaCubeX/mihomo/releases/download/v1.19.30/mihomo-linux-amd64-v1.19.30.gz"
+          gunzip -f /tmp/mihomo.gz
+          chmod +x /tmp/mihomo
+          /tmp/mihomo -v
+
+      - name: 下载 anti-AD yaml
+        run: |
+          curl -fsSL --max-time 120 -o /tmp/anti-ad-clash.yaml \
+            "https://fastly.jsdelivr.net/gh/privacy-protection-tools/anti-AD@master/anti-ad-clash.yaml" \
+            || curl -fsSL --max-time 120 -o /tmp/anti-ad-clash.yaml \
+            "https://raw.githubusercontent.com/privacy-protection-tools/anti-AD/master/anti-ad-clash.yaml"
+          LINES=$(grep -c '^  - ' /tmp/anti-ad-clash.yaml)
+          echo "anti-AD 条目数: $LINES"
+          test "$LINES" -gt 10000 || { echo "条目数异常,中止"; exit 1; }
+
+      - name: 转换为 mrs
+        run: |
+          /tmp/mihomo convert-ruleset domain yaml /tmp/anti-ad-clash.yaml anti-ad.mrs
+          ls -la anti-ad.mrs
+
+      - name: 无变化则跳过,否则提交推送
+        run: |
+          if git diff --quiet -- anti-ad.mrs 2>/dev/null; then
+            echo "anti-ad.mrs 无变化,跳过提交"
+            exit 0
+          fi
+          git config user.name "antiad-sync-bot"
+          git config user.email "antiad-sync-bot@users.noreply.github.com"
+          git add anti-ad.mrs
+          git commit -m "chore: 同步 anti-AD 规则 ($(date -u '+%Y-%m-%d')) [skip ci]"
+          git push
