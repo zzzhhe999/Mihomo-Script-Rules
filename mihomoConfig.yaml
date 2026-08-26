@@ -1861,7 +1861,7 @@ rule-providers:
     format: mrs
     interval: 86400
     behavior: domain
-    url: "https://fastly.jsdelivr.net/gh/wwqgtxx/clash-rules@release/fakeip-filter.mrs"
+    url: "https://fastly.jsdelivr.net/gh/zzzhhe999/Mihomo-Script-Rules@main/fakeip-filter.mrs"
     path: "./ruleset/fakeip-filter.mrs"
   cn:
     type: http
