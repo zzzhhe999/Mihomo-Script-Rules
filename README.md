@@ -30,9 +30,8 @@
 - [5.核心特性](#5核心特性)
 - [6.快速上手](#6快速上手)
 - [7.个性化定制](#7个性化定制)
-- [8.脚本维护与更新](#8脚本维护与更新)
-- [9.鸣谢](#9鸣谢)
-- [10.许可证](#10许可证)
+- [8.鸣谢](#8鸣谢)
+- [9.许可证](#9许可证)
 
 ---
 
@@ -102,9 +101,7 @@
 | TikTok | `TikTok` | `rule-set:tiktok` | —   |
 | Netflix | `Netflix` | `rule-set:netflix` + `rule-set:netflix_ip` | 域名 + IP 双重匹配 |
 | Emby | `Emby` | `rule-set:emby`（geosite/category-emby）+ `DOMAIN-SUFFIX,mb3admin.com` + `DOMAIN-KEYWORD,emby` | 域名 + 关键词多重匹配 |
-| 广告拦截 | `AdBlock` | `rule-set:antiad`（anti-AD，本仓库自托管 .mrs） | 默认 REJECT，可切换直连 |
-
-> 所有规则集均以 **RULE-SET（.mrs）** 形式随订阅下发。分流规则主数据源为 [MetaCubeX/meta-rules-dat](https://github.com/MetaCubeX/meta-rules-dat)；广告拦截规则为 [anti-AD](https://github.com/privacy-protection-tools/anti-AD)，经本仓库 GitHub Actions 每日自动同步为 `anti-ad.mrs`。
+| 广告拦截 | `AdBlock` | `rule-set:antiad` | 默认 REJECT，可切换直连 |
 
 > 常规服务策略组提供 `Default`（跟随系统）、`Direct`（直连）、`Auto`（自动测速）、`Balance`（负载均衡）及各地地区组选项；`AdBlock` 提供 `REJECT`（拦截）和 `DIRECT`（放行）。
 
@@ -178,20 +175,13 @@
 
 ### 5.5 AdBlock（广告拦截）
 
-- 深度集成 [anti-AD](https://github.com/privacy-protection-tools/anti-AD) 规则集（10 万+ 广告与追踪域名），覆盖国内外主流广告、统计、恶意追踪站点
-  
-- **每日自动同步**：本仓库 GitHub Actions（`.github/workflows/sync-antiad.yml`）每天 03:30 UTC 自动拉取 anti-AD 官方最新规则 → 转换为 `.mrs` → 提交至仓库根目录 `anti-ad.mrs`
+- 覆盖国内外主流广告、统计、恶意追踪站点
   
 - 策略组 `AdBlock` 默认 REJECT，可切换到 DIRECT 放行
-  
-- **强制远程更新**：`antiad` 与 `fakeip_filter` 不声明 `path-in-bundle`，规则集不打包进内核内置 geo 数据，每次更新均按更新间隔（24 小时）从远端精准拉取最新规则。
-  
 
 ### 5.6 自动补全客户端指纹
 
 针对 'vmess'、'vless'、'trojan'、'anytls' 协议，自动补全 'client-fingerprint: chrome'，降低 'TLS' 指纹被识别和阻断的风险。
-
-> **为什么不包括 Hysteria2 / TUIC？** Hysteria2 使用独立的 `fingerprint`（证书钉扎）字段，TUIC 不涉及 TLS 指纹，两者均不支持 uTLS 指纹机制，注入无效字段会被内核静默忽略。
 
 ### 5.7 QUIC 管控
 
@@ -202,8 +192,6 @@
 'AND,((NETWORK,udp),(DST-PORT,443),(OR,((RULE-SET,geolocation-cn),(RULE-SET,cn_ip,no-resolve)))),Direct',
 'AND,((NETWORK,udp),(DST-PORT,443)),QUIC'
 ```
-
-> `rule-set:geolocation-cn` 和 `rule-set:cn_ip` 数据来源于 [MetaCubeX/meta-rules-dat](https://github.com/MetaCubeX/meta-rules-dat)，以 .mrs 规则集形式随订阅下发。
 
 - **流量集中管控：** UDP 443 (QUIC) 流量集中拦截到独立策略组，默认走代理。可手动切换到 REJECT 彻底阻断 QUIC，解决部分环境下 QUIC 导致网页加载卡顿的问题。
 - **国内外差异化处理：**
@@ -228,11 +216,13 @@
 
 所有分流规则集每 **24 小时**自动更新，来源包括：
 
-- [MetaCubeX/meta-rules-dat](https://github.com/MetaCubeX/meta-rules-dat)（geosite/geoip .mrs 规则集，主数据源，含 `path-in-bundle` 打包）
-- [wwqgtxx/clash-rules](https://github.com/wwqgtxx/clash-rules)（fakeip 过滤规则）
-- [anti-AD](https://github.com/privacy-protection-tools/anti-AD)（广告拦截规则，由本仓库 GitHub Actions 每日自动同步为 `anti-ad.mrs`）
+- [MetaCubeX/meta-rules-dat](https://github.com/MetaCubeX/meta-rules-dat)（geosite/geoip .mrs 规则集，含 `path-in-bundle` 打包）
+- [ShellCrash](https://github.com/juewuy/ShellCrash)（fakeip 过滤规则源头）
+- [anti-AD](https://github.com/privacy-protection-tools/anti-AD)（广告拦截规则源头）
 
-### 5.10 极致的防御性架构与无损接管
+> **强制远程更新**：`fakeip_filter` （Fake-IP 过滤）与`antiad` （广告拦截）不声明 `path-in-bundle`，规则集不打包进内核内置 geo 数据，由本仓库 GitHub Actions 每日自动同步为自托管，每次更新均按更新间隔（24 小时）从远端精准拉取最新规则。
+
+### 5.10 防御性架构与无损接管
 
 - **防崩溃兜底**：每一处外部输入都经过显式类型校验 —— `typeof` 检查确保非对象输入不崩溃、`Array.isArray()` 保障数组操作安全、`== null` 兜底处理缺失字段。整个主流程包裹在 `try/catch` 中，极端异常下返回最小可用配置（空代理 + 空规则），确保网络绝不因脚本报错而断连。异常时除返回兜底配置外，会通过 `print()` 向 mihomo 日志输出错误信息，便于排查问题。
   
@@ -259,7 +249,7 @@
   
 - **Hosts 硬编码**：DNS 服务器 IP 直写（阿里/DNSPod/Google/Cloudflare），`cn.bing.com` 重定向至 `global.bing.com`，并屏蔽哔哩哔哩 PCDN（`+.mcdn.bilivideo.com` 等 → `0.0.0.0`），防止 DNS 污染导致解析失败
   
-- **节点图标**：每个策略组和地区组配有 Qure 精美图标
+- **节点图标**：每个策略组和地区组配有 Qure 图标
   
 - **测速 URL 国内外分流**：国外节点用 Cloudflare，国内节点用华为
   
@@ -411,36 +401,23 @@ const excludeFilter = /群|返利|循环|官[网址]|客服|网站|网址|获取
 
 ---
 
-## 8.脚本维护与更新
-
-- 本脚本持续维护
-  
-- 分流规则集（geosite/geoip .mrs）由上游 [MetaCubeX/meta-rules-dat](https://github.com/MetaCubeX/meta-rules-dat) 自动更新，脚本本身无需频繁改动
-  
-- 广告拦截规则（`anti-ad.mrs`）由本仓库 GitHub Actions 每日自动同步（[anti-AD](https://github.com/privacy-protection-tools/anti-AD) → .mrs），无需手动更新
-  
-- 如果你发现某个服务的分流规则过时或有更好的替代规则集，欢迎提 **Issue**
-  
-
----
-
-## 9.鸣谢
+## 8.鸣谢
 
 本项目的诞生离不开以下优秀开源项目：
 
 | 项目  | 用途  |
 | --- | --- |
 | [Bettbox](https://github.com/appshubcc/Bettbox) | 推荐客户端 |
-| [MyClash](https://github.com/AIsouler/MyClash) | 原始代码来源，核心逻辑参考 |
+| [MyClash](https://github.com/AIsouler/MyClash) | 原始代码来源 |
 | [Mihomo](https://github.com/MetaCubeX/mihomo) | 内核支持 |
-| [Qure](https://github.com/Koolson/Qure) | 精美图标库 |
-| [Meta 规则集](https://github.com/MetaCubeX/meta-rules-dat) | geosite / geoip .mrs 规则集（主数据源） |
-| [Clash 规则集](https://github.com/wwqgtxx/clash-rules) | fakeip 过滤规则 |
-| [anti-AD](https://github.com/privacy-protection-tools/anti-AD) | 广告拦截规则源（每日自动同步） |
+| [Qure](https://github.com/Koolson/Qure) | 图标库 |
+| [Meta 规则集](https://github.com/MetaCubeX/meta-rules-dat) | geosite / geoip .mrs 规则集 |
+| [ShellCrash](https://github.com/juewuy/ShellCrash) | fakeip 过滤规则源头 |
+| [anti-AD](https://github.com/privacy-protection-tools/anti-AD) | 广告拦截规则源头 |
 
 ---
 
-## 10.许可证
+## 9.许可证
 
 本项目基于 **MIT License** 开源。详见 [LICENSE](./LICENSE) 文件。
 
