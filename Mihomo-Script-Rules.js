@@ -386,28 +386,16 @@ const serviceConfigs = [
   mkSvc({ name: 'Apple', geo: 'apple', icon: ICON('Apple') }),
   mkSvc({ name: 'Telegram', geo: 'telegram', hasIp: true, icon: ICON('Telegram') }),
   mkSvc({ name: 'Cloudflare', geo: 'cloudflare', hasIp: true, icon: ICON('Cloudflare') }),
-  mkSvc({
+  {
     name: 'Steam',
-    geo: 'steam',
-    icon: ICON('Steam'),
-    extra: {
-      providers: {
-        steam: {
-          ...ruleProviderCommonDomain,
-          url: `${META}/geo/geosite/steam.mrs`,
-          path: './ruleset/steam.mrs',
-          'path-in-bundle': 'geo/geosite/steam.mrs',
-        },
-        steam_asn: {
-          ...ruleProviderCommonIpcidr,
-          url: `${META}/asn/AS32590.mrs`,
-          path: './ruleset/steam_asn.mrs',
-          'path-in-bundle': 'asn/AS32590.mrs',
-        },
-      },
-      rules: ['RULE-SET,steam,Steam', 'RULE-SET,steam_asn,Steam,no-resolve'],
+    baseOption: selectBaseOption,
+    providers: {
+      steam: { ...ruleProviderCommonDomain, url: `${META}/geo/geosite/steam.mrs`, path: './ruleset/steam.mrs', 'path-in-bundle': 'geo/geosite/steam.mrs' },
+      steam_asn: { ...ruleProviderCommonIpcidr, url: `${META}/asn/AS32590.mrs`, path: './ruleset/steam_asn.mrs', 'path-in-bundle': 'asn/AS32590.mrs' },
     },
-  }),
+    icon: ICON('Steam'),
+    rules: ['RULE-SET,steam,Steam', 'RULE-SET,steam_asn,Steam,no-resolve'],
+  },
   mkSvc({ name: 'X', geo: 'twitter', hasIp: true, icon: ICON('X') }),
   mkSvc({ name: 'Instagram', geo: 'instagram', icon: ICON('Instagram') }),
   mkSvc({ name: 'Spotify', geo: 'spotify', icon: ICON('Spotify') }),
