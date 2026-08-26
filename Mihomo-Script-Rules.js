@@ -238,7 +238,7 @@ const baseRuleProviders = {
   gfw: RP({ name: 'gfw' }),
   fakeip_filter: RP({
     name: 'fakeip-filter',
-    url: 'https://fastly.jsdelivr.net/gh/wwqgtxx/clash-rules@release/fakeip-filter.mrs',
+    url: 'https://fastly.jsdelivr.net/gh/zzzhhe999/Mihomo-Script-Rules@main/fakeip-filter.mrs',
     pib: '',
   }),
   cn: RP({ name: 'cn' }),
