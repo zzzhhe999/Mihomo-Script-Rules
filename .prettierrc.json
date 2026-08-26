@@ -9,12 +9,4 @@
   "arrowParens": "always",
   "proseWrap": "preserve",
   "endOfLine": "lf",
-  "overrides": [
-    {
-      "files": ["*.yml", "*.yaml"],
-      "options": {
-        "printWidth": 120
-      }
-    }
-  ]
 }
