@@ -1,11 +1,10 @@
-name: 脚本自检与 YAML 自动同步
+name: 脚本自检
 
 on:
   push:
     branches: [main]
     paths:
       - 'Mihomo-Script-Rules.js'
-      - 'scripts/generate-yaml.cjs'
       - 'Test/**'
       - '.prettierrc*'
       - '.github/workflows/**'
@@ -13,7 +12,6 @@ on:
     branches: [main]
     paths:
       - 'Mihomo-Script-Rules.js'
-      - 'scripts/generate-yaml.cjs'
       - 'Test/**'
       - '.prettierrc*'
       - '.github/workflows/**'
@@ -40,8 +38,8 @@ jobs:
           cache: npm
           cache-dependency-path: Test/package-lock.json
 
-      - name: 格式化 js / cjs / yml / yaml（版本锁定，覆盖全部子目录）
-        run: git ls-files -z '*.js' '*.cjs' '*.yml' '*.yaml' | xargs -0 -r npx --yes prettier@3.3.3 --write
+      - name: 格式化 js / cjs / yml（版本锁定，覆盖全部子目录）
+        run: git ls-files -z '*.js' '*.cjs' '*.yml' | xargs -0 -r npx --yes prettier@3.3.3 --write
 
       - name: 格式化有变化则自动提交（push 事件）
         if: github.event_name == 'push'
@@ -60,19 +58,5 @@ jobs:
       - name: 安装测试依赖（espree / quickjs-emscripten，锁文件确定性安装）
         run: npm --prefix Test ci
 
-      - name: 运行测试套件（冒烟 + YAML + ES2020 + QuickJS）
+      - name: 运行测试套件（冒烟 + ES2020 + QuickJS）
         run: node Test/run-tests.js
-
-      - name: 检查 yaml 是否有变化，有则自动提交（push 事件）
-        if: github.event_name == 'push'
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          if git diff --quiet mihomoConfig.yaml; then
-            echo "yaml 无变化，跳过提交"
-          else
-            echo "yaml 有变化，自动提交"
-            git add mihomoConfig.yaml
-            git commit -m "chore: 自动同步 mihomoConfig.yaml [skip ci]"
-            git push origin HEAD:main
-          fi

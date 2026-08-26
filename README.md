@@ -16,7 +16,7 @@
 </p>
 
 <p align="center">
-  <b>提供「脚本」与「纯配置」两种形态 · GitHub Actions 全自动化维护</b>
+  <b>GitHub Actions 全自动化维护</b>
 </p>
 
 ---
@@ -37,16 +37,13 @@
 
 ## 1.简介
 
-这是一个为 **Bettbox（Mihomo 内核 / QuickJS 引擎）** 深度优化的 **JavaScript 订阅预处理脚本**，同时提供自动生成的 **YAML 纯配置文件**。
+这是一个为 **Bettbox（Mihomo 内核 / QuickJS 引擎）** 深度优化的 **JavaScript 订阅预处理脚本**。
 
 大多数机场的原始订阅配置节点名称带有广告尾巴、过期通知混在节点列表里、缺少分流策略，DNS 容易泄漏污染，无法满足较高的使用需求。
 
 本项目主要用于接管机场的原始订阅配置，通过自动执行**节点重命名、无效节点过滤、精细化策略组分流、智能 DNS 配置**，彻底解决原始订阅杂乱无章的问题，提供开箱即用的网络体验。
 
-> **两种模式：**
-> 
-> - **脚本**（`Mihomo-Script-Rules.js`）：根据节点名动态生成地区策略组，自动化程度最高，推荐 Bettbox 用户使用。
-> - **纯配置**（`mihomoConfig.yaml`）：静态配置，适用于不支持 JS 脚本的客户端，需自行填入节点。
+> **脚本**（`Mihomo-Script-Rules.js`）：根据节点名动态生成地区策略组，自动化程度最高，推荐 Bettbox 用户使用。
 
 ---
 
@@ -87,35 +84,6 @@ https://fastly.jsdelivr.net/gh/zzzhhe999/Mihomo-Script-Rules@main/Mihomo-Script-
 Ⅳ **脚本** 功能页中，将刚保存的脚本 **开关** 打开
 
 Ⅴ **代理** 页可选择节点及策略
-
-### 2.2 纯配置文件
-
-适用于不支持 JS 脚本的客户端，或不想用脚本的用户。配置文件由脚本自动生成，但**不含动态地区分组**（需手动填入节点）。
-
-#### 2.2.1 获取配置文件链接
-
-**主链接：**
-
-```
-https://raw.githubusercontent.com/zzzhhe999/Mihomo-Script-Rules/refs/heads/main/mihomoConfig.yaml
-```
-
-**CDN 加速镜像：**
-
-```
-https://fastly.jsdelivr.net/gh/zzzhhe999/Mihomo-Script-Rules@main/mihomoConfig.yaml
-```
-
-#### 2.2.2 使用方式
-
-1. 下载上述 yaml 文件
-  
-2. 将文件中 `proxies` 部分替换为你自己的节点（从机场订阅获取）
-  
-3. 导入到客户端，手动填入节点
-  
-
-> **纯配置与脚本的差异**：纯配置无法根据节点名自动生成地区策略组，未匹配到节点的策略组会回退到 REJECT。如果客户端支持脚本，强烈建议用方式一。
 
 ---
 

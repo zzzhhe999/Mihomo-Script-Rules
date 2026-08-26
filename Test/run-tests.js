@@ -2,14 +2,12 @@
 
 const { Harness } = require('./lib/harness');
 const { runSmokeTests } = require('./suites/smoke');
-const { runYamlTests } = require('./suites/yaml');
 const { runES2020Checks } = require('./lib/es2020-check');
 const { runQuickJSChecks } = require('./lib/quickjs-check');
 
 const ARGS = new Set(process.argv.slice(2));
-const runAll = !ARGS.has('--node') && !ARGS.has('--yaml') && !ARGS.has('--es2020') && !ARGS.has('--quickjs');
+const runAll = !ARGS.has('--node') && !ARGS.has('--es2020') && !ARGS.has('--quickjs');
 const shouldRunNode = runAll || ARGS.has('--node');
-const shouldRunYaml = runAll || ARGS.has('--yaml');
 const shouldRunES2020 = runAll || ARGS.has('--es2020');
 const shouldRunQuickJS = runAll || ARGS.has('--quickjs');
 
@@ -22,14 +20,6 @@ async function main() {
   if (shouldRunNode) {
     const h = new Harness('冒烟测试');
     runSmokeTests({ harness: h });
-    const s = h.summary();
-    totalPassed += s.passed;
-    totalFailed += s.failed;
-  }
-
-  if (shouldRunYaml) {
-    const h = new Harness('YAML 生成校验');
-    runYamlTests({ harness: h });
     const s = h.summary();
     totalPassed += s.passed;
     totalFailed += s.failed;
