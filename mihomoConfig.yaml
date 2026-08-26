@@ -1879,13 +1879,13 @@ rule-providers:
     url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/cloudflare@cn.mrs"
     path: "./ruleset/cloudflare@cn.mrs"
     path-in-bundle: "geo/geosite/cloudflare@cn.mrs"
-  adblockmihomolite:
+  antiad:
     type: http
     format: mrs
     interval: 86400
     behavior: domain
-    url: "https://fastly.jsdelivr.net/gh/217heidai/adblockfilters@main/rules/adblockmihomolite.mrs"
-    path: ./ruleset/adblockmihomolite.mrs
+    url: "https://fastly.jsdelivr.net/gh/zzzhhe999/Mihomo-Script-Rules@main/anti-ad.mrs"
+    path: "./ruleset/anti-ad.mrs"
   youtube:
     type: http
     format: mrs
@@ -2115,7 +2115,7 @@ sniffer:
     - +.lan
     - +.local
 rules:
-  - "RULE-SET,adblockmihomolite,AdBlock"
+  - "RULE-SET,antiad,AdBlock"
   - "DOMAIN-KEYWORD,mcdn.bili,REJECT"
   - "AND,((NETWORK,udp),(DST-PORT,443),(RULE-SET,private_ip,no-resolve)),Direct"
   - "AND,((NETWORK,udp),(DST-PORT,443),(OR,((RULE-SET,geolocation-cn),(RULE-SET,cn_ip,no-resolve)))),Direct"
