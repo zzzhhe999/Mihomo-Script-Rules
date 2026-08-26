@@ -1,18 +1,8 @@
-# ============================================================
-# 每日自动同步 ShellCrash fake_ip_filter 源头 → mrs → 提交回本仓库
-# 源头:   juewuy/ShellCrash (13k+ star, 社区事实标准)
-#         https://raw.githubusercontent.com/juewuy/ShellCrash/dev/public/fake_ip_filter.list
-# 产物:   仓库根目录 fakeip-filter.mrs (可直接用 jsdelivr 引用)
-# 说明:   原 wwqgtxx/clash-rules 的 fakeip-filter 即此源头镜像,
-#         本 workflow 直接对接源头, 绕过中间镜像
-# 用法:   仓库 Settings → Actions → General
-#         允许 "Workflow permissions: Read and write"
-# ============================================================
-name: Sync fakeip-filter to MRS
+name: 同步fakeip-filter为MRS
 
 on:
   schedule:
-    - cron: '0 4 * * *' # 每天 04:00 UTC (北京 12:00), 避开 anti-AD 的 03:30
+    - cron: '0 4 * * *'
   workflow_dispatch: # 支持手动触发
 
 permissions:
