@@ -89,7 +89,7 @@ const NODE_RATE_LOW = 'Low-Rate';
 const NODE_RATE_HIGH = 'High-Rate';
 
 const ICON = (n) => `https://cdn.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/${n}.png`;
-const META = 'https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta';
+const BETT = 'https://cdn.jsdelivr.net/gh/appshubcc/bett-rules@meta';
 const ZZZ = 'https://cdn.jsdelivr.net/gh/zzzhhe999/Mihomo-Script-Rules@main';
 
 const regionDefinitions = [
@@ -222,7 +222,7 @@ const RP = ({
   ip,
   pathName = name,
   pib = `geo/${ip ? 'geoip' : 'geosite'}/${name}.mrs`,
-  url = `${META}/geo/${ip ? 'geoip' : 'geosite'}/${name}.mrs`,
+  url = `${BETT}/geo/${ip ? 'geoip' : 'geosite'}/${name}.mrs`,
 }) => {
   const p = { ...(ip ? ruleProviderCommonIpcidr : ruleProviderCommonDomain), url, path: `./ruleset/${pathName}.mrs` };
   if (pib) p['path-in-bundle'] = pib;
@@ -235,14 +235,14 @@ const baseRuleProviders = {
   games_cn: RP({ name: 'category-games@cn' }),
   apple_cn: RP({ name: 'apple@cn' }),
   'geolocation-cn': RP({ name: 'geolocation-cn' }),
-  cn_ip: RP({ name: 'cn', ip: true, pathName: 'cn_ip' }),
-  gfw: RP({ name: 'gfw' }),
+  cn_ip: RP({ name: 'cn', ip: true, pathName: 'cn_ip', url: `${BETT}/geo/geoip/cn.mrs` }),
+  'geolocation-!cn': RP({ name: 'geolocation-!cn', url: `${BETT}/geo/geosite/geolocation-!cn.mrs` }),
   fakeip_filter: RP({
     name: 'fakeip-filter',
     url: `${ZZZ}/fakeip-filter.mrs`,
     pib: '',
   }),
-  cn: RP({ name: 'cn' }),
+  cn: RP({ name: 'cn', url: `${BETT}/geo/geosite/cn.mrs` }),
   cloudflare_cn: RP({ name: 'cloudflare@cn' }),
 };
 
@@ -345,14 +345,14 @@ const mkSvc = ({ name, geo, icon, hasIp, key = geo, extra = {} }) => ({
   providers: {
     [key]: {
       ...ruleProviderCommonDomain,
-      url: `${META}/geo/geosite/${geo}.mrs`,
+      url: `${BETT}/geo/geosite/${geo}.mrs`,
       path: `./ruleset/${key}.mrs`,
       'path-in-bundle': `geo/geosite/${geo}.mrs`,
     },
     ...(hasIp && {
       [`${key}_ip`]: {
         ...ruleProviderCommonIpcidr,
-        url: `${META}/geo/geoip/${key}.mrs`,
+        url: `${BETT}/geo/geoip/${key}.mrs`,
         path: `./ruleset/${key}_ip.mrs`,
         'path-in-bundle': `geo/geoip/${key}.mrs`,
       },
@@ -393,13 +393,13 @@ const serviceConfigs = [
     providers: {
       steam: {
         ...ruleProviderCommonDomain,
-        url: `${META}/geo/geosite/steam.mrs`,
+        url: `${BETT}/geo/geosite/steam.mrs`,
         path: './ruleset/steam.mrs',
         'path-in-bundle': 'geo/geosite/steam.mrs',
       },
       steam_asn: {
         ...ruleProviderCommonIpcidr,
-        url: `${META}/asn/AS32590.mrs`,
+        url: `${BETT}/asn/AS32590.mrs`,
         path: './ruleset/steam_asn.mrs',
         'path-in-bundle': 'asn/AS32590.mrs',
       },
@@ -542,7 +542,7 @@ function buildNetworkConfig(privateDNS, proxyServerPolicy) {
         'rule-set:apple_cn': chinaDNS,
         'rule-set:cloudflare_cn': chinaDNS,
         'rule-set:games_cn': chinaDNS,
-        'rule-set:gfw': foreignDNS,
+        'rule-set:geolocation-!cn': foreignDNS,
       },
       ...(Object.keys(proxyServerPolicy).length > 0 && {
         'proxy-server-nameserver-policy': proxyServerPolicy,
@@ -991,8 +991,8 @@ function buildConfig(config) {
     ...rules,
     ...serviceRules,
     ...bytedanceCdnRules,
+    'RULE-SET,geolocation-!cn,Default',
     'RULE-SET,geolocation-cn,Direct',
-    'RULE-SET,gfw,Default',
     'RULE-SET,cn_ip,Direct',
     'MATCH,Default',
   ];
