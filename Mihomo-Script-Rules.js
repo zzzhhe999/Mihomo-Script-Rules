@@ -524,7 +524,7 @@ function buildNetworkConfig(privateDNS, proxyServerPolicy) {
       'enhanced-mode': 'fake-ip',
       'fake-ip-range': '198.18.0.1/16',
       'fake-ip-range6': 'fdfe:dcba:9876::1/64',
-      'fake-ip-filter': ['rule-set:private', 'rule-set:fakeip_filter', 'rule-set:geolocation-cn'],
+      'fake-ip-filter': ['rule-set:private', 'rule-set:fakeip_filter', 'rule-set:geolocation-cn', 'geosite:connectivity-check'],
       'default-nameserver': ['223.5.5.5', '1.12.12.12'],
       'proxy-server-nameserver': [...chinaDNS, ...privateDNS],
       nameserver: foreignDNS,
