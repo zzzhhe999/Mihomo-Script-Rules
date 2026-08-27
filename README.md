@@ -196,7 +196,7 @@ TUN 开关由客户端管理。电脑端推荐开启 TUN 模式以全量劫持 U
 - **TLS 指纹**：为 vmess / vless / trojan / anytls 自动补全 `client-fingerprint: chrome`，降低指纹识别风险
 - **Sniffer 嗅探**：HTTP / TLS / QUIC 自动嗅探真实域名，跳过 `+.mijia.com`、`+.push.apple.com`、`+.lan`、`+.local` 等
 - **NTP 时间同步**：每 30 分钟经阿里 NTP 同步，防止系统时间不准导致证书错误
-- **Hosts 硬编码**：DNS 服务器 IP 直写，`cn.bing.com` 重定向 `global.bing.com`，屏蔽哔哩哔哩 PCDN（`+.mcdn.bilivideo.com` 等 → `0.0.0.0`）
+- **Hosts 硬编码**：DNS 服务器 IP 直写，`cn.bing.com` 重定向 `global.bing.com`，屏蔽哔哩哔哩 PCDN
 - **测速与延迟**：国外节点用 Cloudflare 测速、国内用华为；开启 `unified-delay` 与 `tcp-concurrent`
 
 ---
