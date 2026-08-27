@@ -88,8 +88,9 @@ const bytedanceCdnRules = [
 const NODE_RATE_LOW = 'Low-Rate';
 const NODE_RATE_HIGH = 'High-Rate';
 
-const ICON = (n) => `https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/${n}.png`;
-const META = 'https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta';
+const ICON = (n) => `https://cdn.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/${n}.png`;
+const META = 'https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta';
+const ZZZ = 'https://cdn.jsdelivr.net/gh/zzzhhe999/Mihomo-Script-Rules@main';
 
 const regionDefinitions = [
   {
@@ -238,7 +239,7 @@ const baseRuleProviders = {
   gfw: RP({ name: 'gfw' }),
   fakeip_filter: RP({
     name: 'fakeip-filter',
-    url: 'https://fastly.jsdelivr.net/gh/zzzhhe999/Mihomo-Script-Rules@main/fakeip-filter.mrs',
+    url: `${ZZZ}/fakeip-filter.mrs`,
     pib: '',
   }),
   cn: RP({ name: 'cn' }),
@@ -370,7 +371,7 @@ const serviceConfigs = [
     providers: {
       antiad: {
         ...ruleProviderCommonDomain,
-        url: 'https://fastly.jsdelivr.net/gh/zzzhhe999/Mihomo-Script-Rules@main/anti-ad.mrs',
+        url: `${ZZZ}/anti-ad.mrs`,
         path: './ruleset/anti-ad.mrs',
       },
     },
