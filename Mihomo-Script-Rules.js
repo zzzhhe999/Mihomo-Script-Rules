@@ -314,12 +314,16 @@ function matchDomainPattern(pattern, domains) {
     return list.some((d) => d.toLowerCase() === pattern);
   }
 
-  if (pattern.startsWith('+.') || pattern.startsWith('*.')) {
+  if (pattern.startsWith('+.')) {
     return suffixMatch(pattern.slice(2), list, true);
   }
 
+  if (pattern.startsWith('*.')) {
+    return suffixMatch(pattern.slice(2), list, false);
+  }
+
   if (pattern.startsWith('.')) {
-    return suffixMatch(pattern.slice(1), list, false);
+    return suffixMatch(pattern.slice(1), list, true);
   }
 
   const patternParts = pattern.split('.');
@@ -432,9 +436,11 @@ const FINGERPRINT_SUPPORTED = new Set(['vmess', 'vless', 'trojan', 'anytls']);
 const isIpAddress = (server) => /^\d{1,3}(\.\d{1,3}){3}$/.test(server) || server.includes(':');
 
 const hostSpecificity = (pattern) => {
-  if (pattern.startsWith('+.')) return 2;
-  if (pattern.startsWith('.')) return 1;
-  if (pattern.includes('*')) return 0;
+  const p = pattern.toLowerCase();
+  if (p.startsWith('+.')) return 1;
+  if (p.startsWith('*.')) return 2;
+  if (p.startsWith('.')) return 1;
+  if (p.includes('*')) return 0;
   return 3;
 };
 
