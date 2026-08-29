@@ -493,7 +493,7 @@ function buildNetworkConfig(privateDNS, proxyServerPolicy) {
       'dns.cloudflare.com': ['1.1.1.1', '1.0.0.1'],
       'dns.google': ['8.8.8.8', '8.8.4.4', '2001:4860:4860::8888', '2001:4860:4860::8844'],
       'cn.bing.com': 'global.bing.com',
-      'services.googleapis.cn': ['services.googleapis.com'],
+      'services.googleapis.cn': 'services.googleapis.com',
       '+.mcdn.bilivideo.com': ['0.0.0.0'],
       '+.mcdn.bilivideo.cn': ['0.0.0.0'],
       '+.edge.mountaintoys.cn': ['0.0.0.0'],
