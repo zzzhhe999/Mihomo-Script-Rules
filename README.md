@@ -7,6 +7,10 @@
   <img src="https://img.shields.io/badge/Bettbox-QuickJS%20%7C%20ES2020-brightgreen?style=flat-square" alt="Bettbox">
 </p>
 
+---
+出于学业压力，本脚本暂时停止维护，请大家使用 [MyClash](https://github.com/AIsouler/MyClash)。
+---
+
 <p align="center">
   <b>为 Bettbox 深度优化的订阅预处理脚本 · QuickJS 引擎 · ES2020 语法 · GitHub Actions 全自动维护</b>
 </p>
